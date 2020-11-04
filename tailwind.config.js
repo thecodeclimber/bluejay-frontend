@@ -16,11 +16,13 @@ module.exports = {
     },
     minWidth: {
       "220": "220px",
+      "314": "314px",
       "332": "332px",
     },
     borderRadius: {
       "sm": "3px",
       default: "10px",
+      "lg": "25px"
     },
     colors: {
       white: "#fff",

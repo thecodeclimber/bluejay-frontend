@@ -11,6 +11,7 @@ import {
 } from "react-icons/md";
 import {
   BsCardList as ListIcon,
+  BsArrowRight as ArrorForwardIcon,
 } from "react-icons/bs";
 
 const RightMenuTitles = {
@@ -18,6 +19,13 @@ const RightMenuTitles = {
   Account: "Account",
   Orders: "Orders",
   Cart: "Cart",
+}
+
+const OrderStatus = {
+  Shipped: "Shipped",
+  Arrived: "Arrived",
+  Pending: "Pending",
+  Canceled: "Canceled",
 }
 
 const TopNavbar = () => {
@@ -96,28 +104,28 @@ const TopNavbar = () => {
       subMenuList: [{
         serialNumber: "№ 339240",
         dateTime: "19.02.2020  04:20",
-        status: "Shipped",
+        status: OrderStatus.Shipped,
         items: "24",
         price: "697.00",
       },
       {
         serialNumber: "№ 339240",
         dateTime: "19.02.2020  04:20",
-        status: "Shipped",
+        status: OrderStatus.Arrived,
         items: "24",
         price: "697.00",
       },
       {
         serialNumber: "№ 339240",
         dateTime: "19.02.2020  04:20",
-        status: "Shipped",
+        status: OrderStatus.Pending,
         items: "24",
         price: "697.00",
       },
       {
         serialNumber: "№ 339240",
         dateTime: "19.02.2020  04:20",
-        status: "Shipped",
+        status: OrderStatus.Canceled,
         items: "24",
         price: "697.00",
       }],
@@ -125,6 +133,11 @@ const TopNavbar = () => {
     {
       title: RightMenuTitles.Cart,
       icon: Cart,
+      subMenuList: [{
+        img: "/img/Cart.svg",
+        title: "Your Basket is empty",
+        subTitle: "Keep Shopping",
+      }],
     },
   ];
 
@@ -166,15 +179,15 @@ const TopNavbar = () => {
                       >
 
                         <Menu.Items className="font-ubuntu bg-white outline-none p-6 text-dark rounded-b shadow-grey-8">
-                          <Menu.Item as="div" className="font-medium mb-3">{subMenu.title}</Menu.Item>
-                          <Menu.Item as="div" className="font-light text-sm truncate opacity-75">{subMenu.subTitle}</Menu.Item>
+                          <Menu.Item as="div" className="font-medium mb-3 focus:outline-none">{subMenu.title}</Menu.Item>
+                          <Menu.Item as="div" className="font-light text-sm truncate opacity-75 focus:outline-none">{subMenu.subTitle}</Menu.Item>
                           <hr className="my-3 opacity-05" />
-                          <Menu.Item as="div" className="flex text-sm mb-3"><span className="opacity-75 w-16">Phone:</span>{subMenu.phone}</Menu.Item>
-                          <Menu.Item as="div" className="flex text-sm"><span className="opacity-75 w-16">Fax:</span>{subMenu.fax}</Menu.Item>
+                          <Menu.Item as="div" className="flex text-sm mb-3 focus:outline-none"><span className="opacity-75 w-16">Phone:</span>{subMenu.phone}</Menu.Item>
+                          <Menu.Item as="div" className="flex text-sm focus:outline-none"><span className="opacity-75 w-16">Fax:</span>{subMenu.fax}</Menu.Item>
                           <hr className="my-3 opacity-05" />
-                          <Menu.Item as="div" className="flex text-sm mb-3"><span className="opacity-75 w-16 truncate ">E-mail:</span>{subMenu.email}</Menu.Item>
+                          <Menu.Item as="div" className="flex text-sm mb-3 focus:outline-none"><span className="opacity-75 w-16 truncate ">E-mail:</span>{subMenu.email}</Menu.Item>
                           <hr className="my-3 opacity-05" />
-                          <Menu.Item as="div" className="flex text-sm whitespace-pre-line"><span className="opacity-75 w-16">Address:</span>{subMenu.address}</Menu.Item>
+                          <Menu.Item as="div" className="flex text-sm whitespace-pre-line focus:outline-none"><span className="opacity-75 w-16">Address:</span>{subMenu.address}</Menu.Item>
                         </Menu.Items>
                       </Transition>
                     }
@@ -210,6 +223,8 @@ const TopNavbar = () => {
                       >
                         {menu.title === RightMenuTitles.Favorites && FavoritesMenuItems(subMenuList)}
                         {menu.title === RightMenuTitles.Account && AccountMenuItems(subMenuList)}
+                        {menu.title === RightMenuTitles.Orders && OrdersMenuItems(subMenuList)}
+                        {menu.title === RightMenuTitles.Cart && CartMenuItems(subMenuList)}
                       </Transition>
                     }
                   </Fragment>
@@ -230,7 +245,7 @@ const FavoritesMenuItems = (subMenuList) => (
       const { img, title, price } = subMenu || {}
       return (
         <Fragment key={index}>
-          <Menu.Item as="div" className="flex justify-between text-dark py-4 cursor-pointer">
+          <Menu.Item as="div" className="flex justify-between text-dark py-4 cursor-pointer  focus:outline-none">
             <div className="pl-6 pr-4">
               <Image src={img} width="30" height="30" className="object-contain" />
             </div>
@@ -240,7 +255,7 @@ const FavoritesMenuItems = (subMenuList) => (
           {index !== (subMenuList.length - 1) && <hr className="opacity-05 mx-6" />}
         </Fragment>)
     })}
-    <Menu.Item as="div" className="text-primary text-sm text-center w-full py-4 bg-primary bg-opacity-05 rounded-b">
+    <Menu.Item as="div" className="text-primary text-sm text-center w-full py-4 bg-primary bg-opacity-05 rounded-b  focus:outline-none cursor-pointer">
       Show all results
       </Menu.Item>
   </Menu.Items>
@@ -254,10 +269,68 @@ const AccountMenuItems = (subMenuList) => (
       const { name, isExpanded } = subMenu || {}
       return (
         <Fragment key={index}>
-          <Menu.Item as="div" className="text-base flex items-center justify-between px-6 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer">
+          <Menu.Item as="div" className="text-base flex items-center justify-between px-6 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none">
             {name} {isExpanded && <ChevronRight className="text-lg" />}
           </Menu.Item>
           {index !== (subMenuList.length - 1) && <hr className="opacity-05 mx-6" />}
+        </Fragment>)
+    })}
+  </Menu.Items>
+);
+
+const OrdersMenuItems = (subMenuList) => (
+  <Menu.Items className="font-ubuntu bg-white outline-none pt-3 mt-3 -right-8 text-dark rounded relative min-w-332 shadow-grey-8">
+    <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
+    {subMenuList.map((subMenu, index) => {
+      const { serialNumber, dateTime, status, items, price } = subMenu || {}
+      let statusBgColor = "bg-primary";
+      if (status === OrderStatus.Arrived) statusBgColor = "bg-success"
+      if (status === OrderStatus.Pending) statusBgColor = "bg-warning"
+      if (status === OrderStatus.Canceled) statusBgColor = "bg-error"
+      return (
+        <Fragment key={index}>
+          <Menu.Item as="div" className="text-dark py-3 px-6 focus:outline-none">
+            <div className="flex justify-between pb-2">
+              <div className="text-sm font-medium">{serialNumber}</div>
+              <div className={`${statusBgColor} text-xs text-white rounded-lg px-3 flex items-center`}>{status}</div>
+            </div>
+            <div className="flex justify-between items-center pb-1">
+              <div className="text-xs font-light">{dateTime}</div>
+              <div>
+                <span className="text-xs font-light">{items} items at </span>
+                <span className="text-sm font-medium">${price}</span>
+              </div>
+            </div>
+            <div className="flex text-xs text-primary font-light items-center cursor-pointer">
+              <span className="pr-2">Learn more</span>
+              <span><ArrorForwardIcon /></span>
+            </div>
+          </Menu.Item>
+          <hr className="opacity-05 mx-6" />
+        </Fragment>)
+    })}
+    <Menu.Item as="div" className="text-primary text-sm text-center w-full py-2 rounded-b cursor-pointer">
+      Show All
+      </Menu.Item>
+  </Menu.Items>
+);
+
+const CartMenuItems = (subMenuList) => (
+  <Menu.Items className="font-ubuntu bg-white outline-none py-2 mt-3 -right-8 text-dark rounded relative min-w-314 shadow-grey-8">
+    <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
+    {subMenuList.map((subMenu, index) => {
+      const { img, title, subTitle } = subMenu || {}
+      return (
+        <Fragment key={index}>
+          <Menu.Item as="div" className="text-base flex items-center px-8 py-3 focus:outline-none cursor-pointer">
+            <div>
+              <Image src={img} width="27" height="29" className="object-contain" />
+            </div>
+            <div className="ml-8">
+              <div className="font-medium">{title}</div>
+              <div className="text-primary">{subTitle}</div>
+            </div>
+          </Menu.Item>
         </Fragment>)
     })}
   </Menu.Items>
