@@ -11,7 +11,18 @@ module.exports = {
       blue: "0 12px 0 36px hsla(213, 80%, 35%, 0.4)",
       "blue-15": "0 12px 0 36px hsla(213, 80%, 35%, 0.15)",
       "blue-05": "0 8px 0 20px hsla(213, 28%, 19%, 0.05)",
+      "grey-8": "0px 12px 36px hsl(213deg 28% 19% / 8%)",
       none: "none",
+    },
+    minWidth: {
+      "220": "220px",
+      "314": "314px",
+      "332": "332px",
+    },
+    borderRadius: {
+      "sm": "3px",
+      default: "10px",
+      "lg": "25px"
     },
     colors: {
       white: "#fff",
@@ -29,6 +40,11 @@ module.exports = {
     },
     fontFamily: {
       sans: ["Ubuntu", "sans-serif"],
+      ubuntu: "Ubuntu",
+    },
+    opacity: {
+      "05": "0.05",
+      "75": "0.75",
     },
     fontSize: {
       xs: "0.75rem",
@@ -50,6 +66,15 @@ module.exports = {
         10: "0.1",
         90: "0.9",
       },
+      margin: {
+        "-2": "-2px",
+      },
+      zIndex: {
+        "-1": "-1",
+      },
+      inset: {
+        "-8": "-8px",
+      }
     },
   },
   variants: {},
