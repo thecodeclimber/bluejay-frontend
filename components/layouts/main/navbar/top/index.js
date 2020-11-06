@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import Image from "next/image";
 
 import { Menu, Transition } from "@headlessui/react";
@@ -13,6 +13,13 @@ import {
   BsCardList as ListIcon,
   BsArrowRight as ArrorForwardIcon,
 } from "react-icons/bs";
+
+const LeftMenuTitles = {
+  AboutUs: "About Us",
+  Contact: "Contact",
+  RequestaQuote: "Request a Quote",
+  SiteMap: "Site Map",
+}
 
 const RightMenuTitles = {
   Favorites: "Favorites",
@@ -30,12 +37,18 @@ const OrderStatus = {
 
 const TopNavbar = () => {
   const data = {};
+  const [activeMenu, setActiveMenu] = useState(null)
+
+  const setActiveMenuName = (name = null) => {
+    setActiveMenu(name);
+  }
+
   data.menuLeft = [
     {
-      title: "About Us",
+      title: LeftMenuTitles.AboutUs,
     },
     {
-      title: "Contact",
+      title: LeftMenuTitles.Contact,
       subMenu: {
         title: "Contact Information",
         subTitle: "Consultations and ordering by phones:",
@@ -46,10 +59,10 @@ const TopNavbar = () => {
       },
     },
     {
-      title: "Request a Quote",
+      title: LeftMenuTitles.RequestaQuote,
     },
     {
-      title: "Site Map",
+      title: LeftMenuTitles.SiteMap,
     },
   ];
 
@@ -157,42 +170,38 @@ const TopNavbar = () => {
           {data.menuLeft.map((menu, index) => {
             const { subMenu } = menu || {};
             return (
-              <Menu as="div" key={index} className="relative">
-                {({ open }) => (
-                  <Fragment>
-                    <Menu.Button
-                      className={subMenu ? classes.dropdown : classes.button}
-                    >
-                      {menu.title}
-                      {subMenu && <ArrowIcon className={classes.arrow} />}
-                    </Menu.Button>
-                    {open && subMenu &&
-                      <Transition
-                        show={open}
-                        enter="transition duration-100 ease-out"
-                        enterFrom="transform scale-95 opacity-0"
-                        enterTo="transform scale-100 opacity-100"
-                        leave="transition duration-75 ease-out"
-                        leaveFrom="transform scale-100 opacity-100"
-                        leaveTo="transform scale-95 opacity-0"
-                        className="absolute z-10"
-                      >
-
-                        <Menu.Items className="font-ubuntu bg-white outline-none p-6 text-dark rounded-b shadow-grey-8">
-                          <Menu.Item as="div" className="font-medium mb-3 focus:outline-none">{subMenu.title}</Menu.Item>
-                          <Menu.Item as="div" className="font-light text-sm truncate opacity-75 focus:outline-none">{subMenu.subTitle}</Menu.Item>
-                          <hr className="my-3 opacity-05" />
-                          <Menu.Item as="div" className="flex text-sm mb-3 focus:outline-none"><span className="opacity-75 w-16">Phone:</span>{subMenu.phone}</Menu.Item>
-                          <Menu.Item as="div" className="flex text-sm focus:outline-none"><span className="opacity-75 w-16">Fax:</span>{subMenu.fax}</Menu.Item>
-                          <hr className="my-3 opacity-05" />
-                          <Menu.Item as="div" className="flex text-sm mb-3 focus:outline-none"><span className="opacity-75 w-16 truncate ">E-mail:</span>{subMenu.email}</Menu.Item>
-                          <hr className="my-3 opacity-05" />
-                          <Menu.Item as="div" className="flex text-sm whitespace-pre-line focus:outline-none"><span className="opacity-75 w-16">Address:</span>{subMenu.address}</Menu.Item>
-                        </Menu.Items>
-                      </Transition>
-                    }
-                  </Fragment>
-                )}
+              <Menu as="div" key={index} className="relative" onMouseLeave={() => setActiveMenuName()}>
+                <Menu.Button
+                  className={subMenu ? classes.dropdown : classes.button}
+                  onMouseOver={() => setActiveMenuName(menu.title)}
+                >
+                  {menu.title}
+                  {subMenu && <ArrowIcon className={classes.arrow} />}
+                </Menu.Button>
+                {activeMenu == menu.title && subMenu &&
+                  <Transition
+                    show={activeMenu == menu.title}
+                    enter="transition duration-100 ease-out"
+                    enterFrom="transform scale-95 opacity-0"
+                    enterTo="transform scale-100 opacity-100"
+                    leave="transition duration-75 ease-out"
+                    leaveFrom="transform scale-100 opacity-100"
+                    leaveTo="transform scale-95 opacity-0"
+                    className="absolute z-10"
+                  >
+                    <Menu.Items className="font-ubuntu bg-white outline-none p-6 text-dark rounded-b shadow-grey-8" static>
+                      <Menu.Item as="div" className="font-medium mb-3 focus:outline-none">{subMenu.title}</Menu.Item>
+                      <Menu.Item as="div" className="font-light text-sm truncate opacity-75 focus:outline-none">{subMenu.subTitle}</Menu.Item>
+                      <hr className="my-3 opacity-05" />
+                      <Menu.Item as="div" className="flex text-sm mb-3 focus:outline-none"><span className="opacity-75 w-16">Phone:</span>{subMenu.phone}</Menu.Item>
+                      <Menu.Item as="div" className="flex text-sm focus:outline-none"><span className="opacity-75 w-16">Fax:</span>{subMenu.fax}</Menu.Item>
+                      <hr className="my-3 opacity-05" />
+                      <Menu.Item as="div" className="flex text-sm mb-3 focus:outline-none"><span className="opacity-75 w-16 truncate ">E-mail:</span>{subMenu.email}</Menu.Item>
+                      <hr className="my-3 opacity-05" />
+                      <Menu.Item as="div" className="flex text-sm whitespace-pre-line focus:outline-none"><span className="opacity-75 w-16">Address:</span>{subMenu.address}</Menu.Item>
+                    </Menu.Items>
+                  </Transition>
+                }
               </Menu>
             )
           })}
@@ -201,34 +210,36 @@ const TopNavbar = () => {
           {data.menuRight.map((menu, index) => {
             const { subMenuList } = menu || {};
             const isSubMenuList = subMenuList && subMenuList.length > 0;
+
             return (
-              <Menu as="div" key={index} className="relative">
-                {({ open }) => (
-                  <Fragment>
-                    <Menu.Button className={classes.dropdown}>
-                      {menu.icon && <menu.icon className={classes.icon} />}
-                      {menu.title}
-                      {isSubMenuList && <ArrowIcon className={classes.arrow} />}
-                    </Menu.Button>
-                    {open && isSubMenuList &&
-                      <Transition
-                        show={open}
-                        enter="transition duration-100 ease-out"
-                        enterFrom="transform scale-95 opacity-0"
-                        enterTo="transform scale-100 opacity-100"
-                        leave="transition duration-75 ease-out"
-                        leaveFrom="transform scale-100 opacity-100"
-                        leaveTo="transform scale-95 opacity-0"
-                        className="absolute z-10 right-0"
-                      >
-                        {menu.title === RightMenuTitles.Favorites && FavoritesMenuItems(subMenuList)}
-                        {menu.title === RightMenuTitles.Account && AccountMenuItems(subMenuList)}
-                        {menu.title === RightMenuTitles.Orders && OrdersMenuItems(subMenuList)}
-                        {menu.title === RightMenuTitles.Cart && CartMenuItems(subMenuList)}
-                      </Transition>
-                    }
-                  </Fragment>
-                )}
+              <Menu as="div" key={index} className="relative" onMouseLeave={() => setActiveMenuName()}>
+                <Fragment>
+                  <Menu.Button
+                    className={classes.dropdown}
+                    onMouseOver={() => setActiveMenuName(menu.title)}
+                  >
+                    {menu.icon && <menu.icon className={classes.icon} />}
+                    {menu.title}
+                    {isSubMenuList && <ArrowIcon className={classes.arrow} />}
+                  </Menu.Button>
+                  {activeMenu == menu.title && isSubMenuList &&
+                    <Transition
+                      show={activeMenu == menu.title}
+                      enter="transition duration-100 ease-out"
+                      enterFrom="transform scale-95 opacity-0"
+                      enterTo="transform scale-100 opacity-100"
+                      leave="transition duration-75 ease-out"
+                      leaveFrom="transform scale-100 opacity-100"
+                      leaveTo="transform scale-95 opacity-0"
+                      className="absolute z-10 right-0"
+                    >
+                      {menu.title === RightMenuTitles.Favorites && FavoritesMenuItems(subMenuList)}
+                      {menu.title === RightMenuTitles.Account && AccountMenuItems(subMenuList)}
+                      {menu.title === RightMenuTitles.Orders && OrdersMenuItems(subMenuList)}
+                      {menu.title === RightMenuTitles.Cart && CartMenuItems(subMenuList)}
+                    </Transition>
+                  }
+                </Fragment>
               </Menu>
             )
           })}
@@ -239,14 +250,14 @@ const TopNavbar = () => {
 };
 
 const FavoritesMenuItems = (subMenuList) => (
-  <Menu.Items className="font-ubuntu bg-white outline-none pt-3 mt-3 -right-8 text-dark rounded relative min-w-332 shadow-grey-8">
+  <Menu.Items className="font-ubuntu bg-white outline-none pt-3 mt-3 -right-8 text-dark rounded relative min-w-332 shadow-grey-8" static>
     <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
     {subMenuList.map((subMenu, index) => {
       const { img, title, price } = subMenu || {}
       return (
         <Fragment key={index}>
-          <Menu.Item as="div" className="flex justify-between text-dark py-4 cursor-pointer  focus:outline-none">
-            <div className="pl-6 pr-4">
+          <Menu.Item as="div" className="flex justify-between items-center text-dark py-4 cursor-pointer hover:bg-opacity-05 hover:bg-primary focus:outline-none">
+            <div className="pl-6 pr-4 flex items-center">
               <Image src={img} width="30" height="30" className="object-contain" />
             </div>
             <div className="text-xs leading-4 w-48">{title}</div>
@@ -263,7 +274,7 @@ const FavoritesMenuItems = (subMenuList) => (
 
 
 const AccountMenuItems = (subMenuList) => (
-  <Menu.Items className="font-ubuntu bg-white outline-none py-2 mt-3 -right-8 text-dark rounded relative min-w-220 shadow-grey-8">
+  <Menu.Items className="font-ubuntu bg-white outline-none py-2 mt-3 -right-8 text-dark rounded relative min-w-220 shadow-grey-8" static>
     <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
     {subMenuList.map((subMenu, index) => {
       const { name, isExpanded } = subMenu || {}
@@ -279,7 +290,7 @@ const AccountMenuItems = (subMenuList) => (
 );
 
 const OrdersMenuItems = (subMenuList) => (
-  <Menu.Items className="font-ubuntu bg-white outline-none pt-3 mt-3 -right-8 text-dark rounded relative min-w-332 shadow-grey-8">
+  <Menu.Items className="font-ubuntu bg-white outline-none pt-3 mt-3 -right-8 text-dark rounded relative min-w-332 shadow-grey-8" static>
     <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
     {subMenuList.map((subMenu, index) => {
       const { serialNumber, dateTime, status, items, price } = subMenu || {}
@@ -289,10 +300,10 @@ const OrdersMenuItems = (subMenuList) => (
       if (status === OrderStatus.Canceled) statusBgColor = "bg-error"
       return (
         <Fragment key={index}>
-          <Menu.Item as="div" className="text-dark py-3 px-6 focus:outline-none">
+          <Menu.Item as="div" className="text-dark py-3 px-6 focus:outline-none hover:bg-primary hover:bg-opacity-05">
             <div className="flex justify-between pb-2">
               <div className="text-sm font-medium">{serialNumber}</div>
-              <div className={`${statusBgColor} text-xs text-white rounded-lg px-3 flex items-center`}>{status}</div>
+              <div className={`${statusBgColor} text-xs text-white rounded-xl px-3 flex items-center`}>{status}</div>
             </div>
             <div className="flex justify-between items-center pb-1">
               <div className="text-xs font-light">{dateTime}</div>
@@ -316,7 +327,7 @@ const OrdersMenuItems = (subMenuList) => (
 );
 
 const CartMenuItems = (subMenuList) => (
-  <Menu.Items className="font-ubuntu bg-white outline-none py-2 mt-3 -right-8 text-dark rounded relative min-w-314 shadow-grey-8">
+  <Menu.Items className="font-ubuntu bg-white outline-none py-2 mt-3 -right-8 text-dark rounded relative min-w-314 shadow-grey-8" static>
     <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
     {subMenuList.map((subMenu, index) => {
       const { img, title, subTitle } = subMenu || {}

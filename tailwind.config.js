@@ -16,13 +16,14 @@ module.exports = {
     },
     minWidth: {
       "220": "220px",
+      "293": "293px",
       "314": "314px",
       "332": "332px",
     },
     borderRadius: {
       "sm": "3px",
       default: "10px",
-      "lg": "25px"
+      "xl": "25px"
     },
     colors: {
       white: "#fff",
@@ -43,7 +44,10 @@ module.exports = {
       ubuntu: "Ubuntu",
     },
     opacity: {
+      "01": "0.01",
+      "03": "0.03",
       "05": "0.05",
+      "07": "0.07",
       "75": "0.75",
     },
     fontSize: {
@@ -74,6 +78,10 @@ module.exports = {
       },
       inset: {
         "-8": "-8px",
+      },
+      width: {
+        "640":"640px",
+        "210":"210px",
       }
     },
   },
