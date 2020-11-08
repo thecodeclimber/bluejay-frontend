@@ -15,14 +15,14 @@ module.exports = {
       none: "none",
     },
     minWidth: {
-      "220": "220px",
-      "314": "314px",
-      "332": "332px",
+      220: "220px",
+      314: "314px",
+      332: "332px",
     },
     borderRadius: {
-      "sm": "3px",
+      sm: "3px",
       default: "10px",
-      "lg": "25px"
+      lg: "25px",
     },
     colors: {
       white: "#fff",
@@ -44,7 +44,7 @@ module.exports = {
     },
     opacity: {
       "05": "0.05",
-      "75": "0.75",
+      75: "0.75",
     },
     fontSize: {
       xs: "0.75rem",
@@ -74,7 +74,7 @@ module.exports = {
       },
       inset: {
         "-8": "-8px",
-      }
+      },
     },
   },
   variants: {},
