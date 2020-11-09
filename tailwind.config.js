@@ -15,13 +15,12 @@ module.exports = {
       none: "none",
     },
     minWidth: {
-      220: "220px",
-      293: "293px",
-      314: "314px",
-      332: "332px",
+      200: "200px",
+      300: "300px",
     },
     borderRadius: {
       sm: "3px",
+      md: "6px",
       default: "10px",
       xl: "25px",
     },

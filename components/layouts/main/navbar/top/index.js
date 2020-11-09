@@ -250,7 +250,7 @@ const TopNavbar = () => {
 };
 
 const FavoritesMenuItems = (subMenuList) => (
-  <Menu.Items className="font-ubuntu bg-white outline-none pt-3 mt-3 -right-8 text-dark rounded relative min-w-332 shadow-grey-8" static>
+  <Menu.Items className="font-ubuntu bg-white outline-none pt-3 mt-3 -right-8 text-dark rounded relative min-w-300 shadow-grey-8" static>
     <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
     {subMenuList.map((subMenu, index) => {
       const { img, title, price } = subMenu || {}
@@ -261,7 +261,7 @@ const FavoritesMenuItems = (subMenuList) => (
               <Image src={img} width="30" height="30" className="object-contain" />
             </div>
             <div className="text-xs leading-4 w-48">{title}</div>
-            <div className="text-sm font-medium pr-6">${price}</div>
+            <div className="text-sm font-medium pr-6 pl-10">${price}</div>
           </Menu.Item>
           {index !== (subMenuList.length - 1) && <hr className="opacity-05 mx-6" />}
         </Fragment>)
@@ -274,14 +274,14 @@ const FavoritesMenuItems = (subMenuList) => (
 
 
 const AccountMenuItems = (subMenuList) => (
-  <Menu.Items className="font-ubuntu bg-white outline-none py-2 mt-3 -right-8 text-dark rounded relative min-w-220 shadow-grey-8" static>
+  <Menu.Items className="font-ubuntu bg-white outline-none py-2 mt-3 -right-8 text-dark rounded relative min-w-200 shadow-grey-8" static>
     <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
     {subMenuList.map((subMenu, index) => {
       const { name, isExpanded } = subMenu || {}
       return (
         <Fragment key={index}>
           <Menu.Item as="div" className="text-base flex items-center justify-between px-6 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none">
-            {name} {isExpanded && <ChevronRight className="text-lg" />}
+            {name} {isExpanded && <ChevronRight className="text-lg ml-10" />}
           </Menu.Item>
           {index !== (subMenuList.length - 1) && <hr className="opacity-05 mx-6" />}
         </Fragment>)
@@ -290,7 +290,7 @@ const AccountMenuItems = (subMenuList) => (
 );
 
 const OrdersMenuItems = (subMenuList) => (
-  <Menu.Items className="font-ubuntu bg-white outline-none pt-3 mt-3 -right-8 text-dark rounded relative min-w-332 shadow-grey-8" static>
+  <Menu.Items className="font-ubuntu bg-white outline-none pt-3 mt-3 -right-8 text-dark rounded relative min-w-300 shadow-grey-8" static>
     <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
     {subMenuList.map((subMenu, index) => {
       const { serialNumber, dateTime, status, items, price } = subMenu || {}
@@ -306,8 +306,8 @@ const OrdersMenuItems = (subMenuList) => (
               <div className={`${statusBgColor} text-xs text-white rounded-xl px-3 flex items-center`}>{status}</div>
             </div>
             <div className="flex justify-between items-center pb-1">
-              <div className="text-xs font-light">{dateTime}</div>
-              <div>
+              <div className="text-xs font-light pr-20 flex-none">{dateTime}</div>
+              <div className="flex-none pr-24">
                 <span className="text-xs font-light">{items} items at </span>
                 <span className="text-sm font-medium">${price}</span>
               </div>
@@ -327,17 +327,17 @@ const OrdersMenuItems = (subMenuList) => (
 );
 
 const CartMenuItems = (subMenuList) => (
-  <Menu.Items className="font-ubuntu bg-white outline-none py-2 mt-3 -right-8 text-dark rounded relative min-w-314 shadow-grey-8" static>
+  <Menu.Items className="font-ubuntu bg-white outline-none py-2 mt-3 -right-8 text-dark rounded relative min-w-300 shadow-grey-8" static>
     <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
     {subMenuList.map((subMenu, index) => {
       const { img, title, subTitle } = subMenu || {}
       return (
         <Fragment key={index}>
           <Menu.Item as="div" className="text-base flex items-center px-8 py-3 focus:outline-none cursor-pointer">
-            <div>
+            <div className="flex-none">
               <Image src={img} width="27" height="29" className="object-contain" />
             </div>
-            <div className="ml-8">
+            <div className="ml-8 mr-32 flex-none">
               <div className="font-medium">{title}</div>
               <div className="text-primary">{subTitle}</div>
             </div>

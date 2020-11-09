@@ -325,7 +325,7 @@ const Categories = () => {
                   })}
                 </div>
                 {subCategories && subCategories.length > 0 &&
-                  <div className="bg-opacity-01 bg-dark min-w-293 border-r border-opacity-07 border-dark">
+                  <div className="bg-opacity-01 bg-dark min-w-300 border-r border-opacity-07 border-dark">
                     {subCategories.map((subMenu, index) => {
                       const { name, id } = subMenu || {}
                       return (
