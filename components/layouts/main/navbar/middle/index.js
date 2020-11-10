@@ -9,6 +9,15 @@ import {
   MdSubject as CategoryIcon,
   MdChevronRight as ChevronRight,
 } from "react-icons/md";
+import {
+  VscClose as CloseIcon
+} from "react-icons/vsc";
+
+const SearchType = {
+  category: "category",
+  history: "history",
+  result: "result",
+};
 
 const Logo = () => (
   <div className="flex items-center">
@@ -20,23 +29,174 @@ const Logo = () => (
   </div>
 );
 
-const Search = () => (
-  <div className="relative flex flex-grow mx-8 rounded-md">
-    <span className="inline-flex items-center px-4 border-r border-solid rounded-l-lg bg-light border-alpha-05 sm:text-sm">
-      All
-      <ArrowIcon className="ml-3" />
-    </span>
-    <input
-      id="company_website"
-      className="flex-1 block w-full p-3 rounded-none focus:outline-none form-input rounded-r-md sm:text-base sm:leading-5"
-      placeholder="Search..."
-    />
-    <div className="absolute inset-y-0 right-0 flex items-center px-4 border-l border-solid pointer-events-none border-light">
-      <SearchIcon className="text-xl text-primary" />
-    </div>
-  </div>
-);
+const Search = () => {
+  const [activeSearchType, setActiveSearchType] = useState("");
+  const data = {};
+  data.searchCategories = [
+    {
+      name: "Anchors"
+    },
+    {
+      name: "Carriage Bolts"
+    },
+    {
+      name: "Chain & S-Hooks"
+    },
+    {
+      name: "Cotter Pins"
+    },
+    {
+      name: "Drywall Screws"
+    },
+    {
+      name: "Flange Bolts"
+    },
+    {
+      name: "Cotter Pins"
+    },
+    {
+      name: "Drywall Screws"
+    },
+    {
+      name: "Flange Bolts"
+    },
+  ];
 
+  data.searchHistory = [
+    {
+      img: "/img/screw-img.svg",
+      name: "Carriage Bolts 1/4-20 UNC Steel Zinc"
+    },
+    {
+      img: "/img/screw-img.svg",
+      name: "Carriage Bolts 5/16-18 UNC Steel Zinc"
+    },
+    {
+      img: "/img/screw-img.svg",
+      name: "Carriage Bolts 3/8-16 UNC Steel Zinc"
+    },
+    {
+      img: "/img/screw-img.svg",
+      name: "Carriage Bolts 1/2-13 UNC Steel Zinc"
+    },
+  ];
+
+  const handleActiveSearchType = (type = "") => {
+    setActiveSearchType(type);
+  }
+
+  return (
+    <div className="relative flex flex-grow mx-8 rounded-md" onMouseLeave={() => handleActiveSearchType()}>
+      <Menu as="div" className="relative">
+        <Menu.Button
+          onClick={() => handleActiveSearchType(SearchType.category)}
+          className={classnames("inline-flex h-full items-center px-4 border-r border-solid bg-light border-alpha-05 sm:text-sm focus:outline-none", {
+            "rounded-l-md": activeSearchType !== SearchType.history,
+            "rounded-tl-md": activeSearchType === SearchType.history
+          })}
+        >
+          All
+        <ArrowIcon className="ml-3" />
+        </Menu.Button>
+        {activeSearchType == SearchType.category && <SearchCategory {...data} />}
+      </Menu>
+      <input
+        id="company_website"
+        className={classnames("flex-1 block w-full p-3 rounded-none focus:outline-none form-input sm:text-base sm:leading-5", {
+          "rounded-r-md ": activeSearchType !== SearchType.history,
+          "rounded-tr-md": activeSearchType === SearchType.history
+        })}
+        placeholder="Search..."
+        onClick={() => handleActiveSearchType(SearchType.history)}
+      />
+      <div className="absolute inset-y-0 right-0 flex items-center px-4 border-l border-solid pointer-events-none border-light">
+        <SearchIcon className="text-xl text-primary" />
+      </div>
+      {activeSearchType == SearchType.history
+        && <Menu as="div" className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b">
+          <SearchHistory {...data} />
+        </Menu>}
+
+    </div>
+  );
+};
+
+const SearchCategory = (data) => {
+  const { searchCategories } = data || {};
+  return (
+    <Transition
+      show={true}
+      enter="transition duration-100 ease-out"
+      enterFrom="transform scale-95 opacity-0"
+      enterTo="transform scale-100 opacity-100"
+      leave="transition duration-75 ease-out"
+      leaveFrom="transform scale-100 opacity-100"
+      leaveTo="transform scale-95 opacity-0"
+      className="absolute z-10"
+    >
+      <Menu.Items className="font-ubuntu bg-white outline-none py-3 mt-4 text-dark rounded relative min-w-200 shadow-grey-8" static>
+        <span className="w-5 h-5 -mt-2 ml-8 rounded-sm bg-white absolute -z-1 left-0 top-0 transform rotate-45" />
+        {searchCategories.length > 0 && searchCategories.map((category, index) => {
+          const { name } = category || {};
+          return (<Menu.Item as="div" key={index}
+            className="text-base flex items-center justify-between px-6 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
+          >
+            {name}
+          </Menu.Item>
+          );
+        })}
+      </Menu.Items>
+    </Transition>
+  );
+};
+
+const SearchHistory = (data) => {
+  const { searchHistory } = data || {};
+  return (
+    <Transition
+      show={true}
+      enter="transition duration-100 ease-out"
+      enterFrom="transform scale-95 opacity-0"
+      enterTo="transform scale-100 opacity-100"
+      leave="transition duration-75 ease-out"
+      leaveFrom="transform scale-100 opacity-100"
+      leaveTo="transform scale-95 opacity-0"
+    >
+      <div className="flex justify-between font-light text-xs px-4 pt-3 border-t border-light">
+        <input
+          id="search_history"
+          className={classnames("focus:outline-none form-input text-dark text-opacity-75 font-ubuntu w-full font-light", {
+          })}
+          placeholder="Search History"
+        />
+        <div className="text-primary cursor-pointer truncate w-200 text-right">
+          Clear search history
+      </div>
+      </div>
+      <Menu.Items className="font-ubuntu outline-none py-3 text-dark relative min-w-200" static>
+        {searchHistory.length > 0 && searchHistory.map((history, index) => {
+          const { name, img } = history || {};
+          return (<Menu.Item as="div" key={index}
+            className="text-base flex items-center justify-between px-4 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
+          >
+            <div className="flex">
+              <div className="pr-3">
+                <img key={index} src={img} className="w-6 object-contain" alt="product-img" />
+              </div>
+              <div className="text-xs flex items-center">
+                {name}
+              </div>
+            </div>
+            <div>
+              <CloseIcon className="text-lg text-dark" />
+            </div>
+          </Menu.Item>
+          );
+        })}
+      </Menu.Items>
+    </Transition>
+  );
+}
 const Categories = () => {
   const [isActiveCategory, setIsActiveCategory] = useState(false)
   const [activeList, setActiveList] = useState(1);
@@ -345,13 +505,13 @@ const Categories = () => {
                     })}
                   </div>
                 }
-                <div className="w-640 flex flex-wrap">
+                <div className="w-600 flex flex-wrap">
                   {products && products.length > 0 && products.map((row, index) => {
                     const { img, name } = row || {}
                     return (
                       <Menu.Item as="div"
                         key={index}
-                        className={classnames("text-base focus:outline-none text-center w-210 hover:text-primary cursor-pointer", {
+                        className={classnames("text-base focus:outline-none text-center w-200 hover:text-primary cursor-pointer", {
                           "pl-10": index == 0,
                           "pr-10": index == 2 || index == 5,
                           "pt-10": index <= 2,
