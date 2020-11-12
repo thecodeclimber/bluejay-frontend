@@ -31,6 +31,7 @@ const Logo = () => (
 
 const Search = () => {
   const [activeSearchType, setActiveSearchType] = useState("");
+  const [search, setSearch] = useState("");
   const data = {};
   data.searchCategories = [
     {
@@ -81,8 +82,50 @@ const Search = () => {
     },
   ];
 
+  data.searchProducts = [
+    {
+      img: "/img/screw-img1.svg",
+      name: "Alloy Steel Socket Head Screws",
+      price: "5.64",
+    },
+    {
+      img: "/img/screw-img1.svg",
+      name: "Alloy Steel Socket Head Screws",
+      price: "5.64",
+    },
+    {
+      img: "/img/screw-img1.svg",
+      name: "Alloy Steel Socket Head Screws",
+      price: "5.64",
+    },
+  ]
+
+  data.searchResult = [
+    {
+      name: "Carriage Bolts 1/4-20 UNC Steel Zinc",
+    },
+    {
+      name: "Carriage Bolts 1/4-20 UNC Steel Zinc",
+    },
+    {
+      name: "Carriage Bolts 1/4-20 UNC Steel Zinc",
+    },
+    {
+      name: "Carriage Bolts 1/4-20 UNC Steel Zinc",
+    }
+  ];
+
   const handleActiveSearchType = (type = "") => {
     setActiveSearchType(type);
+  }
+
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+  }
+
+  const handleMainSearch = (e, type) => {
+    handleActiveSearchType(type)
+    handleSearch(e);
   }
 
   return (
@@ -91,32 +134,37 @@ const Search = () => {
         <Menu.Button
           onClick={() => handleActiveSearchType(SearchType.category)}
           className={classnames("inline-flex h-full items-center px-4 border-r border-solid bg-light border-alpha-05 sm:text-sm focus:outline-none", {
-            "rounded-l-md": activeSearchType !== SearchType.history,
-            "rounded-tl-md": activeSearchType === SearchType.history
+            "rounded-l-md": activeSearchType !== SearchType.result && activeSearchType !== SearchType.history,
+            "rounded-tl-md": activeSearchType === SearchType.result || activeSearchType === SearchType.history
           })}
         >
           All
         <ArrowIcon className="ml-3" />
         </Menu.Button>
-        {activeSearchType == SearchType.category && <SearchCategory {...data} />}
+        {activeSearchType === SearchType.category && <SearchCategory {...data} />}
       </Menu>
       <input
         id="company_website"
         className={classnames("flex-1 block w-full p-3 rounded-none focus:outline-none form-input sm:text-base sm:leading-5", {
-          "rounded-r-md ": activeSearchType !== SearchType.history,
-          "rounded-tr-md": activeSearchType === SearchType.history
+          "rounded-r-md ": activeSearchType !== SearchType.result && activeSearchType !== SearchType.history,
+          "rounded-tr-md": activeSearchType === SearchType.result || activeSearchType === SearchType.history
         })}
         placeholder="Search..."
         onClick={() => handleActiveSearchType(SearchType.history)}
+        onChange={(e) => handleMainSearch(e, SearchType.result)}
+        autoComplete="off"
       />
-      <div className="absolute inset-y-0 right-0 flex items-center px-4 border-l border-solid pointer-events-none border-light">
+      <div className="absolute inset-y-0 right-0 flex items-center px-4 border-l border-solid pointer-events-none border-dark border-opacity-05">
         <SearchIcon className="text-xl text-primary" />
       </div>
-      {activeSearchType == SearchType.history
+      {activeSearchType === SearchType.history
         && <Menu as="div" className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b">
           <SearchHistory {...data} />
         </Menu>}
-
+      {activeSearchType === SearchType.result
+        && <Menu as="div" className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b">
+          <SearchResult {...data} search={search} handleSearch={handleSearch} />
+        </Menu>}
     </div>
   );
 };
@@ -139,7 +187,7 @@ const SearchCategory = (data) => {
         {searchCategories.length > 0 && searchCategories.map((category, index) => {
           const { name } = category || {};
           return (<Menu.Item as="div" key={index}
-            className="text-base flex items-center justify-between px-6 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
+            className="text-base flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
           >
             {name}
           </Menu.Item>
@@ -162,7 +210,7 @@ const SearchHistory = (data) => {
       leaveFrom="transform scale-100 opacity-100"
       leaveTo="transform scale-95 opacity-0"
     >
-      <div className="flex justify-between font-light text-xs px-4 pt-3 border-t border-light">
+      <div className="flex justify-between font-light text-xs px-4 pt-3 border-t border-dark border-opacity-05">
         <input
           id="search_history"
           className={classnames("focus:outline-none form-input text-dark text-opacity-75 font-ubuntu w-full font-light", {
@@ -183,7 +231,7 @@ const SearchHistory = (data) => {
               <div className="pr-3">
                 <img key={index} src={img} className="w-6 object-contain" alt="product-img" />
               </div>
-              <div className="text-xs flex items-center">
+              <div className="text-sm flex items-center text-dark">
                 {name}
               </div>
             </div>
@@ -197,6 +245,73 @@ const SearchHistory = (data) => {
     </Transition>
   );
 }
+
+const SearchResult = (data) => {
+  const { searchResult, searchProducts, search, handleSearch } = data || {};
+  return (
+    <Transition
+      show={true}
+      enter="transition duration-100 ease-out"
+      enterFrom="transform scale-95 opacity-0"
+      enterTo="transform scale-100 opacity-100"
+      leave="transition duration-75 ease-out"
+      leaveFrom="transform scale-100 opacity-100"
+      leaveTo="transform scale-95 opacity-0"
+    >
+      {searchResult.length == 0 && <div className="text-sm px-4 py-3 text-dark">
+        No products found
+      </div>}
+      {searchResult.length > 0 && <div>
+        <div className="font-light text-xs px-4 py-3 border-t border-b border-dark border-opacity-05">
+          <input
+            value={search}
+            name="search"
+            onChange={handleSearch}
+            id="search_result"
+            className={classnames("focus:outline-none form-input text-dark text-opacity-75 font-ubuntu w-full font-light", {
+            })}
+            placeholder="Search Result"
+          />
+        </div>
+        <div className="flex text-dark">
+          <Menu.Items className="font-ubuntu outline-none pb-3 text-dark relative min-w-200 lg:w-4/6" static>
+            {searchResult.length > 0 && searchResult.map((result, index) => {
+              const { name } = result || {};
+              return (<Menu.Item as="div" key={index}
+                className="text-base flex items-center justify-between pl-6 pr-4 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
+              >
+                <div className="text-sm flex items-center font-medium">
+                  {name}
+                </div>
+              </Menu.Item>
+              );
+            })}
+          </Menu.Items>
+          <div className="border-l border-dark border-opacity-05">
+            {searchProducts.length > 0
+              && searchProducts.map((product, index) => {
+                const { img, price, name } = product || {};
+                return (
+                  <div className="pl-6" key={index}>
+                    <div className="flex py-2">
+                      <div className="flex items-center">
+                        <img src={img} className="w-10 object-contain" alt="product-img" />
+                      </div>
+                      <div className="pl-4">
+                        <div className="font-normal">{name}</div>
+                        <div className="font-medium">${price}</div>
+                      </div>
+                    </div>
+                    <hr className="opacity-05" />
+                  </div>);
+              })}
+          </div>
+        </div>
+      </div>}
+    </Transition>
+  );
+}
+
 const Categories = () => {
   const [isActiveCategory, setIsActiveCategory] = useState(false)
   const [activeList, setActiveList] = useState(1);
