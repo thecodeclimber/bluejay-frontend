@@ -18,6 +18,9 @@ module.exports = {
       200: "200px",
       300: "300px",
     },
+    maxWidth: {
+      400: "472px",
+    },
     borderRadius: {
       sm: "3px",
       md: "6px",
@@ -30,6 +33,8 @@ module.exports = {
       dark: "#232F3E",
       grey: "#9fa5bd",
       primary: "#1E74DF",
+      blue: "#385797",
+      orange: "#DE4837",
       success: "#76b162",
       info: "#56a1ff",
       warning: "#ecb937",
@@ -47,6 +52,9 @@ module.exports = {
       "03": "0.03",
       "05": "0.05",
       "07": "0.07",
+      10: "0.10",
+      25: "0.25",
+      50: "0.50",
       75: "0.75",
     },
     fontSize: {
