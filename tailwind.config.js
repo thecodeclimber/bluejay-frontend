@@ -15,14 +15,17 @@ module.exports = {
       none: "none",
     },
     minWidth: {
-      "220": "220px",
-      "314": "314px",
-      "332": "332px",
+      200: "200px",
+      300: "300px",
+    },
+    maxWidth: {
+      400: "472px",
     },
     borderRadius: {
-      "sm": "3px",
+      sm: "3px",
+      md: "6px",
       default: "10px",
-      "lg": "25px"
+      xl: "25px",
     },
     colors: {
       white: "#fff",
@@ -30,6 +33,8 @@ module.exports = {
       dark: "#232F3E",
       grey: "#9fa5bd",
       primary: "#1E74DF",
+      blue: "#385797",
+      orange: "#DE4837",
       success: "#76b162",
       info: "#56a1ff",
       warning: "#ecb937",
@@ -43,8 +48,14 @@ module.exports = {
       ubuntu: "Ubuntu",
     },
     opacity: {
+      "01": "0.01",
+      "03": "0.03",
       "05": "0.05",
-      "75": "0.75",
+      "07": "0.07",
+      10: "0.10",
+      25: "0.25",
+      50: "0.50",
+      75: "0.75",
     },
     fontSize: {
       xs: "0.75rem",
@@ -68,13 +79,18 @@ module.exports = {
       },
       margin: {
         "-2": "-2px",
+        "11": "2.7rem",
       },
       zIndex: {
         "-1": "-1",
       },
       inset: {
         "-8": "-8px",
-      }
+      },
+      width: {
+        600: "640px",
+        200: "210px",
+      },
     },
   },
   variants: {},
