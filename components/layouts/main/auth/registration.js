@@ -25,8 +25,6 @@ const Registration = (props) => {
   const [formData, setFormData] = useState(state);
 
   const handleFormData = (e) => {
-    console.log('e.target.name', e.target.name);
-    console.log('e.target.value', e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   }
 
@@ -39,7 +37,7 @@ const Registration = (props) => {
   }
 
   return (
-    <div className="bg-dark bg-dark fixed inset-0 w-100 h-100 z-10 bg-opacity-75  justify-center items-center overflow-y-auto">
+    <div className="bg-dark fixed inset-0 w-100 h-100 z-10 bg-opacity-75  justify-center items-center overflow-y-auto">
       <div className="flex items-center h-full">
         <div className="font-ubuntu bg-white rounded shadow-grey-8 py-6 px-8 max-w-400 w-full text-dark m-auto" static="true">
           <div className="flex justify-end">
