@@ -40,7 +40,8 @@ export const getCommonHeaders = (url, additional_headers = {}) => {
       Accept: 'application/json',
       'Access-Control-Allow-Origin': '*',
       'Cache-Control': 'no-cache',
-      Authorization: `Bearer ${token}`,
+      'X-Auth-Client': '3wb4rpc93rw2vv16wo3hv2bmfvbfpdp',
+      'X-Auth-Token': 'r818rgh1juj09o3h1b2xg470asjdij0',
       ...light_step_headers,
       ...additional_headers,
     };
