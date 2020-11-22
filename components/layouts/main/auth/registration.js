@@ -10,6 +10,8 @@ import {
 import {
   VscChromeClose as CloseIcon
 } from "react-icons/vsc";
+import { httpPost } from '../../../../utils/https';
+import URLS from '../../../../utils/urls';
 
 const Registration = (props) => {
   const { closeModal } = props;
@@ -21,6 +23,7 @@ const Registration = (props) => {
     isPasswordVisible: false,
     isConfirmPasswordVisible: false,
     isTermAndConditions: false,
+    isSubmit: false,
   };
   const [formData, setFormData] = useState(state);
 
@@ -34,6 +37,33 @@ const Registration = (props) => {
 
   const togglePasswordVisibility = (name) => {
     setFormData({ ...formData, [name]: !formData[name] });
+  }
+
+  const checkValidations = () => {
+    const errorStructure = {
+      errorName: '',
+      errorEmail: '',
+      errorPassword: '',
+      errorConfirmPassword: '',
+      isSubmit: false,
+    }
+
+    if (!isSubmit) return errorStructure;
+  }
+
+  const createAccount = () => {
+    const attributeParams = [
+      {
+        "name": `attr-${Date.now() + 100}`,
+        "type": "date"
+      }
+    ];
+
+    httpPost(URLS.CUSTOMERS.ATTRIBUTES, attributeParams,
+      { trace_name: 'create customer attribute' }).then(
+        (res) => { console.log('res', res) },
+        (err) => { console.log('err', err) }
+      )
   }
 
   return (
@@ -124,6 +154,7 @@ const Registration = (props) => {
             <div className="text-sm">I accept <a href="#" className="text-primary">Terms & Conditions</a> </div>
           </div>
           <button
+            onClick={createAccount}
             className="font-medium w-full py-3 items-center rounded bg-primary text-white border-alpha-05 focus:outline-none mb-3"
           >
             Create Account
