@@ -1,0 +1,62 @@
+import { httpPost, httpGet } from '../../../utils/https';
+import URLS from '../../../utils/urls';
+const moment = require('moment');
+
+export default async (req, res) => {
+  if (req.method !== 'POST') {
+    res.status = 500;
+    res.json('Something went wrong');
+    return;
+  }
+
+  const customersUrl = URLS.BIG_COMMERCE.CUSTOMERS.CUSTOMERS;
+  const emailExist = await httpGet(`${customersUrl}?email:in=${req.body.email}`, { isBigCommerce: true });
+
+  if (emailExist.data.length > 0) {
+    res.json({
+      "errors": {
+        "email": `email ${emailExist.data[0].email} already in use`
+      }
+    });
+    return;
+  }
+
+  const attributeParams = [
+    {
+      "name": `attr-${Date.now() + 100}`,
+      "type": "date"
+    }
+  ];
+  const attrResponse = await httpPost(URLS.BIG_COMMERCE.CUSTOMERS.ATTRIBUTES, attributeParams, { isBigCommerce: true });
+  if (attrResponse.status === 422) {
+    res.json(attrResponse);
+    return;
+  }
+
+  const data = req.body || {};
+  const params = [{
+    first_name: data.first_name,
+    last_name: data.last_name,
+    email: data.email,
+    address: {
+      first_name: data.address?.first_name,
+      last_name: data.address?.last_name,
+      city: data.address?.city,
+      country_code: data.address?.country_code,
+      state_or_province: data.address?.state_or_province,
+      address1: data.address?.address1,
+      postal_code: '133301',
+    },
+    attributes: [
+      {
+        attribute_id: attrResponse?.data[0]?.id,
+        attribute_value: moment(new Date()).format("YYYY/MM/DD"),
+      }
+    ],
+    authentication: {
+      new_password: data.authentication.password
+    },
+  }];
+  const customerResponse = await httpPost(customersUrl, params, { isBigCommerce: true });
+  res.json(customerResponse);
+};

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import classnames from "classnames";
 import {
   TiTick as CheckedIcon
@@ -10,6 +10,14 @@ import {
 import {
   VscChromeClose as CloseIcon
 } from "react-icons/vsc";
+import { httpPost } from '../../../../utils/https';
+import URLS from '../../../../utils/urls';
+import {
+  validateEmail,
+  validateNumberAndCharacter,
+  useStateCallback
+} from '../../../../utils/helper';
+
 
 const Registration = (props) => {
   const { closeModal } = props;
@@ -21,20 +29,97 @@ const Registration = (props) => {
     isPasswordVisible: false,
     isConfirmPasswordVisible: false,
     isTermAndConditions: false,
+    isLoading: false,
   };
   const [formData, setFormData] = useState(state);
+  const [isSubmit, setIsSubmit] = useStateCallback(false);
 
   const handleFormData = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  }
+  };
 
   const toggleCheckbox = () => {
     setFormData({ ...formData, isTermAndConditions: !formData.isTermAndConditions });
-  }
+  };
 
   const togglePasswordVisibility = (name) => {
     setFormData({ ...formData, [name]: !formData[name] });
-  }
+  };
+
+  const checkValidations = () => {
+    const errorStructure = {
+      errorName: '',
+      errorEmail: '',
+      errorPassword: '',
+      errorConfirmPassword: '',
+      isValidate: false,
+    };
+    if (!isSubmit) return errorStructure;
+    if (!formData.name.trim()) {
+      errorStructure.errorName = "Please enter name";
+    }
+    if (!formData.email.trim()) {
+      errorStructure.errorEmail = "Please enter email";
+    } else if (!validateEmail(formData.email)) {
+      errorStructure.errorEmail = "Please enter valid email";
+    }
+    if (!formData.password) {
+      errorStructure.errorPassword = "Please enter password";
+    } else if (formData.password.length < 7) {
+      errorStructure.errorPassword = "Password must be at least 7 characters";
+    } else if (!validateNumberAndCharacter(formData.password)) {
+      errorStructure.errorPassword = "Password contain at least one letter, one number and one special character.";
+    }
+    if (!formData.confirmPassword) {
+      errorStructure.errorConfirmPassword = "Please enter confirm password";
+    } else if (formData.password != formData.confirmPassword) {
+      errorStructure.errorConfirmPassword = "Please enter same password";
+    }
+    if (!errorStructure.errorName && !errorStructure.errorEmail
+      && !errorStructure.errorPassword && !errorStructure.errorConfirmPassword) {
+      errorStructure.isValidate = true;
+    }
+    return errorStructure;
+  };
+
+  const createAccount = () => {
+    setIsSubmit({ isSubmit: true }, (stateData) => {
+      if (stateData.isSubmit) {
+        const { isValidate } = checkValidations();
+        if (!isValidate) return;
+        const params = {
+          first_name: formData.name,
+          last_name: formData.name,
+          email: formData.email,
+          address: {
+            first_name: formData.name,
+            last_name: formData.name,
+            city: 'chandigarh',
+            country_code: 'IN',
+            state_or_province: 'IN-CHD',
+            address1: 'Near, SCO- 226, Second Floor, Tricity Plaza, Sector 20 Rd, Panchkula',
+            postal_code: '133301',
+          },
+          authentication: {
+            new_password: formData.password
+          },
+        };
+
+        setFormData({ ...formData, isLoading: true });
+        httpPost(URLS.NEXT.AUTH.REGISTER, params,
+          { traceName: 'create customer' }).then(
+            (res) => {
+              setFormData({ ...formData, isLoading: false });
+            },
+            (err) => {
+              setFormData({ ...formData, isLoading: false });
+            }
+          );
+      }
+    });
+  };
+
+  const { errorName, errorEmail, errorPassword, errorConfirmPassword } = checkValidations();
 
   return (
     <div className="bg-dark fixed inset-0 w-100 h-100 z-10 bg-opacity-75  justify-center items-center overflow-y-auto">
@@ -54,6 +139,7 @@ const Registration = (props) => {
                 "font-medium": formData.name,
               })}
             />
+            {errorName && <div className="text-error text-sm mt-1 pl-4">{errorName}</div>}
           </div>
           <div className="mb-6">
             <input type="email"
@@ -65,8 +151,8 @@ const Registration = (props) => {
                 "font-medium": formData.email,
               })}
             />
+            {errorEmail && <div className="text-error text-sm mt-1 pl-4">{errorEmail}</div>}
           </div>
-
           <div className="mb-6 relative">
             <input type={formData.isPasswordVisible ? "text" : "password"}
               value={formData.password}
@@ -89,6 +175,7 @@ const Registration = (props) => {
                 onClick={() => togglePasswordVisibility("isPasswordVisible")}
               />
             }
+            {errorPassword && <div className="text-error text-sm mt-1 pl-4">{errorPassword}</div>}
           </div>
           <div className="mb-6 relative">
             <input type={formData.isConfirmPasswordVisible ? "text" : "password"}
@@ -112,6 +199,7 @@ const Registration = (props) => {
                 onClick={() => togglePasswordVisibility("isConfirmPasswordVisible")}
               />
             }
+            {errorConfirmPassword && <div className="text-error text-sm mt-1 pl-4">{errorConfirmPassword}</div>}
           </div>
           <div className="mb-6 flex items-center">
             <div
@@ -124,14 +212,18 @@ const Registration = (props) => {
             <div className="text-sm">I accept <a href="#" className="text-primary">Terms & Conditions</a> </div>
           </div>
           <button
-            className="font-medium w-full py-3 items-center rounded bg-primary text-white border-alpha-05 focus:outline-none mb-3"
+            onClick={createAccount}
+            className={classnames("font-medium w-full py-3 items-center rounded bg-primary text-white border-alpha-05 focus:outline-none mb-3", {
+              "cursor-not-allowed bg-opacity-70": formData.isLoading,
+            })}
+            disabled={formData.isLoading}
           >
-            Create Account
+            {formData.isLoading ? 'Loading...' : 'Create Account'}
           </button>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Registration;

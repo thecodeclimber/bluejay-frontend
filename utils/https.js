@@ -3,21 +3,19 @@ import axios from 'axios';
  * Cancel Token
  */
 const { CancelToken } = axios;
-
 /**
  * Use to cancel Http Requests
  */
 let cancelHttpTokens = [];
-
 /**
  * Helper Params used in Request
  */
 const HELPER_PARAMS = {
   callback: null, // Function|Null
   headers: {}, // Additional Headers
-  trace_name: 'untraced_event',
+  traceName: 'untraced_event',
+  isBigCommerce: false,
 };
-
 /**
  * Get Common Headers
  *
@@ -28,29 +26,32 @@ const HELPER_PARAMS = {
  */
 export const getCommonHeaders = (url, additional_headers = {}) => {
   try {
-    const token = "test_token";
-
-    const { trace_name } = additional_headers;
-
+    const { traceName, isBigCommerce } = additional_headers;
     const light_step_headers = {
-      'x-api-trace-name': trace_name,
+      'x-api-trace-name': traceName,
     };
 
-    const headers = {
+    let headers = {
       Accept: 'application/json',
       'Access-Control-Allow-Origin': '*',
       'Cache-Control': 'no-cache',
-      Authorization: `Bearer ${token}`,
       ...light_step_headers,
       ...additional_headers,
     };
 
+    const bigCommerce = {
+      'X-Auth-Client': 'am3w2xluq1hsaspcbelowyeplw6a55u',
+      'X-Auth-Token': 'e2dq9gbzsac2m2xqr8o6cxr8fu0s9o8',
+    };
+
+    if (isBigCommerce) {
+      headers = { ...headers, ...bigCommerce };
+    }
     return headers;
   } catch (e) {
     return {};
   }
 };
-
 /**
  * Extract JSON Response
  *
@@ -65,7 +66,6 @@ export const extractJSON = (json) => {
     return '';
   }
 };
-
 /**
  * Handle Success Response
  *
@@ -76,11 +76,9 @@ export const extractJSON = (json) => {
 export const httpHandleResponse = (res) => {
   cancelHttpTokens = [];
   if (!res) return Promise.reject(null);
-
   const r = res.data;
   return Promise.resolve(r);
 };
-
 /**
  * Handle API Error Reponse
  *
@@ -92,92 +90,77 @@ export const httpHandleError = (error) => {
   /* error = { error, config, code, request, response } */
   try {
     if (!error) return Promise.reject({});
-
     /* Handle Cancel Request */
     cancelHttpTokens = [];
     if (!error.request) return Promise.reject('cancelled');
-
-    const xhr = error.request;
-
+    const xhr = error.response.data;
     let err = {};
-    if (xhr.response) err = extractJSON(xhr.response);
-
+    if (xhr) err = xhr;
     if (xhr) {
       switch (xhr.status) {
         case 0:
-          alert('SERVER_ERROR');
+          console.log('SERVER_ERROR');
           break;
-
         case 400:
           if (err.error) {
-            alert(err.error[0].message);
+            console.log(err.error[0].message);
           } else if (!err.status && !err.error && err.response) {
-            alert(err.response);
+            console.log(err.response);
           } else {
-            alert('INTERNAL_ERROR');
+            console.log('INTERNAL_ERROR');
           }
           break;
-
         case 401:
-          alert(xhr.statusText);
+          console.log(xhr.statusText);
           break;
-
         case 403:
-          alert('You do not have access.');
+          console.log('You do not have access.');
           break;
-
         case 404:
-          alert(err.response);
+          console.log(err.response);
           break;
-
         case 412:
           if (Object.keys(err.errors)[0] === 'q') {
-            alert('Please enter valid location.');
+            console.log('Please enter valid location.');
           } else {
-            alert(err.errors[Object.keys(err.errors)[0]][0]);
+            console.log(err.errors[Object.keys(err.errors)[0]][0]);
           }
           break;
-
         case 422:
           if (err.errors && err.errors[0] && err.errors[0].detail) {
-            alert(err.errors[0].detail);
+            console.log(err.errors[0].detail);
           } else if (Array.isArray(err.message)) {
-            alert(err.message[0]);
+            console.log(err.message[0]);
           } else if (err.message) {
-            alert(err.message);
+            console.log(err.message);
           } else if (err.error && typeof err.error == 'string') {
-            alert(err.error);
+            console.log(err.error);
           } else {
-            alert(err[Object.keys(err)[0]]);
+            console.log(err[Object.keys(err)[0]]);
           }
           break;
-
         case 502:
-          alert('BAD_GATEWAY');
+          console.log('BAD_GATEWAY');
           break;
-
         case 503:
           if (err.error && typeof err.error == 'string') {
-            alert(err.error);
+            console.log(err.error);
           } else {
-            alert('BAD_GATEWAY');
+            console.log('BAD_GATEWAY');
           }
           break;
-
         default:
-          alert('INTERNAL_ERROR');
+          console.log('INTERNAL_ERROR');
       }
     } else {
-      alert('INTERNAL_ERROR');
+      console.log('INTERNAL_ERROR');
     }
-
-    return Promise.reject(err);
+    return xhr;
   } catch (e) {
     console.error('-- HTTP HANDLE ERROR -- ', e);
     return Promise.reject({});
   }
 };
-
 /**
  * GET Request
  *
@@ -186,13 +169,14 @@ export const httpHandleError = (error) => {
  */
 export const httpGet = async (
   url,
-  { callback, headers, trace_name } = HELPER_PARAMS
+  { callback, headers, traceName, isBigCommerce } = HELPER_PARAMS
 ) => {
   try {
     if (!headers) ({ headers } = HELPER_PARAMS);
-    if (!trace_name) ({ trace_name } = HELPER_PARAMS);
-    headers.trace_name = trace_name;
-
+    if (!traceName) ({ traceName } = HELPER_PARAMS);
+    if (!isBigCommerce) ({ isBigCommerce } = HELPER_PARAMS);
+    headers.traceName = traceName;
+    headers.isBigCommerce = isBigCommerce;
     return axios
       .get(url, {
         headers: getCommonHeaders(url, headers),
@@ -212,7 +196,6 @@ export const httpGet = async (
     return Promise.reject({});
   }
 };
-
 /**
  * POST Request
  *
@@ -223,13 +206,14 @@ export const httpGet = async (
 export const httpPost = (
   url,
   params,
-  { callback, headers, trace_name } = HELPER_PARAMS
+  { callback, headers, traceName, isBigCommerce } = HELPER_PARAMS
 ) => {
   try {
     if (!headers) ({ headers } = HELPER_PARAMS);
-    if (!trace_name) ({ trace_name } = HELPER_PARAMS);
-    headers.trace_name = trace_name;
-
+    if (!traceName) ({ traceName } = HELPER_PARAMS);
+    if (!isBigCommerce) ({ isBigCommerce } = HELPER_PARAMS);
+    headers.traceName = traceName;
+    headers.isBigCommerce = isBigCommerce;
     return axios
       .post(url, params, {
         headers: getCommonHeaders(url, headers),
@@ -249,7 +233,6 @@ export const httpPost = (
     return Promise.reject({});
   }
 };
-
 /**
  * PUT Request
  *
@@ -260,13 +243,14 @@ export const httpPost = (
 export const httpPut = (
   url,
   params,
-  { callback, headers, trace_name } = HELPER_PARAMS
+  { callback, headers, traceName, isBigCommerce } = HELPER_PARAMS
 ) => {
   try {
     if (!headers) ({ headers } = HELPER_PARAMS);
-    if (!trace_name) ({ trace_name } = HELPER_PARAMS);
-    headers.trace_name = trace_name;
-
+    if (!traceName) ({ traceName } = HELPER_PARAMS);
+    if (!isBigCommerce) ({ isBigCommerce } = HELPER_PARAMS);
+    headers.traceName = traceName;
+    headers.isBigCommerce = isBigCommerce;
     return axios
       .put(url, params, {
         headers: getCommonHeaders(url, headers),
@@ -286,7 +270,6 @@ export const httpPut = (
     return Promise.reject({});
   }
 };
-
 /**
  * DELETE Request
  *
@@ -295,13 +278,14 @@ export const httpPut = (
  */
 export const httpDelete = (
   url,
-  { callback, headers, trace_name } = HELPER_PARAMS
+  { callback, headers, traceName, isBigCommerce } = HELPER_PARAMS
 ) => {
   try {
     if (!headers) ({ headers } = HELPER_PARAMS);
-    if (!trace_name) ({ trace_name } = HELPER_PARAMS);
-    headers.trace_name = trace_name;
-
+    if (!traceName) ({ traceName } = HELPER_PARAMS);
+    if (!isBigCommerce) ({ isBigCommerce } = HELPER_PARAMS);
+    headers.traceName = traceName;
+    headers.isBigCommerce = isBigCommerce;
     return axios
       .delete(url, {
         headers: getCommonHeaders(url, headers),

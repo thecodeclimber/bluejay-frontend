@@ -75,6 +75,7 @@ module.exports = {
     extend: {
       opacity: {
         10: "0.1",
+        70: "0.7",
         90: "0.9",
       },
       margin: {

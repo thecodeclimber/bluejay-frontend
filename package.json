@@ -12,6 +12,7 @@
     "axios": "^0.21.0",
     "classnames": "^2.2.6",
     "immutable": "^4.0.0-rc.12",
+    "moment": "^2.29.1",
     "next": "^10.0.0",
     "next-google-fonts": "^1.2.1",
     "next-optimized-images": "^2.6.2",
