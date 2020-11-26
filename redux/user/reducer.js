@@ -1,17 +1,19 @@
 /**
  * Import Dependencies
  */
-import { fromJS } from 'immutable';
+import { fromJS } from "immutable";
 import {
   SET_USER,
+  SET_MODAL,
   USER_STRUCTURE,
-} from './constants';
+} from "./constants";
 
 /**
  * Set Initial State
  */
 export const initialState = fromJS({
   user: USER_STRUCTURE,
+  modal: '',
 });
 
 /**
@@ -24,6 +26,8 @@ function UserReducer(state = initialState, action) {
   switch (action.type) {
     case SET_USER:
       return state.set('user', fromJS(action.data));
+    case SET_MODAL:
+      return state.set('modal', fromJS(action.data));
 
     default:
       return state;

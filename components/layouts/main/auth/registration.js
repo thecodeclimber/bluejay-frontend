@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { func, shape } from "prop-types";
+import { connect } from "react-redux";
+import { createStructuredSelector } from 'reselect';
 import classnames from "classnames";
 import {
   TiTick as CheckedIcon
@@ -10,19 +13,21 @@ import {
 import {
   VscChromeClose as CloseIcon
 } from "react-icons/vsc";
-import { httpPost } from '../../../../utils/https';
-import URLS from '../../../../utils/urls';
+import { httpPost } from "../../../../utils/https";
+import URLS from "../../../../utils/urls";
 import {
   validateEmail,
   validateNumberAndCharacter,
   useStateCallback
-} from '../../../../utils/helper';
-
+} from "../../../../utils/helper";
+import { setModal, setUser } from "../../../../redux/user/actions";
+import { getUser } from "../../../../redux/user/selectors";
+import { MODAL_TYPES } from "../../../../redux/user/constants";
 
 const Registration = (props) => {
-  const { closeModal } = props;
+  const { user, setModal, setUser } = props;
   const state = {
-    name: 'Andrey Babak',
+    name: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -109,7 +114,26 @@ const Registration = (props) => {
         httpPost(URLS.NEXT.AUTH.REGISTER, params,
           { traceName: 'create customer' }).then(
             (res) => {
-              setFormData({ ...formData, isLoading: false });
+              if (res.errors && Object.keys(res.errors).length > 0) {
+                alert(res.errors[Object.keys(res.errors)[0]]);
+                setFormData({ ...formData, isLoading: false });
+              } else {
+                alert("Account created successfully");
+                setUser({ ...user, tempEmail: formData.email });
+                setIsSubmit(false);
+                setFormData({
+                  ...formData,
+                  name: '',
+                  email: '',
+                  password: '',
+                  confirmPassword: '',
+                  isPasswordVisible: false,
+                  isConfirmPasswordVisible: false,
+                  isTermAndConditions: false,
+                  isLoading: false
+                });
+                setModal(MODAL_TYPES.LOGIN);
+              }
             },
             (err) => {
               setFormData({ ...formData, isLoading: false });
@@ -126,7 +150,7 @@ const Registration = (props) => {
       <div className="flex items-center h-full">
         <div className="font-ubuntu bg-white rounded shadow-grey-8 py-6 px-8 max-w-400 w-full text-dark m-auto" static="true">
           <div className="flex justify-end">
-            <CloseIcon className="text-dark text-opacity-50 text-xl cursor-pointer" onClick={closeModal} />
+            <CloseIcon className="text-dark text-opacity-50 text-xl cursor-pointer" onClick={() => setModal()} />
           </div>
           <div className="font-medium mb-3 text-3xl text-sm leading-8 text-center mb-10">New Account</div>
           <div className="mb-6">
@@ -226,4 +250,18 @@ const Registration = (props) => {
   );
 };
 
-export default Registration;
+Registration.propTypes = {
+  setUser: func,
+  setModal: func,
+  user: shape({}),
+};
+
+const mapStateToProps = createStructuredSelector({
+  user: getUser(),
+});
+
+
+export default connect(mapStateToProps, {
+  setModal,
+  setUser,
+})(Registration);

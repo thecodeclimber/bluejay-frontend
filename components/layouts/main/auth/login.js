@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { func, shape } from 'prop-types';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import classnames from "classnames";
 import {
   TiTick as CheckedIcon
@@ -6,40 +9,52 @@ import {
 import {
   VscChromeClose as CloseIcon
 } from "react-icons/vsc";
+import { setModal, setUser } from "../../../../redux/user/actions";
+import { getUser } from "../../../../redux/user/selectors";
 
 const Login = (props) => {
-  const { closeModal } = props;
   const state = {
-    name: 'Andrey Babak',
+    email: '',
     password: '',
     isRemember: false,
   };
+  const { user, setUser, setModal } = props;
   const [formData, setFormData] = useState(state);
+
+  useEffect(() => {
+    const { tempEmail } = user || {};
+    setFormData({ ...formData, email: tempEmail });
+
+    return () => {
+      setUser({ ...user, tempEmail: '' });
+    };
+  }, []);
+
 
   const handleFormData = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  }
+  };
 
   const toggleCheckbox = () => {
     setFormData({ ...formData, isRemember: !formData.isRemember });
-  }
+  };
 
   return (
     <div className="bg-dark fixed inset-0 w-100 h-100 z-10 bg-opacity-75 py-5 justify-center items-center overflow-y-auto">
       <div className="flex items-center h-full">
         <div className="font-ubuntu bg-white rounded shadow-grey-8 py-6 px-8 max-w-400 w-full text-dark m-auto" static="true">
           <div className="flex justify-end">
-            <CloseIcon className="text-dark text-opacity-50 text-xl cursor-pointer" onClick={closeModal} />
+            <CloseIcon className="text-dark text-opacity-50 text-xl cursor-pointer" onClick={() => setModal()} />
           </div>
           <div className="font-medium mb-3 text-3xl text-sm leading-8 text-center mb-10">Login Account</div>
           <div className="mb-6">
             <input type="text"
-              value={formData.name}
+              value={formData.email}
               onChange={handleFormData}
-              name="name"
-              placeholder="Name"
+              name="email"
+              placeholder="Email"
               className={classnames("w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
-                "font-medium": formData.name,
+                "font-medium": formData.email,
               })}
             />
           </div>
@@ -99,6 +114,19 @@ const Login = (props) => {
       </div>
     </div>
   );
-}
+};
 
-export default Login;
+Login.propTypes = {
+  setModal: func,
+  setUser: func,
+  user: shape({}),
+};
+
+const mapStateToProps = createStructuredSelector({
+  user: getUser(),
+});
+
+export default connect(mapStateToProps, {
+  setModal,
+  setUser,
+})(Login);

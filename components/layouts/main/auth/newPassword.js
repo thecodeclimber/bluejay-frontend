@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { func } from 'prop-types';
+import { connect } from 'react-redux';
 import classnames from "classnames";
 import {
   AiFillEye as EyeIcon,
@@ -7,9 +9,10 @@ import {
 import {
   VscChromeClose as CloseIcon
 } from "react-icons/vsc";
+import { setModal } from "../../../../redux/user/actions";
 
 const NewPassword = (props) => {
-  const { closeModal } = props;
+  const { setModal } = props;
   const state = {
     password: '1231454797',
     repeatPassword: '',
@@ -28,7 +31,7 @@ const NewPassword = (props) => {
       <div className="flex items-center h-full">
         <div className="font-ubuntu bg-white rounded shadow-grey-8 py-6 px-8 max-w-400 w-full text-dark m-auto" static="true">
           <div className="flex justify-end">
-            <CloseIcon className="text-dark text-opacity-50 text-xl cursor-pointer" onClick={closeModal} />
+            <CloseIcon className="text-dark text-opacity-50 text-xl cursor-pointer" onClick={() => setModal()} />
           </div>
           <div className="font-medium mb-3 text-3xl text-sm leading-8 text-center">New Password</div>
           <div className="text-dark opacity-75 text-sm font-light py-6 leading-4">
@@ -84,4 +87,10 @@ const NewPassword = (props) => {
   );
 };
 
-export default NewPassword;
+NewPassword.propTypes = {
+  setModal: func
+};
+
+export default connect(null, {
+  setModal,
+})(NewPassword);

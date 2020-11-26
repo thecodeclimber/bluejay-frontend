@@ -86,6 +86,7 @@ module.exports = {
         "-1": "-1",
       },
       inset: {
+        "-5": "-5rem",
         "-8": "-8px",
       },
       width: {

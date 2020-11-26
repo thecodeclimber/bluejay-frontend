@@ -15,7 +15,7 @@ export default async (req, res) => {
   if (emailExist.data.length > 0) {
     res.json({
       "errors": {
-        "email": `email ${emailExist.data[0].email} already in use`
+        "email": `${emailExist.data[0].email} already in use`
       }
     });
     return;

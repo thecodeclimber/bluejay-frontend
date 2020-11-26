@@ -98,7 +98,7 @@ const Search = () => {
       name: "Alloy Steel Socket Head Screws",
       price: "5.64",
     },
-  ]
+  ];
 
   data.searchResult = [
     {
@@ -117,19 +117,19 @@ const Search = () => {
 
   const handleActiveSearchType = (type = "") => {
     setActiveSearchType(type);
-  }
+  };
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
-  }
+  };
 
   const handleMainSearch = (e, type) => {
-    handleActiveSearchType(type)
+    handleActiveSearchType(type);
     handleSearch(e);
-  }
+  };
 
   return (
-    <div className="relative flex flex-grow mx-8 rounded-md" onMouseLeave={() => handleActiveSearchType()}>
+    <div className="relative flex flex-grow ml-6 rounded-md" onMouseLeave={() => handleActiveSearchType()}>
       <Menu as="div" className="relative">
         <Menu.Button
           onClick={() => handleActiveSearchType(SearchType.category)}
@@ -244,7 +244,7 @@ const SearchHistory = (data) => {
       </Menu.Items>
     </Transition>
   );
-}
+};
 
 const SearchResult = (data) => {
   const { searchResult, searchProducts, search, handleSearch } = data || {};
@@ -310,10 +310,10 @@ const SearchResult = (data) => {
       </div>}
     </Transition>
   );
-}
+};
 
 const Categories = () => {
-  const [isActiveCategory, setIsActiveCategory] = useState(false)
+  const [isActiveCategory, setIsActiveCategory] = useState(false);
   const [activeList, setActiveList] = useState(1);
   const [activeSubList, setActiveSubList] = useState(1);
   const [subCategories, setSubCategories] = useState([]);
@@ -322,7 +322,7 @@ const Categories = () => {
   const handleSubCategories = (id) => {
     const filteredSubCategories = data.categorySubMenu.filter((data) => data.categoryId == id) || [];
     setSubCategories(filteredSubCategories);
-  }
+  };
 
   const handleActiveList = (id) => {
     setActiveList(id);
@@ -332,25 +332,25 @@ const Categories = () => {
       setActiveSubList(activeSubMenu.id);
       handleSubCategories(id);
     }
-  }
+  };
 
   const handleActiveSubList = (id) => {
     setActiveSubList(id);
     handleProducts();
-  }
+  };
 
   const handleProducts = () => {
     setProducts(data.products);
-  }
+  };
 
   const setActiveCategory = (open = false) => {
     setIsActiveCategory(open);
     setActiveList(1);
-    handleSubCategories(1)
-    handleActiveSubList(1)
-  }
+    handleSubCategories(1);
+    handleActiveSubList(1);
+  };
 
-  const data = {}
+  const data = {};
 
   data.categoryMenu = [
     {
@@ -525,7 +525,7 @@ const Categories = () => {
       categoryId: 11,
       productId: 1
     },
-  ]
+  ];
 
   data.products = [
     {
@@ -557,12 +557,12 @@ const Categories = () => {
       id: 1,
       img: "/img/category-img3.svg ",
       name: "6-32 Slotted Flat Head",
-    }]
+    }];
 
   return (
     <Menu as="div" onMouseLeave={() => setActiveCategory(false)} className="relative">
       <Menu.Button onMouseOver={() => setActiveCategory(true)}
-        className="px-4 py-2 focus:outline-none flex items-center bg-white border-2 border-white rounded-lg hover:block cursor-pointer hover:block border-opacity-10 text-dark hover:bg-primary hover:text-white">
+        className="px-4 py-2 focus:outline-none flex items-center bg-white border-2 border-white rounded-md hover:block cursor-pointer hover:block border-opacity-10 text-dark hover:bg-primary hover:text-white ml-6">
         <CategoryIcon className="mr-3" />
             Categories
           <ArrowIcon className="ml-2" />
@@ -576,15 +576,15 @@ const Categories = () => {
           leave="transition duration-75 ease-out"
           leaveFrom="transform scale-100 opacity-100"
           leaveTo="transform scale-95 opacity-0"
-          className="absolute z-10 right-0"
+          className="absolute z-10 -left-5"
         >
           <div className="mt-4">
             <Menu.Items className="font-ubuntu bg-white outline-none text-dark rounded relative shadow-grey-8" static>
-              <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
+              <span className="w-5 h-5 -mt-2 ml-56 rounded-sm bg-white absolute -z-1 left-0 top-0 transform rotate-45" />
               <div className="flex">
                 <div className="bg-opacity-03 bg-dark">
                   {data.categoryMenu.map((menu, index) => {
-                    const { id, name } = menu || {}
+                    const { id, name } = menu || {};
                     return (
                       <Menu.Item as="div" key={index} onMouseOver={() => handleActiveList(id)}
                         className={classnames("text-base focus:outline-none flex items-center justify-between px-4 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer", {
@@ -596,13 +596,13 @@ const Categories = () => {
                           {<ChevronRight className="text-lg" />}
                         </div>
                       </Menu.Item>
-                    )
+                    );
                   })}
                 </div>
                 {subCategories && subCategories.length > 0 &&
                   <div className="bg-opacity-01 bg-dark min-w-300 border-r border-opacity-07 border-dark">
                     {subCategories.map((subMenu, index) => {
-                      const { name, id } = subMenu || {}
+                      const { name, id } = subMenu || {};
                       return (
                         <Menu.Item as="div"
                           key={index}
@@ -616,13 +616,13 @@ const Categories = () => {
                             {<ChevronRight className="text-lg" />}
                           </div>
                         </Menu.Item>
-                      )
+                      );
                     })}
                   </div>
                 }
                 <div className="w-600 flex flex-wrap">
                   {products && products.length > 0 && products.map((row, index) => {
-                    const { img, name } = row || {}
+                    const { img, name } = row || {};
                     return (
                       <Menu.Item as="div"
                         key={index}
@@ -647,7 +647,7 @@ const Categories = () => {
                           </div>
                         </div>
                       </Menu.Item>
-                    )
+                    );
                   })}
                 </div>
               </div>
@@ -656,15 +656,15 @@ const Categories = () => {
         </Transition>
       }
     </Menu>
-  )
+  );
 };
 
 const MiddleNavbar = () => (
   <div className="flex items-center py-1 bg-dark">
     <div className="container flex items-center mx-auto">
       <Logo />
-      <Search />
       <Categories />
+      <Search />
     </div>
   </div>
 );

@@ -1,58 +1,49 @@
-import { useState } from "react";
+import { string, func } from 'prop-types';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import { Transition } from "@headlessui/react";
-import Registration from './registration'
-import Login from './login'
+import Registration from './registration';
+import Login from './login';
 import ForgotPassword from "./forgotPassword";
 import NewPassword from "./newPassword";
+import { setModal } from "../../../../redux/user/actions";
+import { getModal } from "../../../../redux/user/selectors";
+import { MODAL_TYPES } from "../../../../redux/user/constants";
 
-const ModalType = {
-  Registration: "Registration",
-  Login: "Login",
-  ForgotPassword: "ForgotPassword",
-  NewPassword: "NewPassword",
-};
-
-const Auth = () => {
-  const [activeModal, setActiveModal] = useState("");
-  const handleModal = (name = "") => {
-    setActiveModal(name);
-  }
-  const closeModal = () => {
-    setActiveModal("");
-  }
-
+const Auth = (props) => {
+  const { activeModal, setModal } = props;
   return (
     <div className="container mx-auto py-3">
       <div className="">
         <button
           className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none mr-3"
-          onClick={() => handleModal(ModalType.Registration)}
+          onClick={() => setModal(MODAL_TYPES.REGISTRATION)}
         >
           Registration
         </button>
         <button
           className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none mr-3"
-          onClick={() => handleModal(ModalType.Login)}
+          onClick={() => setModal(MODAL_TYPES.LOGIN)}
         >
           Login
         </button>
         <button
           className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none mr-3"
-          onClick={() => handleModal(ModalType.ForgotPassword)}
+          onClick={() => setModal(MODAL_TYPES.FORGOT_PASSWORD)}
         >
           Forgot Password
         </button>
         <button
           className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none"
-          onClick={() => handleModal(ModalType.NewPassword)}
+          onClick={() => setModal(MODAL_TYPES.NEW_PASSWORD)}
         >
           New Password
         </button>
       </div>
 
-      {activeModal === ModalType.Registration &&
+      {activeModal === MODAL_TYPES.REGISTRATION &&
         <Transition
-          show={activeModal === ModalType.Registration}
+          show={activeModal === MODAL_TYPES.REGISTRATION}
           enter="transition duration-100 ease-out"
           enterFrom="transform scale-95 opacity-0"
           enterTo="transform scale-100 opacity-100"
@@ -61,12 +52,12 @@ const Auth = () => {
           leaveTo="transform scale-95 opacity-0"
           className="h-full"
         >
-          <Registration closeModal={closeModal} />
+          <Registration />
         </Transition>}
 
-      {activeModal === ModalType.Login &&
+      {activeModal === MODAL_TYPES.LOGIN &&
         <Transition
-          show={activeModal === ModalType.Login}
+          show={activeModal === MODAL_TYPES.LOGIN}
           enter="transition duration-100 ease-out"
           enterFrom="transform scale-95 opacity-0"
           enterTo="transform scale-100 opacity-100"
@@ -75,12 +66,12 @@ const Auth = () => {
           leaveTo="transform scale-95 opacity-0"
           className="h-full"
         >
-          <Login closeModal={closeModal} />
+          <Login />
         </Transition>}
 
-      {activeModal === ModalType.ForgotPassword &&
+      {activeModal === MODAL_TYPES.FORGOT_PASSWORD &&
         <Transition
-          show={activeModal === ModalType.ForgotPassword}
+          show={activeModal === MODAL_TYPES.FORGOT_PASSWORD}
           enter="transition duration-100 ease-out"
           enterFrom="transform scale-95 opacity-0"
           enterTo="transform scale-100 opacity-100"
@@ -89,12 +80,12 @@ const Auth = () => {
           leaveTo="transform scale-95 opacity-0"
           className="h-full"
         >
-          <ForgotPassword closeModal={closeModal} />
+          <ForgotPassword />
         </Transition>}
 
-      {activeModal === ModalType.NewPassword &&
+      {activeModal === MODAL_TYPES.NEW_PASSWORD &&
         <Transition
-          show={activeModal === ModalType.NewPassword}
+          show={activeModal === MODAL_TYPES.NEW_PASSWORD}
           enter="transition duration-100 ease-out"
           enterFrom="transform scale-95 opacity-0"
           enterTo="transform scale-100 opacity-100"
@@ -103,10 +94,22 @@ const Auth = () => {
           leaveTo="transform scale-95 opacity-0"
           className="h-full"
         >
-          <NewPassword closeModal={closeModal} />
+          <NewPassword />
         </Transition>}
     </div>
-  )
+  );
 };
 
-export default Auth;
+
+Auth.propTypes = {
+  activeModal: string,
+  setModal: func
+};
+
+const mapStateToProps = createStructuredSelector({
+  activeModal: getModal(),
+});
+
+export default connect(mapStateToProps, {
+  setModal,
+})(Auth);
