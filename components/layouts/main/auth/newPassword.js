@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { func } from 'prop-types';
-import { connect } from 'react-redux';
+import { func } from "prop-types";
+import { connect } from "react-redux";
 import classnames from "classnames";
 import {
   AiFillEye as EyeIcon,
@@ -14,8 +14,8 @@ import { setModal } from "../../../../redux/user/actions";
 const NewPassword = (props) => {
   const { setModal } = props;
   const state = {
-    password: '1231454797',
-    repeatPassword: '',
+    password: "1231454797",
+    repeatPassword: "",
     isPasswordVisible: false,
   };
   const [formData, setFormData] = useState(state);

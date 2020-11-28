@@ -1,9 +1,9 @@
-import { string, func } from 'prop-types';
-import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
+import { string, func } from "prop-types";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
 import { Transition } from "@headlessui/react";
-import Registration from './registration';
-import Login from './login';
+import Registration from "./registration";
+import Login from "./login";
 import ForgotPassword from "./forgotPassword";
 import NewPassword from "./newPassword";
 import { setModal } from "../../../../redux/user/actions";

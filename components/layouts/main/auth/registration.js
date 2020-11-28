@@ -27,10 +27,10 @@ import { MODAL_TYPES } from "../../../../redux/user/constants";
 const Registration = (props) => {
   const { user, setModal, setUser } = props;
   const state = {
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
     isPasswordVisible: false,
     isConfirmPasswordVisible: false,
     isTermAndConditions: false,
@@ -53,10 +53,10 @@ const Registration = (props) => {
 
   const checkValidations = () => {
     const errorStructure = {
-      errorName: '',
-      errorEmail: '',
-      errorPassword: '',
-      errorConfirmPassword: '',
+      errorName: "",
+      errorEmail: "",
+      errorPassword: "",
+      errorConfirmPassword: "",
       isValidate: false,
     };
     if (!isSubmit) return errorStructure;
@@ -123,10 +123,10 @@ const Registration = (props) => {
                 setIsSubmit(false);
                 setFormData({
                   ...formData,
-                  name: '',
-                  email: '',
-                  password: '',
-                  confirmPassword: '',
+                  name: "",
+                  email: "",
+                  password: "",
+                  confirmPassword: "",
                   isPasswordVisible: false,
                   isConfirmPasswordVisible: false,
                   isTermAndConditions: false,
@@ -242,7 +242,7 @@ const Registration = (props) => {
             })}
             disabled={formData.isLoading}
           >
-            {formData.isLoading ? 'Loading...' : 'Create Account'}
+            {formData.isLoading ? "Loading..." : "Create Account"}
           </button>
         </div>
       </div>

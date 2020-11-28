@@ -45,7 +45,7 @@ export default async (req, res) => {
       country_code: data.address?.country_code,
       state_or_province: data.address?.state_or_province,
       address1: data.address?.address1,
-      postal_code: '133301',
+      postal_code: data.address?.postal_code,
     },
     attributes: [
       {
@@ -54,7 +54,7 @@ export default async (req, res) => {
       }
     ],
     authentication: {
-      new_password: data.authentication.password
+      new_password: data.authentication.new_password
     },
   }];
   const customerResponse = await httpPost(customersUrl, params, { isBigCommerce: true });

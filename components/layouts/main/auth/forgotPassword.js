@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { func } from 'prop-types';
-import { connect } from 'react-redux';
+import { func } from "prop-types";
+import { connect } from "react-redux";
 import classnames from "classnames";
 import {
   VscChromeClose as CloseIcon
@@ -10,7 +10,7 @@ import { setModal } from "../../../../redux/user/actions";
 const ForgotPassword = (props) => {
   const { setModal } = props;
   const state = {
-    email: 'andreybabak101@gmail.com',
+    email: "andreybabak101@gmail.com",
   };
   const [formData, setFormData] = useState(state);
   const handleFormData = (e) => {

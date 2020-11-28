@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { func, shape } from 'prop-types';
-import { connect } from 'react-redux';
+import { func, shape } from "prop-types";
+import { connect } from "react-redux";
 import { createStructuredSelector } from 'reselect';
 import classnames from "classnames";
 import {
@@ -9,24 +9,29 @@ import {
 import {
   VscChromeClose as CloseIcon
 } from "react-icons/vsc";
+import URLS from "../../../../utils/urls";
+import { httpPost } from "../../../../utils/https";
+import { useStateCallback, setLocalStorage } from "../../../../utils/helper";
 import { setModal, setUser } from "../../../../redux/user/actions";
 import { getUser } from "../../../../redux/user/selectors";
 
 const Login = (props) => {
   const state = {
-    email: '',
-    password: '',
+    email: "",
+    password: "",
     isRemember: false,
+    isLoading: false,
   };
   const { user, setUser, setModal } = props;
   const [formData, setFormData] = useState(state);
+  const [isSubmit, setIsSubmit] = useStateCallback(false);
 
   useEffect(() => {
     const { tempEmail } = user || {};
-    setFormData({ ...formData, email: tempEmail });
+    if (tempEmail) setFormData({ ...formData, email: tempEmail });
 
     return () => {
-      setUser({ ...user, tempEmail: '' });
+      setUser({ ...user, tempEmail: "" });
     };
   }, []);
 
@@ -38,6 +43,66 @@ const Login = (props) => {
   const toggleCheckbox = () => {
     setFormData({ ...formData, isRemember: !formData.isRemember });
   };
+
+  const checkValidations = () => {
+    const errorStructure = {
+      errorEmail: "",
+      errorPassword: "",
+      isValidate: false,
+    };
+    if (!isSubmit) return errorStructure;
+
+    if (!formData.email.trim()) {
+      errorStructure.errorEmail = "Please enter email";
+    }
+    if (!formData.password) {
+      errorStructure.errorPassword = "Please enter password";
+    }
+    if (!errorStructure.errorEmail
+      && !errorStructure.errorPassword) {
+      errorStructure.isValidate = true;
+    }
+    return errorStructure;
+  };
+
+  const handleLogin = () => {
+    setIsSubmit({ isSubmit: true }, (stateData) => {
+      if (stateData.isSubmit) {
+        const { isValidate } = checkValidations();
+        if (!isValidate) return;
+        const params = {
+          email: formData.email,
+          password: formData.password
+        };
+        setFormData({ ...formData, isLoading: true });
+        httpPost(URLS.NEXT.AUTH.LOGIN, params,
+          { traceName: 'login customer' }).then(
+            (res) => {
+              if (res.errors && Object.keys(res.errors).length > 0) {
+                alert(res.errors[Object.keys(res.errors)[0]]);
+                setFormData({ ...formData, isLoading: false });
+              } else {
+                alert("You are logged in successfully");
+                setIsSubmit(false);
+                setFormData({
+                  ...formData,
+                  email: "",
+                  password: "",
+                  isLoading: false
+                });
+                const token = { token: res.token }
+                setLocalStorage(token);
+              }
+            },
+            (err) => {
+              setFormData({ ...formData, isLoading: false });
+            }
+          );
+      }
+    });
+  };
+
+  const { errorEmail, errorPassword } = checkValidations();
 
   return (
     <div className="bg-dark fixed inset-0 w-100 h-100 z-10 bg-opacity-75 py-5 justify-center items-center overflow-y-auto">
@@ -57,6 +122,7 @@ const Login = (props) => {
                 "font-medium": formData.email,
               })}
             />
+            {errorEmail && <div className="text-error text-sm mt-1 pl-4">{errorEmail}</div>}
           </div>
           <div className="mb-6">
             <input type="password"
@@ -68,6 +134,7 @@ const Login = (props) => {
                 "font-medium": formData.password,
               })}
             />
+            {errorPassword && <div className="text-error text-sm mt-1 pl-4">{errorPassword}</div>}
           </div>
           <div className="mb-6 flex items-center">
             <div
@@ -80,10 +147,14 @@ const Login = (props) => {
             <div className="text-sm flex justify-between w-full"><span>Remember me</span><a href="#" className="text-primary">Forgot Password?</a> </div>
           </div>
           <button
-            className="font-medium w-full py-3 items-center rounded bg-primary text-white focus:outline-none mb-4"
+            onClick={handleLogin}
+            disabled={formData.isLoading}
+            className={classnames("font-medium w-full py-3 items-center rounded bg-primary text-white focus:outline-none mb-4", {
+              "cursor-not-allowed bg-opacity-70": formData.isLoading,
+            })}
           >
-            Login
-            </button>
+            {formData.isLoading ? "Loading..." : "Login"}
+          </button>
           <button
             className="font-medium w-full py-3 items-center rounded bg-white text-dark border border-dark border-opacity-25 opacity-50 focus:outline-none mb-6"
           >
