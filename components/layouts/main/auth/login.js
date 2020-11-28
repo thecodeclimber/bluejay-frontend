@@ -90,8 +90,9 @@ const Login = (props) => {
                   password: "",
                   isLoading: false
                 });
-                const token = { token: res.token }
-                setLocalStorage(token);
+
+                const data = { token: res.token, user: res.user }
+                setLocalStorage(data);
               }
             },
             (err) => {

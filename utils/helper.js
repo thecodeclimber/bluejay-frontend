@@ -49,12 +49,20 @@ export const validateNumberAndCharacter = (text) => {
   return false;
 };
 
+/**
+ * Set local storage
+ * 
+ * @param {Object} data 
+ */
 export const setLocalStorage = (data) => {
   if (!data) return;
   localStorage.setItem('user', JSON.stringify(data));
   setUserDataInReduxState();
 }
 
+/**
+ * Set user data in redux state
+ */
 export const setUserDataInReduxState = () => {
   const authToken = JSON.parse(localStorage.getItem('user'));
   if (!authToken) return;
@@ -71,10 +79,10 @@ export const setUserDataInReduxState = () => {
       const { user } = store().getState().get('user').toJS();
       const userData = {
         ...user,
-        id: authToken.id,
-        email: authToken.email,
-        firstName: authToken.first_name,
-        lastName: authToken.last_name,
+        id: authToken.user.id,
+        email: authToken.user.email,
+        firstName: authToken.user.first_name,
+        lastName: authToken.user.last_name,
         token: authToken.token
       };
 
