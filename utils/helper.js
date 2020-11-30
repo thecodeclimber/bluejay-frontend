@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import store from '../redux/store';
-import { setUser } from '../redux/user/actions';
 import jwt from 'jsonwebtoken';
 const { v4: uuidv4 } = require("uuid");
 
@@ -53,27 +52,31 @@ export const validateNumberAndCharacter = (text) => {
  * Set local storage
  * 
  * @param {Object} data 
+ * 
+ * @return {Object}
+ * @return {Null}
  */
 export const setLocalStorage = (data) => {
-  if (!data) return;
+  if (!data) return null;
   localStorage.setItem('user', JSON.stringify(data));
-  setUserDataInReduxState();
+  return getUserData();
 }
 
 /**
- * Set user data in redux state
+ * Get user data
+ * 
+ * @return {Object}
+ * @return {Null}
  */
-export const setUserDataInReduxState = () => {
+export const getUserData = () => {
   const authToken = JSON.parse(localStorage.getItem('user'));
-  if (!authToken) return;
-
   if (authToken && authToken.token) {
     const token = authToken.token.split('.');
     if (token.length > 1) {
       const decodedData = JSON.parse(atob(token[1]));
       if (!decodedData.exp || (Date.now() > decodedData.exp * 1000)) {
         localStorage.removeItem('user');
-        return;
+        return null;
       }
 
       const { user } = store().getState().get('user').toJS();
@@ -86,9 +89,10 @@ export const setUserDataInReduxState = () => {
         token: authToken.token
       };
 
-      store().dispatch(setUser(userData));
+      return userData;
     }
   }
+  return null;
 }
 
 /**

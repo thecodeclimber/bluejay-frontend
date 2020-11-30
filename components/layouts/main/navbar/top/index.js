@@ -1,6 +1,5 @@
 import { Fragment, useState } from "react";
 import Image from "next/image";
-
 import { Menu, Transition } from "@headlessui/react";
 import {
   MdAccountCircle as UserIcon,

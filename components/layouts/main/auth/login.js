@@ -92,7 +92,8 @@ const Login = (props) => {
                 });
 
                 const data = { token: res.token, user: res.user }
-                setLocalStorage(data);
+                const userData = setLocalStorage(data);
+                setUser(userData);
               }
             },
             (err) => {

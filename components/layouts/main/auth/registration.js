@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { func, shape } from "prop-types";
 import { connect } from "react-redux";
 import { createStructuredSelector } from 'reselect';
+import { Menu } from "@headlessui/react";
 import classnames from "classnames";
 import {
   TiTick as CheckedIcon
@@ -29,6 +30,11 @@ const Registration = (props) => {
   const state = {
     name: "",
     email: "",
+    countryCode: "",
+    stateOrProvince: "",
+    city: "",
+    postalCode: "",
+    address: "",
     password: "",
     confirmPassword: "",
     isPasswordVisible: false,
@@ -55,6 +61,11 @@ const Registration = (props) => {
     const errorStructure = {
       errorName: "",
       errorEmail: "",
+      errorCountryCode: "",
+      errorStateOrProvince: "",
+      errorCity: "",
+      errorPostalCode: "",
+      errorAddress: "",
       errorPassword: "",
       errorConfirmPassword: "",
       isValidate: false,
@@ -62,6 +73,21 @@ const Registration = (props) => {
     if (!isSubmit) return errorStructure;
     if (!formData.name.trim()) {
       errorStructure.errorName = "Please enter name";
+    }
+    if (!formData.countryCode.trim()) {
+      errorStructure.errorCountryCode = "Please select country";
+    }
+    if (!formData.stateOrProvince.trim()) {
+      errorStructure.errorStateOrProvince = "Please select state or province";
+    }
+    if (!formData.city.trim()) {
+      errorStructure.errorCity = "Please enter city";
+    }
+    if (!formData.postalCode.trim()) {
+      errorStructure.errorPostalCode = "Please enter postal code";
+    }
+    if (!formData.address.trim()) {
+      errorStructure.errorAddress = "Please enter address";
     }
     if (!formData.email.trim()) {
       errorStructure.errorEmail = "Please enter email";
@@ -81,7 +107,10 @@ const Registration = (props) => {
       errorStructure.errorConfirmPassword = "Please enter same password";
     }
     if (!errorStructure.errorName && !errorStructure.errorEmail
-      && !errorStructure.errorPassword && !errorStructure.errorConfirmPassword) {
+      && !errorStructure.errorPassword && !errorStructure.errorConfirmPassword
+      && !errorStructure.errorCountryCode && !errorStructure.errorStateOrProvince
+      && !errorStructure.errorCity && !errorStructure.errorPostalCode
+      && !errorStructure.errorAddress) {
       errorStructure.isValidate = true;
     }
     return errorStructure;
@@ -99,11 +128,11 @@ const Registration = (props) => {
           address: {
             first_name: formData.name,
             last_name: formData.name,
-            city: 'chandigarh',
-            country_code: 'IN',
-            state_or_province: 'IN-CHD',
-            address1: 'Near, SCO- 226, Second Floor, Tricity Plaza, Sector 20 Rd, Panchkula',
-            postal_code: '133301',
+            city: formData.city,
+            country_code: formData.countryCode,
+            state_or_province: formData.stateOrProvince,
+            address1: formData.address,
+            postal_code: formData.postalCode,
           },
           authentication: {
             new_password: formData.password
@@ -143,7 +172,16 @@ const Registration = (props) => {
     });
   };
 
-  const { errorName, errorEmail, errorPassword, errorConfirmPassword } = checkValidations();
+  const {
+    errorName,
+    errorEmail,
+    errorCountryCode,
+    errorStateOrProvince,
+    errorCity,
+    errorPostalCode,
+    errorAddress,
+    errorPassword,
+    errorConfirmPassword } = checkValidations();
 
   return (
     <div className="bg-dark fixed inset-0 w-100 h-100 z-10 bg-opacity-75  justify-center items-center overflow-y-auto">
@@ -176,6 +214,71 @@ const Registration = (props) => {
               })}
             />
             {errorEmail && <div className="text-error text-sm mt-1 pl-4">{errorEmail}</div>}
+          </div>
+          <div className="mb-6">
+            <Menu as="div" className="relative">
+              <input type="text"
+                value={formData.countryCode}
+                onChange={handleFormData}
+                name="countryCode"
+                placeholder="Country Code"
+                className={classnames("w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
+                  "font-medium": formData.countryCode,
+                })}
+              />
+            </Menu>
+            {errorCountryCode && <div className="text-error text-sm mt-1 pl-4">{errorCountryCode}</div>}
+          </div>
+          <div className="mb-6">
+            <input type="text"
+              value={formData.stateOrProvince}
+              onChange={handleFormData}
+              name="stateOrProvince"
+              placeholder="State or Province"
+              className={classnames("w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
+                "font-medium": formData.stateOrProvince,
+              })}
+            />
+            {errorStateOrProvince && <div className="text-error text-sm mt-1 pl-4">{errorStateOrProvince}</div>}
+          </div>
+          <div className="mb-6">
+            <input type="text"
+              value={formData.city}
+              onChange={handleFormData}
+              name="city"
+              placeholder="City"
+              className={classnames("w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
+                "font-medium": formData.city,
+              })}
+            />
+            {errorCity && <div className="text-error text-sm mt-1 pl-4">{errorCity}</div>}
+          </div>
+          <div className="mb-6">
+            <input type="text"
+              value={formData.postalCode}
+              onChange={handleFormData}
+              name="postalCode"
+              placeholder="Postal code"
+              className={classnames("w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
+                "font-medium": formData.postalCode,
+              })}
+            />
+            {errorPostalCode && <div className="text-error text-sm mt-1 pl-4">{errorPostalCode}</div>}
+          </div>
+          <div className="mb-6">
+            <textarea
+              name="address"
+              placeholder="Address"
+              rows="3"
+              className={classnames("w-full border border-dark rounded border-opacity-10 px-4 py-2 font-normal focus:outline-none", {
+                "font-medium": formData.address,
+              })}
+              value={formData.address}
+              onChange={handleFormData}
+            >
+              {formData.address}
+            </textarea>
+            {errorAddress && <div className="text-error text-sm pl-4">{errorAddress}</div>}
           </div>
           <div className="mb-6 relative">
             <input type={formData.isPasswordVisible ? "text" : "password"}
