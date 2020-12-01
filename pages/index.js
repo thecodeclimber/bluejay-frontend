@@ -1,10 +1,9 @@
 import Head from "next/head";
 // import MainLayout from "@/components/layouts/main";
-import MainLayout from "@/components//layouts/main/index.js";
 
 export default function Home() {
   return (
-    <MainLayout>
+    <>
       <Head>
         <title>BlueJay Fasteners | Home Page</title>
         <link rel="icon" href="/favicon.ico" />
@@ -22,6 +21,6 @@ export default function Home() {
       <footer>
         <h3>Footer</h3>
       </footer>
-    </MainLayout>
+    </>
   );
 }
