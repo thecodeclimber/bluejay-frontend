@@ -91,13 +91,21 @@ const Contact = () => {
           <div className="flex text-base whitespace-pre-line focus:outline-none"><span className="opacity-75 w-24 font-light">Address:</span><span className="font-medium">{data.contactInformation.address}</span></div>
           <hr className="my-5 opacity-10" />
           <div className="font-medium mb-3 focus:outline-none text-xl">{data.callCenter.title}</div>
-          {data.callCenter.timing.length > 0 && data.callCenter.timing.map((callCenterTiming) => (
-            <div className="flex justify-between text-base focus:outline-none py-1">
+          {data.callCenter.timing.length > 0 && data.callCenter.timing.map((callCenterTiming, index) => (
+            <div className="flex justify-between text-base focus:outline-none py-1" key={index}>
               <div className="opacity-75 font-light">{callCenterTiming.day}:</div>
               <div className="font-medium">{callCenterTiming.time}</div>
             </div>
           ))}
         </div>
+      </div>
+      <div className="container mx-auto flex mb-10 rounded overflow-hidden">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d27727.91580567266!2d77.0146304!3d29.6910848!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1606910776878!5m2!1sen!2sin"
+          width="100%"
+          height="450"
+        >
+        </iframe>
       </div>
     </>
   )

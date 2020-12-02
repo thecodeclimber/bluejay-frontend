@@ -4,14 +4,22 @@ import { generateToken } from "../../../utils/helper";
 
 export default async (req, res) => {
   if (req.method !== "POST") {
-    res.status = 500;
+    res.status(500);
     res.json("Something went wrong");
     return;
   }
-
   const data = req.body || {};
   const customersUrl = URLS.BIG_COMMERCE.CUSTOMERS.CUSTOMERS;
   const customerData = await httpGet(`${customersUrl}?email:in=${data.email}`, { isBigCommerce: true });
+  if (customerData.status === 401) {
+    res.status(401);
+    res.json({
+      "errors": {
+        "error": "Unauthorized."
+      }
+    });
+    return;
+  }
   if (customerData.data.length === 0) {
     res.status(400);
     res.json({
@@ -25,6 +33,15 @@ export default async (req, res) => {
   const customerId = customerData.data[0].id;
   const validatePasswordUrl = URLS.BIG_COMMERCE.CUSTOMERS.VALIDATE_PASSWORD.replace('{CUSTOMER_ID}', customerId);
   const validatePassword = await httpPost(validatePasswordUrl, { password: data.password }, { isBigCommerce: true });
+  if (validatePassword.status === 401) {
+    res.status(401);
+    res.json({
+      "errors": {
+        "error": "Unauthorized."
+      }
+    });
+    return;
+  }
   if (!validatePassword.success) {
     res.status(400);
     res.json({

@@ -9,22 +9,98 @@ import {
 import {
   VscChromeClose as CloseIcon
 } from "react-icons/vsc";
+import {
+  useStateCallback,
+  validateNumberAndCharacter
+} from "../../../../utils/helper";
 import { setModal } from "../../../../redux/user/actions";
+import { httpPut } from "../../../../utils/https";
+import URLS from "../../../../utils/urls";
 
 const NewPassword = (props) => {
   const { setModal } = props;
   const state = {
-    password: "1231454797",
+    password: "",
     repeatPassword: "",
     isPasswordVisible: false,
+    isLoading: false,
   };
   const [formData, setFormData] = useState(state);
+  const [isSubmit, setIsSubmit] = useStateCallback(false);
+
   const handleFormData = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
   const togglePasswordVisibility = (name) => {
     setFormData({ ...formData, [name]: !formData[name] });
   };
+
+  const checkValidations = () => {
+    const errorStructure = {
+      errorPassword: "",
+      errorRepeatPassword: "",
+      isValidate: false,
+    };
+    if (!isSubmit) return errorStructure;
+    if (!formData.password) {
+      errorStructure.errorPassword = "Please enter password";
+    } else if (formData.password.length < 7) {
+      errorStructure.errorPassword = "Password must be at least 7 characters";
+    } else if (!validateNumberAndCharacter(formData.password)) {
+      errorStructure.errorPassword = "Password contain at least one letter, one number and one special character.";
+    }
+    if (!formData.repeatPassword) {
+      errorStructure.errorRepeatPassword = "Please enter repeat password";
+    } else if (formData.password != formData.repeatPassword) {
+      errorStructure.errorRepeatPassword = "Please enter same password";
+    }
+    if (!errorStructure.errorPassword && !errorStructure.errorRepeatPassword) {
+      errorStructure.isValidate = true;
+    }
+    return errorStructure;
+  };
+
+  const changePassword = () => {
+    setIsSubmit({ isSubmit: true }, (stateData) => {
+      if (stateData.isSubmit) {
+        const { isValidate } = checkValidations();
+        if (!isValidate) return;
+
+        const params = {
+          id: 12,
+          authentication: {
+            new_password: formData.password
+          }
+        }
+
+        setFormData({ ...formData, isLoading: true });
+        httpPut(URLS.NEXT.AUTH.CHANGE_PASSWORD, params,
+          { traceName: 'change password' }).then(
+            (res) => {
+              if (res.errors && Object.keys(res.errors).length > 0) {
+                alert(res.errors[Object.keys(res.errors)[0]]);
+                setFormData({ ...formData, isLoading: false });
+              } else {
+                alert("Password changed successfully");
+                setIsSubmit(false);
+                setFormData({
+                  ...formData,
+                  password: "",
+                  repeatPassword: "",
+                  isLoading: false
+                });
+              }
+            },
+            (err) => {
+              setFormData({ ...formData, isLoading: false });
+            }
+          );
+      }
+    });
+  }
+
+  const { errorPassword, errorRepeatPassword } = checkValidations();
 
   return (
     <div className="bg-dark fixed inset-0 w-100 h-100 z-10 bg-opacity-75  justify-center items-center overflow-y-auto">
@@ -59,6 +135,7 @@ const NewPassword = (props) => {
                 onClick={() => togglePasswordVisibility("isPasswordVisible")}
               />
             }
+            {errorPassword && <div className="text-error text-sm mt-1 pl-4">{errorPassword}</div>}
           </div>
           <div className="mb-6">
             <input type="password"
@@ -70,11 +147,17 @@ const NewPassword = (props) => {
                 "font-medium": formData.repeatPassword,
               })}
             />
+            {errorRepeatPassword && <div className="text-error text-sm mt-1 pl-4">{errorRepeatPassword}</div>}
           </div>
           <button
             className="font-medium w-full py-3 items-center rounded bg-primary text-white border-alpha-05 focus:outline-none mb-3"
+            onClick={changePassword}
+            className={classnames("font-medium w-full py-3 items-center rounded bg-primary text-white border-alpha-05 focus:outline-none mb-3", {
+              "cursor-not-allowed bg-opacity-70": formData.isLoading,
+            })}
+            disabled={formData.isLoading}
           >
-            Login
+            {formData.isLoading ? "Loading..." : "Change Password"}
           </button>
           <button
             className="font-medium w-full py-3 items-center rounded bg-white text-dark border border-dark border-opacity-25 opacity-50 focus:outline-none mb-6"

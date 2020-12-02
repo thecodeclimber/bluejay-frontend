@@ -40,8 +40,8 @@ export const getCommonHeaders = (url, additional_headers = {}) => {
     };
 
     const bigCommerce = {
-      'X-Auth-Client': 'am3w2xluq1hsaspcbelowyeplw6a55u',
-      'X-Auth-Token': 'e2dq9gbzsac2m2xqr8o6cxr8fu0s9o8',
+      'X-Auth-Client': process.env.NEXT_PUBLIC_CLIENT_ID,
+      'X-Auth-Token': process.env.NEXT_PUBLIC_ACCESS_TOKEN,
     };
 
     if (isBigCommerce) {

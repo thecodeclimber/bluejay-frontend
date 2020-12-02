@@ -4,7 +4,7 @@ const moment = require('moment');
 
 export default async (req, res) => {
   if (req.method !== 'POST') {
-    res.status = 500;
+    res.status(500);
     res.json('Something went wrong');
     return;
   }
@@ -12,7 +12,17 @@ export default async (req, res) => {
   const customersUrl = URLS.BIG_COMMERCE.CUSTOMERS.CUSTOMERS;
   const emailExist = await httpGet(`${customersUrl}?email:in=${req.body.email}`, { isBigCommerce: true });
 
+  if (emailExist.status === 401) {
+    res.status(401);
+    res.json({
+      "errors": {
+        "error": "Unauthorized."
+      }
+    });
+    return;
+  }
   if (emailExist.data.length > 0) {
+    res.status(400);
     res.json({
       "errors": {
         "email": `${emailExist.data[0].email} already in use`
@@ -28,7 +38,17 @@ export default async (req, res) => {
     }
   ];
   const attrResponse = await httpPost(URLS.BIG_COMMERCE.CUSTOMERS.ATTRIBUTES, attributeParams, { isBigCommerce: true });
+  if (attrResponse.status === 401) {
+    res.status(401);
+    res.json({
+      "errors": {
+        "error": "Unauthorized."
+      }
+    });
+    return;
+  }
   if (attrResponse.status === 422) {
+    res.status(422);
     res.json(attrResponse);
     return;
   }
@@ -58,5 +78,14 @@ export default async (req, res) => {
     },
   }];
   const customerResponse = await httpPost(customersUrl, params, { isBigCommerce: true });
+  if (customerResponse.status === 401) {
+    res.status(401);
+    res.json({
+      "errors": {
+        "error": "Unauthorized."
+      }
+    });
+    return;
+  }
   res.json(customerResponse);
 };
