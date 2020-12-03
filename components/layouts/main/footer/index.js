@@ -5,21 +5,26 @@ import {
   MdPhone as PhoneIcon,
   MdLocationOn as LocationIcon
 } from "react-icons/md";
+import Link from 'next/link'
 
 const Footer = () => {
   const data = {}
   data.companyPages = [
     {
-      title: "Our Catalog"
+      title: "Our Catalog",
+      link: "",
     },
     {
-      title: "About Us"
+      title: "About Us",
+      link: "about",
     },
     {
-      title: "Contact Us"
+      title: "Contact Us",
+      link: "contact",
     },
     {
-      title: "Request Quote"
+      title: "Request Quote",
+      link: "",
     },
   ];
   data.contactDetails = [
@@ -69,7 +74,11 @@ const Footer = () => {
               {data.companyPages.map((page, index) => {
                 return (
                   <div key={index} className="sm:text-base text-xs font-light pb-2 md:pb-1">
-                    {page.title}
+                    <Link href={page.link}>
+                      <a>
+                        {page.title}
+                      </a>
+                    </Link>
                   </div>
                 )
               })}

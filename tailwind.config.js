@@ -22,6 +22,9 @@ module.exports = {
     maxWidth: {
       400: "472px",
     },
+    maxHeight: {
+      450: "480px",
+    },
     borderRadius: {
       sm: "3px",
       md: "6px",
@@ -74,7 +77,11 @@ module.exports = {
       medium: "500",
     },
     extend: {
+      backgroundImage: theme => ({
+        "about-card": "url('/img/about-card.svg')",
+      }),
       opacity: {
+        7: "0.07",
         10: "0.1",
         70: "0.7",
         90: "0.9",
@@ -89,6 +96,7 @@ module.exports = {
       inset: {
         "-5": "-5rem",
         "-8": "-8px",
+        "-55": "-55px",
       },
       width: {
         600: "640px",
