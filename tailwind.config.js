@@ -21,6 +21,7 @@ module.exports = {
     },
     maxWidth: {
       400: "472px",
+      650: "640px",
     },
     maxHeight: {
       450: "480px",
@@ -50,6 +51,7 @@ module.exports = {
     fontFamily: {
       sans: ["Ubuntu", "sans-serif"],
       ubuntu: "Ubuntu",
+      montserrat: "Montserrat",
     },
     opacity: {
       "01": "0.01",
@@ -60,12 +62,14 @@ module.exports = {
       25: "0.25",
       50: "0.50",
       75: "0.75",
+      90: "0.90",
     },
     fontSize: {
       xs: "0.75rem",
       sm: "0.875rem",
       base: "1rem",
       lg: "1.25rem",
+      "2lg": "1.375rem",
       xl: "1.5rem",
       "2xl": "2rem",
       "3xl": "2.625rem",
@@ -75,14 +79,17 @@ module.exports = {
       light: "300",
       normal: "400",
       medium: "500",
+      bold: "600",
     },
     extend: {
       backgroundImage: theme => ({
         "about-card": "url('/img/about-card.svg')",
+        "customer-review": "url('/img/customer-review.svg')",
       }),
       opacity: {
         7: "0.07",
         10: "0.1",
+        50: "0.5",
         70: "0.7",
         90: "0.9",
       },

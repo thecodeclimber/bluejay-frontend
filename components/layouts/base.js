@@ -1,9 +1,12 @@
 import Head from "next/head";
 import GoogleFonts from "next-google-fonts";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const Base = ({ children }) => (
   <>
     <GoogleFonts href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500&display=swap" />
+    <GoogleFonts href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" />
     <Head>
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
