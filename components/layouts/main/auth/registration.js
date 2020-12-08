@@ -41,6 +41,7 @@ const Registration = (props) => {
     isConfirmPasswordVisible: false,
     isTermAndConditions: false,
     isLoading: false,
+    isValidate: false,
   };
   const [formData, setFormData] = useState(state);
   const [isSubmit, setIsSubmit] = useStateCallback(false);
@@ -68,7 +69,6 @@ const Registration = (props) => {
       errorAddress: "",
       errorPassword: "",
       errorConfirmPassword: "",
-      isValidate: false,
     };
     if (!isSubmit) return errorStructure;
     if (!formData.name.trim()) {
@@ -111,7 +111,7 @@ const Registration = (props) => {
       && !errorStructure.errorCountryCode && !errorStructure.errorStateOrProvince
       && !errorStructure.errorCity && !errorStructure.errorPostalCode
       && !errorStructure.errorAddress) {
-      errorStructure.isValidate = true;
+      formData.isValidate = true;
     }
     return errorStructure;
   };
@@ -119,7 +119,7 @@ const Registration = (props) => {
   const createAccount = () => {
     setIsSubmit({ isSubmit: true }, (stateData) => {
       if (stateData.isSubmit) {
-        const { isValidate } = checkValidations();
+        const { isValidate } = formData;
         if (!isValidate) return;
         const params = {
           first_name: formData.name,

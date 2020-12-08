@@ -16,6 +16,12 @@ const URLS = {
       CUSTOMERS: `${BIG_COMMERCE_BASE_URL}/customers`,
       VALIDATE_PASSWORD: `${BIG_COMMERCE_BASE_URL.replace(BIG_COMMERCE_VERSION_3, BIG_COMMERCE_VERSION_2)}/customers/{CUSTOMER_ID}/validate`,
       ATTRIBUTES: `${BIG_COMMERCE_BASE_URL}/customers/attributes`
+    },
+    CATEGORY: {
+      CATEGORIES: `${BIG_COMMERCE_BASE_URL}/catalog/categories`
+    },
+    PRODUCT: {
+      PRODUCTS: `${BIG_COMMERCE_BASE_URL}/catalog/products`
     }
   },
   //Next
@@ -24,6 +30,13 @@ const URLS = {
       REGISTER: `${NEXT_BASE_URL}/auth/register`,
       LOGIN: `${NEXT_BASE_URL}/auth/login`,
       CHANGE_PASSWORD: `${NEXT_BASE_URL}/auth/changePassword`,
+    },
+    CATEGORY: {
+      CATEGORIES: `${NEXT_BASE_URL}/categories`,
+    },
+    PRODUCT: {
+      PRODUCTS: `${NEXT_BASE_URL}/products`,
+      SEARCH: `${NEXT_BASE_URL}/product`,
     }
   }
 };

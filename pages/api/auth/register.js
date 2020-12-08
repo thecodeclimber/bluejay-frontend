@@ -1,13 +1,12 @@
-import { httpPost, httpGet } from '../../../utils/https';
-import URLS from '../../../utils/urls';
-const moment = require('moment');
+import { httpPost, httpGet } from "../../../utils/https";
+import URLS from "../../../utils/urls";
+import { verifyPostMethod } from "../../../utils/helper";
+import { MESSAGES } from "../../../utils/constants";
+
+const moment = require("moment");
 
 export default async (req, res) => {
-  if (req.method !== 'POST') {
-    res.status(500);
-    res.json('Something went wrong');
-    return;
-  }
+  if (!verifyPostMethod(req, res)) return;
 
   const customersUrl = URLS.BIG_COMMERCE.CUSTOMERS.CUSTOMERS;
   const emailExist = await httpGet(`${customersUrl}?email:in=${req.body.email}`, { isBigCommerce: true });
@@ -16,7 +15,7 @@ export default async (req, res) => {
     res.status(401);
     res.json({
       "errors": {
-        "error": "Unauthorized."
+        "error": MESSAGES.UNAUTHORIZED
       }
     });
     return;
@@ -42,7 +41,7 @@ export default async (req, res) => {
     res.status(401);
     res.json({
       "errors": {
-        "error": "Unauthorized."
+        "error": MESSAGES.UNAUTHORIZED
       }
     });
     return;
@@ -82,10 +81,10 @@ export default async (req, res) => {
     res.status(401);
     res.json({
       "errors": {
-        "error": "Unauthorized."
+        "error": MESSAGES.UNAUTHORIZED
       }
     });
     return;
   }
-  res.json(customerResponse);
+  return res.json(customerResponse);
 };

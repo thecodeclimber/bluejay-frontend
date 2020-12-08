@@ -24,6 +24,7 @@ const NewPassword = (props) => {
     repeatPassword: "",
     isPasswordVisible: false,
     isLoading: false,
+    isValidate: false,
   };
   const [formData, setFormData] = useState(state);
   const [isSubmit, setIsSubmit] = useStateCallback(false);
@@ -40,7 +41,6 @@ const NewPassword = (props) => {
     const errorStructure = {
       errorPassword: "",
       errorRepeatPassword: "",
-      isValidate: false,
     };
     if (!isSubmit) return errorStructure;
     if (!formData.password) {
@@ -56,7 +56,7 @@ const NewPassword = (props) => {
       errorStructure.errorRepeatPassword = "Please enter same password";
     }
     if (!errorStructure.errorPassword && !errorStructure.errorRepeatPassword) {
-      errorStructure.isValidate = true;
+      formData.isValidate = true;
     }
     return errorStructure;
   };
@@ -64,7 +64,7 @@ const NewPassword = (props) => {
   const changePassword = () => {
     setIsSubmit({ isSubmit: true }, (stateData) => {
       if (stateData.isSubmit) {
-        const { isValidate } = checkValidations();
+        const { isValidate } = formData;
         if (!isValidate) return;
 
         const params = {

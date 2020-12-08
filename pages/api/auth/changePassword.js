@@ -1,12 +1,10 @@
-import { httpPut, httpGet } from '../../../utils/https';
-import URLS from '../../../utils/urls';
+import { httpPut, httpGet } from "../../../utils/https";
+import URLS from "../../../utils/urls";
+import { verifyPutMethod } from "../../../utils/helper";
+import { MESSAGES } from "../../../utils/constants";
 
 export default async (req, res) => {
-  if (req.method !== 'PUT') {
-    res.status = 500;
-    res.json('Something went wrong');
-    return;
-  }
+  if (!verifyPutMethod(req, res)) return;
 
   const data = req.body || {};
   const customersUrl = URLS.BIG_COMMERCE.CUSTOMERS.CUSTOMERS;
@@ -15,12 +13,13 @@ export default async (req, res) => {
     res.status(401);
     res.json({
       "errors": {
-        "error": "Unauthorized."
+        "error": MESSAGES.UNAUTHORIZED
       }
     });
     return;
   }
   if (userExist?.data && userExist.data.length === 0) {
+    res.status(404);
     res.json({
       "errors": {
         "error": `User does not exist`
@@ -37,5 +36,5 @@ export default async (req, res) => {
     },
   }];
   const customerResponse = await httpPut(customersUrl, params, { isBigCommerce: true });
-  res.json(customerResponse);
+  return res.json(customerResponse);
 };

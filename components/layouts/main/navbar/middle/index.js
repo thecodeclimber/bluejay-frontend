@@ -1,6 +1,12 @@
 import Image from "next/image";
+import { httpGet } from "../../../../../utils/https";
+import URLS from "../../../../../utils/urls";
+import { getSearchHistoryLocalStorage, setSearchHistoryLocalStorage } from "../../../../../utils/helper";
+import { func, array } from "prop-types";
+import { connect } from "react-redux";
+import { createStructuredSelector } from 'reselect';
 import { Menu, Transition } from "@headlessui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import classnames from "classnames";
 import {
   MdAccountCircle as UserIcon,
@@ -12,6 +18,8 @@ import {
 import {
   VscClose as CloseIcon
 } from "react-icons/vsc";
+import { setCategories } from "../../../../../redux/category/actions";
+import { getCategories } from "../../../../../redux/category/selectors";
 
 const SearchType = {
   category: "category",
@@ -29,58 +37,13 @@ const Logo = () => (
   </div>
 );
 
-const Search = () => {
+const Search = (props) => {
   const [activeSearchType, setActiveSearchType] = useState("");
   const [search, setSearch] = useState("");
-  const data = {};
-  data.searchCategories = [
-    {
-      name: "Anchors"
-    },
-    {
-      name: "Carriage Bolts"
-    },
-    {
-      name: "Chain & S-Hooks"
-    },
-    {
-      name: "Cotter Pins"
-    },
-    {
-      name: "Drywall Screws"
-    },
-    {
-      name: "Flange Bolts"
-    },
-    {
-      name: "Cotter Pins"
-    },
-    {
-      name: "Drywall Screws"
-    },
-    {
-      name: "Flange Bolts"
-    },
-  ];
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResult, setSearchResult] = useState([]);
 
-  data.searchHistory = [
-    {
-      img: "/img/screw-img.svg",
-      name: "Carriage Bolts 1/4-20 UNC Steel Zinc"
-    },
-    {
-      img: "/img/screw-img.svg",
-      name: "Carriage Bolts 5/16-18 UNC Steel Zinc"
-    },
-    {
-      img: "/img/screw-img.svg",
-      name: "Carriage Bolts 3/8-16 UNC Steel Zinc"
-    },
-    {
-      img: "/img/screw-img.svg",
-      name: "Carriage Bolts 1/2-13 UNC Steel Zinc"
-    },
-  ];
+  const data = {};
 
   data.searchProducts = [
     {
@@ -120,8 +83,50 @@ const Search = () => {
   };
 
   const handleSearch = (e) => {
+    if (!e.target.value) return;
+    const searchParams = {
+      name: e.target.value,
+    }
+    let searchUrl = URLS.NEXT.PRODUCT.SEARCH;
+    searchUrl += `/${JSON.stringify(searchParams)}`;
+    setIsSearching(true);
+    httpGet(searchUrl,
+      { traceName: "search products" }).then(
+        (res) => {
+          if (res.errors && Object.keys(res.errors).length > 0) {
+            alert(res.errors[Object.keys(res.errors)[0]]);
+            setIsSearching(false);
+          } else {
+            setIsSearching(false);
+            setSearchResult(res.data || []);
+            handleSearchHistory(res);
+          }
+        },
+        (err) => {
+          setIsSearching(false);
+        }
+      );
     setSearch(e.target.value);
   };
+
+  const handleSearchHistory = (res) => {
+    if (res && res.data && res.data.length > 0) {
+      const searchHistory = getSearchHistoryLocalStorage() || [];
+      let isDataAlreadyExist = false;
+      if (searchHistory && searchHistory.length > 0) {
+        isDataAlreadyExist = searchHistory.some(history => history.id == res.data[0]?.id);
+      }
+      if (!isDataAlreadyExist) {
+        if (searchHistory && searchHistory.length > 7) {
+          searchHistory.unshift(res.data[0]);
+          searchHistory.pop();
+        } else {
+          searchHistory.push(res.data[0]);
+        }
+      }
+      setSearchHistoryLocalStorage(searchHistory);
+    }
+  }
 
   const handleMainSearch = (e, type) => {
     handleActiveSearchType(type);
@@ -141,7 +146,7 @@ const Search = () => {
           All
         <ArrowIcon className="ml-3" />
         </Menu.Button>
-        {activeSearchType === SearchType.category && <SearchCategory {...data} />}
+        {activeSearchType === SearchType.category && <SearchCategory {...props} />}
       </Menu>
       <input
         id="company_website"
@@ -159,18 +164,18 @@ const Search = () => {
       </div>
       {activeSearchType === SearchType.history
         && <Menu as="div" className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b">
-          <SearchHistory {...data} />
+          <SearchHistory />
         </Menu>}
       {activeSearchType === SearchType.result
         && <Menu as="div" className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b">
-          <SearchResult {...data} search={search} handleSearch={handleSearch} />
+          <SearchResult {...data} searchResult={searchResult} search={search} isSearching={isSearching} handleSearch={handleSearch} />
         </Menu>}
     </div>
   );
 };
 
-const SearchCategory = (data) => {
-  const { searchCategories } = data || {};
+const SearchCategory = (props) => {
+  const { categories } = props || {};
   return (
     <Transition
       show={true}
@@ -184,7 +189,7 @@ const SearchCategory = (data) => {
     >
       <Menu.Items className="font-ubuntu bg-white outline-none py-3 mt-4 text-dark rounded relative min-w-200 shadow-grey-8" static>
         <span className="w-5 h-5 -mt-2 ml-8 rounded-sm bg-white absolute -z-1 left-0 top-0 transform rotate-45" />
-        {searchCategories.length > 0 && searchCategories.map((category, index) => {
+        {categories.length > 0 && categories.map((category, index) => {
           const { name } = category || {};
           return (<Menu.Item as="div" key={index}
             className="text-base flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
@@ -198,8 +203,8 @@ const SearchCategory = (data) => {
   );
 };
 
-const SearchHistory = (data) => {
-  const { searchHistory } = data || {};
+const SearchHistory = () => {
+  const searchHistory = getSearchHistoryLocalStorage() || [];
   return (
     <Transition
       show={true}
@@ -229,7 +234,7 @@ const SearchHistory = (data) => {
           >
             <div className="flex">
               <div className="pr-3">
-                <img key={index} src={img} className="w-6 object-contain" alt="product-img" />
+                <img key={index} src="/img/screw-img.svg" className="w-6 object-contain" alt="product-img" />
               </div>
               <div className="text-sm flex items-center text-dark">
                 {name}
@@ -246,8 +251,8 @@ const SearchHistory = (data) => {
   );
 };
 
-const SearchResult = (data) => {
-  const { searchResult, searchProducts, search, handleSearch } = data || {};
+const SearchResult = (props) => {
+  const { isSearching, searchResult, search, handleSearch, searchProducts } = props || {};
   return (
     <Transition
       show={true}
@@ -258,10 +263,13 @@ const SearchResult = (data) => {
       leaveFrom="transform scale-100 opacity-100"
       leaveTo="transform scale-95 opacity-0"
     >
-      {searchResult.length == 0 && <div className="text-sm px-4 py-3 text-dark">
+      {!isSearching && searchResult.length == 0 && <div className="text-sm px-4 py-3 text-dark">
         No products found
       </div>}
-      {searchResult.length > 0 && <div>
+      {isSearching && <div className="text-sm px-4 py-3 text-dark">
+        Searching...
+      </div>}
+      {!isSearching && searchResult.length > 0 && <div>
         <div className="font-light text-xs px-4 py-3 border-t border-b border-dark border-opacity-05">
           <input
             value={search}
@@ -312,221 +320,13 @@ const SearchResult = (data) => {
   );
 };
 
-const Categories = () => {
+const Categories = (props) => {
   const [isActiveCategory, setIsActiveCategory] = useState(false);
   const [activeList, setActiveList] = useState(1);
   const [activeSubList, setActiveSubList] = useState(1);
   const [subCategories, setSubCategories] = useState([]);
-  const [products, setProducts] = useState([]);
-
-  const handleSubCategories = (id) => {
-    const filteredSubCategories = data.categorySubMenu.filter((data) => data.categoryId == id) || [];
-    setSubCategories(filteredSubCategories);
-  };
-
-  const handleActiveList = (id) => {
-    setActiveList(id);
-    const activeSubMenu = data.categorySubMenu.find((data) => data.categoryId == id) || {};
-
-    if (activeSubMenu?.id) {
-      setActiveSubList(activeSubMenu.id);
-      handleSubCategories(id);
-    }
-  };
-
-  const handleActiveSubList = (id) => {
-    setActiveSubList(id);
-    handleProducts();
-  };
-
-  const handleProducts = () => {
-    setProducts(data.products);
-  };
-
-  const setActiveCategory = (open = false) => {
-    setIsActiveCategory(open);
-    setActiveList(1);
-    handleSubCategories(1);
-    handleActiveSubList(1);
-  };
-
+  const { isFetching, categories } = props;
   const data = {};
-
-  data.categoryMenu = [
-    {
-      id: 1,
-      name: "Conical Plastic Anchors",
-    },
-    {
-      id: 2,
-      name: "Drop-in Anchors & Setting Tools",
-    },
-    {
-      id: 3,
-      name: "E-Z Anchors (Metal & Plastic)",
-    },
-    {
-      id: 4,
-      name: "Expansion Shields (Single & Double)",
-    },
-    {
-      id: 5,
-      name: "Hammer Drive Anchors",
-    },
-    {
-      id: 6,
-      name: "Hollow Wall Anchors",
-    },
-    {
-      id: 7,
-      name: "Lag Shields",
-    },
-    {
-      id: 8,
-      name: "Machine Screw Anchors & Setting Tools",
-    },
-    {
-      id: 9,
-      name: "Nylon Nail Anchors (Flat & Mushroom)",
-    },
-    {
-      id: 10,
-      name: "Sleeve Anchors",
-    },
-    {
-      id: 11,
-      name: "Wedge Anchors, Steel & Stainless Steel",
-    }];
-
-  data.categorySubMenu = [
-    {
-      id: 1,
-      name: "Conical Plastic Anchors",
-      categoryId: 1,
-      productId: 1
-    },
-    {
-      id: 2,
-      name: "Drop-in Anchors",
-      categoryId: 1,
-      productId: 1
-    },
-    {
-      id: 3,
-      name: "E-Z Anchor",
-      categoryId: 1,
-      productId: 13
-    },
-    {
-      id: 4,
-      name: "Expansion Shields",
-      categoryId: 1,
-      productId: 1
-    },
-    {
-      id: 5,
-      name: "Hammer Anchors",
-      categoryId: 1,
-      productId: 1
-    },
-    {
-      id: 6,
-      name: "Hollow Wall Anchors",
-      categoryId: 1,
-      productId: 1
-    },
-    {
-      id: 7,
-      name: "Lag Shields",
-      categoryId: 1,
-      productId: 1
-    },
-    {
-      id: 8,
-      name: "Machine Screw Anchors",
-      categoryId: 1,
-      productId: 1
-    },
-    {
-      id: 9,
-      name: "Nylon Nail Anchors",
-      categoryId: 1,
-      productId: 1
-    },
-    {
-      id: 10,
-      name: "Sleeve Anchors",
-      categoryId: 1,
-      productId: 1
-    },
-    {
-      id: 11,
-      name: "Wedge Anchors",
-      categoryId: 1,
-      productId: 1
-    },
-    {
-      id: 12,
-      name: "Conical Plastic Anchors",
-      categoryId: 2,
-      productId: 1
-    },
-    {
-      id: 13,
-      name: "E-Z Anchor",
-      categoryId: 3,
-      productId: 1
-    },
-    {
-      id: 14,
-      name: "Expansion Shields",
-      categoryId: 4,
-      productId: 1
-    },
-    {
-      id: 15,
-      name: "Hammer Anchors",
-      categoryId: 5,
-      productId: 1
-    },
-    {
-      id: 16,
-      name: "Hollow Wall Anchors",
-      categoryId: 6,
-      productId: 1
-    },
-    {
-      id: 17,
-      name: "Lag Shields",
-      categoryId: 7,
-      productId: 1
-    },
-    {
-      id: 18,
-      name: "Machine Screw Anchors",
-      categoryId: 8,
-      productId: 1
-    },
-    {
-      id: 19,
-      name: "Nylon Nail Anchors",
-      categoryId: 9,
-      productId: 1
-    },
-    {
-      id: 20,
-      name: "Sleeve Anchors",
-      categoryId: 10,
-      productId: 1
-    },
-    {
-      id: 21,
-      name: "Wedge Anchors",
-      categoryId: 11,
-      productId: 1
-    },
-  ];
-
   data.products = [
     {
       id: 1,
@@ -559,6 +359,42 @@ const Categories = () => {
       name: "6-32 Slotted Flat Head",
     }];
 
+  const getParentCategories = () => {
+    if (categories && categories.length > 0) {
+      return categories.filter(data => data.parent_id === 0);
+    } else {
+      return [];
+    }
+  }
+
+  const handleSubCategories = (id) => {
+    const filteredChildCategories = categories.filter((data) => data.parent_id == id) || [];
+    setSubCategories(filteredChildCategories);
+  };
+
+  const handleActiveList = (id) => {
+    setActiveList(id);
+    const activeChildMenu = categories.find((data) => data.parent_id == id) || {};
+    if (activeChildMenu?.id) {
+      setActiveSubList(activeChildMenu.id);
+      handleSubCategories(id);
+    } else {
+      handleSubCategories();
+    }
+  };
+
+  const handleActiveSubList = (id) => {
+    setActiveSubList(id);
+  };
+
+  const setActiveCategory = (open = false) => {
+    setIsActiveCategory(open);
+    setActiveList(1);
+    handleSubCategories(1);
+    handleActiveSubList(1);
+  };
+
+  const parentCategories = getParentCategories();
   return (
     <Menu as="div" onMouseLeave={() => setActiveCategory(false)} className="relative">
       <Menu.Button onMouseOver={() => setActiveCategory(true)}
@@ -581,9 +417,10 @@ const Categories = () => {
           <div className="mt-4">
             <Menu.Items className="font-ubuntu bg-white outline-none text-dark rounded relative shadow-grey-8" static>
               <span className="w-5 h-5 -mt-2 ml-56 rounded-sm bg-white absolute -z-1 left-0 top-0 transform rotate-45" />
-              <div className="flex">
-                <div className="bg-opacity-03 bg-dark">
-                  {data.categoryMenu.map((menu, index) => {
+              {isFetching && <div className="bg-opacity-03 bg-dark flex py-32 w-full min-w-300 justify-center" >Loading....</div>}
+              {!isFetching && <div className="flex">
+                <div className="bg-opacity-03 bg-dark  min-w-300">
+                  {parentCategories.length > 0 && parentCategories.map((menu, index) => {
                     const { id, name } = menu || {};
                     return (
                       <Menu.Item as="div" key={index} onMouseOver={() => handleActiveList(id)}
@@ -621,7 +458,7 @@ const Categories = () => {
                   </div>
                 }
                 <div className="w-600 flex flex-wrap">
-                  {products && products.length > 0 && products.map((row, index) => {
+                  {data.products && data.products.length > 0 && data.products.map((row, index) => {
                     const { img, name } = row || {};
                     return (
                       <Menu.Item as="div"
@@ -651,6 +488,7 @@ const Categories = () => {
                   })}
                 </div>
               </div>
+              }
             </Menu.Items>
           </div>
         </Transition>
@@ -659,14 +497,51 @@ const Categories = () => {
   );
 };
 
-const MiddleNavbar = () => (
-  <div className="flex items-center py-1 bg-dark">
+const MiddleNavbar = (props) => {
+  const { setCategories } = props;
+  const [isFetching, setIsFetching] = useState(false);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = () => {
+    setIsFetching(true);
+    httpGet(URLS.NEXT.CATEGORY.CATEGORIES,
+      { traceName: "get all categories" }).then(
+        (res) => {
+          if (res.errors && Object.keys(res.errors).length > 0) {
+            alert(res.errors[Object.keys(res.errors)[0]]);
+            setIsFetching(false);
+          } else {
+            setIsFetching(false);
+            setCategories(res.data || [])
+          }
+        },
+        (err) => {
+          setIsFetching(false);
+        }
+      );
+  }
+  return (<div className="flex items-center py-1 bg-dark">
     <div className="container flex items-center mx-auto">
       <Logo />
-      <Categories />
-      <Search />
+      <Categories {...props} isFetching={isFetching} />
+      <Search {...props} isFetching={isFetching} />
     </div>
   </div>
-);
+  );
+}
 
-export default MiddleNavbar;
+MiddleNavbar.propTypes = {
+  setCategories: func,
+  categories: array,
+};
+
+const mapStateToProps = createStructuredSelector({
+  categories: getCategories(),
+});
+
+export default connect(mapStateToProps, {
+  setCategories,
+})(MiddleNavbar);

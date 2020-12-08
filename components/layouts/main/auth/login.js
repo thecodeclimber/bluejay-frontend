@@ -11,7 +11,7 @@ import {
 } from "react-icons/vsc";
 import URLS from "../../../../utils/urls";
 import { httpPost } from "../../../../utils/https";
-import { useStateCallback, setLocalStorage } from "../../../../utils/helper";
+import { useStateCallback, setUserLocalStorage } from "../../../../utils/helper";
 import { setModal, setUser } from "../../../../redux/user/actions";
 import { getUser } from "../../../../redux/user/selectors";
 
@@ -21,6 +21,7 @@ const Login = (props) => {
     password: "",
     isRemember: false,
     isLoading: false,
+    isValidate: false,
   };
   const { user, setUser, setModal } = props;
   const [formData, setFormData] = useState(state);
@@ -29,12 +30,13 @@ const Login = (props) => {
   useEffect(() => {
     const { tempEmail } = user || {};
     if (tempEmail) setFormData({ ...formData, email: tempEmail });
-
-    return () => {
-      setUser({ ...user, tempEmail: "" });
-    };
   }, []);
 
+  const handleModal = () => {
+    const { user, setUser } = props;
+    setUser({ ...user, tempEmail: "" });
+    setModal();
+  }
 
   const handleFormData = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,7 +50,6 @@ const Login = (props) => {
     const errorStructure = {
       errorEmail: "",
       errorPassword: "",
-      isValidate: false,
     };
     if (!isSubmit) return errorStructure;
 
@@ -60,7 +61,7 @@ const Login = (props) => {
     }
     if (!errorStructure.errorEmail
       && !errorStructure.errorPassword) {
-      errorStructure.isValidate = true;
+      formData.isValidate = true;
     }
     return errorStructure;
   };
@@ -68,7 +69,7 @@ const Login = (props) => {
   const handleLogin = () => {
     setIsSubmit({ isSubmit: true }, (stateData) => {
       if (stateData.isSubmit) {
-        const { isValidate } = checkValidations();
+        const { isValidate } = formData;
         if (!isValidate) return;
         const params = {
           email: formData.email,
@@ -76,7 +77,7 @@ const Login = (props) => {
         };
         setFormData({ ...formData, isLoading: true });
         httpPost(URLS.NEXT.AUTH.LOGIN, params,
-          { traceName: 'login customer' }).then(
+          { traceName: "login customer" }).then(
             (res) => {
               if (res.errors && Object.keys(res.errors).length > 0) {
                 alert(res.errors[Object.keys(res.errors)[0]]);
@@ -90,10 +91,10 @@ const Login = (props) => {
                   password: "",
                   isLoading: false
                 });
-
                 const data = { token: res.token, user: res.user }
-                const userData = setLocalStorage(data);
+                const userData = setUserLocalStorage(data);
                 setUser(userData);
+                setModal();
               }
             },
             (err) => {
@@ -111,7 +112,7 @@ const Login = (props) => {
       <div className="flex items-center h-full">
         <div className="font-ubuntu bg-white rounded shadow-grey-8 py-6 px-8 max-w-400 w-full text-dark m-auto" static="true">
           <div className="flex justify-end">
-            <CloseIcon className="text-dark text-opacity-50 text-xl cursor-pointer" onClick={() => setModal()} />
+            <CloseIcon className="text-dark text-opacity-50 text-xl cursor-pointer" onClick={handleModal} />
           </div>
           <div className="font-medium mb-3 text-3xl text-sm leading-8 text-center mb-10">Login Account</div>
           <div className="mb-6">

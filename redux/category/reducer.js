@@ -3,17 +3,14 @@
  */
 import { fromJS } from "immutable";
 import {
-  SET_USER,
-  SET_MODAL,
-  USER_STRUCTURE,
+  SET_CATEGORIES
 } from "./constants";
 
 /**
  * Set Initial State
  */
 export const initialState = fromJS({
-  user: USER_STRUCTURE,
-  modal: "",
+  categories: [],
 });
 
 /**
@@ -22,12 +19,10 @@ export const initialState = fromJS({
  * @param {Object} state
  * @param {Object} action
  */
-function UserReducer(state = initialState, action) {
+function CategoryReducer(state = initialState, action) {
   switch (action.type) {
-    case SET_USER:
-      return state.set('user', fromJS(action.data));
-    case SET_MODAL:
-      return state.set('modal', fromJS(action.data));
+    case SET_CATEGORIES:
+      return state.set('categories', fromJS(action.data));
 
     default:
       return state;
@@ -37,4 +32,4 @@ function UserReducer(state = initialState, action) {
 /**
  * Export the reducer
  */
-export default UserReducer;
+export default CategoryReducer;

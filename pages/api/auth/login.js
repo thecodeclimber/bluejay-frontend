@@ -1,13 +1,11 @@
 import { httpPost, httpGet } from "../../../utils/https";
 import URLS from "../../../utils/urls";
-import { generateToken } from "../../../utils/helper";
+import { generateToken, verifyPostMethod } from "../../../utils/helper";
+import { MESSAGES } from "../../../utils/constants";
 
 export default async (req, res) => {
-  if (req.method !== "POST") {
-    res.status(500);
-    res.json("Something went wrong");
-    return;
-  }
+  if (!verifyPostMethod(req, res)) return;
+
   const data = req.body || {};
   const customersUrl = URLS.BIG_COMMERCE.CUSTOMERS.CUSTOMERS;
   const customerData = await httpGet(`${customersUrl}?email:in=${data.email}`, { isBigCommerce: true });
@@ -15,7 +13,7 @@ export default async (req, res) => {
     res.status(401);
     res.json({
       "errors": {
-        "error": "Unauthorized."
+        "error": MESSAGES.UNAUTHORIZED
       }
     });
     return;

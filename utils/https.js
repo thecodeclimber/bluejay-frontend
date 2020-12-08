@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { MESSAGES } from "./constants";
+
 /**
  * Cancel Token
  */
@@ -99,7 +101,7 @@ export const httpHandleError = (error) => {
     if (xhr) {
       switch (xhr.status) {
         case 0:
-          console.log('SERVER_ERROR');
+          console.log(MESSAGES.SERVER_ERROR);
           break;
         case 400:
           if (err.error) {
@@ -107,14 +109,14 @@ export const httpHandleError = (error) => {
           } else if (!err.status && !err.error && err.response) {
             console.log(err.response);
           } else {
-            console.log('INTERNAL_ERROR');
+            console.log(MESSAGES.INTERNAL_ERROR);
           }
           break;
         case 401:
-          console.log(xhr.statusText);
+          console.log(MESSAGES.UNAUTHORIZED);
           break;
         case 403:
-          console.log('You do not have access.');
+          console.log(MESSAGES.UNAUTHORIZED);
           break;
         case 404:
           console.log(err.response);
@@ -140,20 +142,20 @@ export const httpHandleError = (error) => {
           }
           break;
         case 502:
-          console.log('BAD_GATEWAY');
+          console.log(MESSAGES.BAD_GATEWAY);
           break;
         case 503:
           if (err.error && typeof err.error == 'string') {
             console.log(err.error);
           } else {
-            console.log('BAD_GATEWAY');
+            console.log(MESSAGES.BAD_GATEWAY);
           }
           break;
         default:
-          console.log('INTERNAL_ERROR');
+          console.log(MESSAGES.INTERNAL_ERROR);
       }
     } else {
-      console.log('INTERNAL_ERROR');
+      console.log(MESSAGES.INTERNAL_ERROR);
     }
     return xhr;
   } catch (e) {

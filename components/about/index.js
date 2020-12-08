@@ -2,6 +2,7 @@ import AboutBanner from "./aboutBanner";
 import UniqueValue from "./uniqueValue";
 import Partners from "./partners";
 import CustomerReviews from "./customerReviews";
+import CompanyAccount from "./companyAccount";
 
 const About = () => {
   return (
@@ -14,6 +15,7 @@ const About = () => {
       <hr className="my-5 opacity-10 bg-dark" />
       <Partners />
       <CustomerReviews />
+      <CompanyAccount />
     </>
   );
 }

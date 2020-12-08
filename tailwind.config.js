@@ -85,13 +85,17 @@ module.exports = {
       backgroundImage: theme => ({
         "about-card": "url('/img/about-card.svg')",
         "customer-review": "url('/img/customer-review.svg')",
+        "account": "url('/img/account-background.png')",
+        "customer-card": "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 2000%)",
       }),
       opacity: {
+        0: "0",
         7: "0.07",
         10: "0.1",
         50: "0.5",
         70: "0.7",
         90: "0.9",
+        100: "1",
       },
       margin: {
         "-2": "-2px",
@@ -106,8 +110,12 @@ module.exports = {
         "-55": "-55px",
       },
       width: {
+        "3.5": "0.875rem",
         600: "640px",
         200: "210px",
+      },
+      height: {
+        "3.5": "0.875rem",
       },
     },
   },
