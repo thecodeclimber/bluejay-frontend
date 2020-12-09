@@ -99,6 +99,7 @@ const CustomerReviews = () => {
                   "w-3.5 h-3.5 bg-opacity-100": activeSlide === index,
                 })}
                 onClick={() => handleSlideGoTo(index)}
+                key={index}
               >
               </div>
             )

@@ -22,6 +22,7 @@ module.exports = {
     maxWidth: {
       400: "472px",
       650: "640px",
+      700: "692px",
     },
     maxHeight: {
       450: "480px",
@@ -108,6 +109,7 @@ module.exports = {
         "-5": "-5rem",
         "-8": "-8px",
         "-55": "-55px",
+        "-70": "-70px",
       },
       width: {
         "3.5": "0.875rem",

@@ -3,6 +3,8 @@ import UniqueValue from "./uniqueValue";
 import Partners from "./partners";
 import CustomerReviews from "./customerReviews";
 import CompanyAccount from "./companyAccount";
+import OurStory from "./ourStory";
+import OurHistory from "./ourHistory";
 
 const About = () => {
   return (
@@ -16,6 +18,8 @@ const About = () => {
       <Partners />
       <CustomerReviews />
       <CompanyAccount />
+      <OurStory />
+      <OurHistory />
     </>
   );
 }
