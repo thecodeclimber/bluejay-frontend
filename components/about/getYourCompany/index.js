@@ -1,9 +1,7 @@
-import React from "react";
-
-const CompanyAccount = () => {
+const GetYourCompany = () => {
   return (
-    <div className="bg-account bg-cover bg-no-repeat py-8">
-      <div className="container mx-auto border rounded border-opacity-10 border-white">
+    <div className="container mx-auto px-8 bg-account bg-cover bg-no-repeat py-8 rounded mb-16">
+      <div className="border rounded border-opacity-10 border-white">
         <div className="text-3xl py-10 font-ubuntu text-white text-center">
           <span className="font-light">Get</span> <span className="font-medium">Your Company An Account</span>
         </div>
@@ -48,7 +46,7 @@ const CompanyAccount = () => {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default CompanyAccount;
+export default GetYourCompany;

@@ -22,6 +22,12 @@ const URLS = {
     },
     PRODUCT: {
       PRODUCTS: `${BIG_COMMERCE_BASE_URL}/catalog/products`
+    },
+    REVIEW: {
+      REVIEWS: `${BIG_COMMERCE_BASE_URL}/catalog/products/{PRODUCT_ID}/reviews`,
+    },
+    BRAND: {
+      BRANDS: `${BIG_COMMERCE_BASE_URL}/catalog/brands`
     }
   },
   //Next
@@ -35,9 +41,18 @@ const URLS = {
       CATEGORIES: `${NEXT_BASE_URL}/categories`,
     },
     PRODUCT: {
+      PRODUDCT: `${NEXT_BASE_URL}/products/get`,
       PRODUCTS: `${NEXT_BASE_URL}/products`,
-      SEARCH: `${NEXT_BASE_URL}/product`,
-    }
+      SEARCH: `${NEXT_BASE_URL}/products/search`,
+    },
+    BRAND: {
+      BRAND: `${NEXT_BASE_URL}/products/get`,
+      BRANDS: `${NEXT_BASE_URL}/brands`,
+      SEARCH: `${NEXT_BASE_URL}/brands/search`,
+    },
+    REVIEW: {
+      REVIEW: `${NEXT_BASE_URL}/productReviews/get`,
+    },
   }
 };
 

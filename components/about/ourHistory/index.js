@@ -44,7 +44,7 @@ const OurHistory = () => {
   };
 
   return (
-    <div className="pb-24 font-ubuntu">
+    <div className="pb-18 font-ubuntu">
       <div className="container mx-auto text-3xl pb-10 text-dark text-center">
         <span className="font-light">Our</span> <span className="font-medium">History</span>
       </div>
