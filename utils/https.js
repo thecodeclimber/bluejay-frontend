@@ -30,13 +30,13 @@ export const getCommonHeaders = (url, additional_headers = {}) => {
   try {
     const { traceName, isBigCommerce } = additional_headers;
     const light_step_headers = {
-      'x-api-trace-name': traceName,
+      "x-api-trace-name": traceName,
     };
 
     let headers = {
-      Accept: 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'no-cache',
+      Accept: "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Cache-Control": "no-cache",
       ...light_step_headers,
       ...additional_headers,
     };

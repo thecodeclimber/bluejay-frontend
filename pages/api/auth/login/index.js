@@ -1,7 +1,7 @@
-import { httpPost, httpGet } from "../../../utils/https";
-import URLS from "../../../utils/urls";
-import { generateToken, verifyPostMethod } from "../../../utils/helper";
-import { MESSAGES } from "../../../utils/constants";
+import { httpPost, httpGet } from "../../../../utils/https";
+import URLS from "../../../../utils/urls";
+import { generateToken, verifyPostMethod } from "../../../../utils/helper";
+import { MESSAGES } from "../../../../utils/constants";
 
 export default async (req, res) => {
   if (!verifyPostMethod(req, res)) return;

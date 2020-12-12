@@ -14,6 +14,7 @@ import { httpPost } from "../../../../utils/https";
 import { useStateCallback, setUserLocalStorage } from "../../../../utils/helper";
 import { setModal, setUser } from "../../../../redux/user/actions";
 import { getUser } from "../../../../redux/user/selectors";
+import { MODAL_TYPES } from "../../../../redux/user/constants";
 
 const Login = (props) => {
   const state = {
@@ -62,6 +63,8 @@ const Login = (props) => {
     if (!errorStructure.errorEmail
       && !errorStructure.errorPassword) {
       formData.isValidate = true;
+    } else {
+      formData.isValidate = false;
     }
     return errorStructure;
   };
@@ -147,7 +150,10 @@ const Login = (props) => {
               onClick={toggleCheckbox}>
               <CheckedIcon className="text-white text-xl" />
             </div>
-            <div className="text-sm flex justify-between w-full"><span>Remember me</span><a href="#" className="text-primary">Forgot Password?</a> </div>
+            <div className="text-sm flex justify-between w-full">
+              <span>Remember me</span>
+              <span className="text-primary cursor-pointer" onClick={() => setModal(MODAL_TYPES.FORGOT_PASSWORD)}>Forgot Password?</span>
+            </div>
           </div>
           <button
             onClick={handleLogin}

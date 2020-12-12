@@ -8,8 +8,7 @@ import ForgotPassword from "./forgotPassword";
 import NewPassword from "./newPassword";
 import { setModal, setUser } from "../../../../redux/user/actions";
 import { getModal, getUser } from "../../../../redux/user/selectors";
-import { USER_STRUCTURE } from "../../../../redux/user/constants";
-import { MODAL_TYPES } from "../../../../redux/user/constants";
+import { USER_STRUCTURE, MODAL_TYPES } from "../../../../redux/user/constants";
 import { removeUserLocalStorage } from "../../../../utils/helper";
 
 const Auth = (props) => {

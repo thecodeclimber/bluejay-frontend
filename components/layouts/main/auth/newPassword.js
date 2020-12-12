@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { func } from "prop-types";
 import { connect } from "react-redux";
 import classnames from "classnames";
@@ -15,10 +15,22 @@ import {
 } from "../../../../utils/helper";
 import { setModal } from "../../../../redux/user/actions";
 import { httpPut } from "../../../../utils/https";
+import { MESSAGES } from "../../../../utils/constants";
 import URLS from "../../../../utils/urls";
+import { MODAL_TYPES } from "../../../../redux/user/constants";
+import { useRouter } from "next/router";
 
 const NewPassword = (props) => {
   const { setModal } = props;
+  const router = useRouter();
+
+  useEffect(() => {
+    // returned function will be called on component unmount 
+    return () => {
+      router.push("/");
+    }
+  }, []);
+
   const state = {
     password: "",
     repeatPassword: "",
@@ -57,6 +69,8 @@ const NewPassword = (props) => {
     }
     if (!errorStructure.errorPassword && !errorStructure.errorRepeatPassword) {
       formData.isValidate = true;
+    } else {
+      formData.isValidate = false;
     }
     return errorStructure;
   };
@@ -68,15 +82,21 @@ const NewPassword = (props) => {
         if (!isValidate) return;
 
         const params = {
-          id: 12,
           authentication: {
             new_password: formData.password
           }
         }
-
+        const { query } = router || {};
+        if (!query.token && !query.reset) {
+          alert(MESSAGES.SOMETHING_WENT_WRONG);
+          return;
+        }
         setFormData({ ...formData, isLoading: true });
+        const headers = {
+          Authorization: `Bearer ${query.token}`,
+        }
         httpPut(URLS.NEXT.AUTH.CHANGE_PASSWORD, params,
-          { traceName: 'change password' }).then(
+          { traceName: 'change password', headers }).then(
             (res) => {
               if (res.errors && Object.keys(res.errors).length > 0) {
                 alert(res.errors[Object.keys(res.errors)[0]]);
@@ -90,6 +110,7 @@ const NewPassword = (props) => {
                   repeatPassword: "",
                   isLoading: false
                 });
+                setModal(MODAL_TYPES.LOGIN);
               }
             },
             (err) => {
@@ -161,6 +182,7 @@ const NewPassword = (props) => {
           </button>
           <button
             className="font-medium w-full py-3 items-center rounded bg-white text-dark border border-dark border-opacity-25 opacity-50 focus:outline-none mb-6"
+            onClick={() => setModal()}
           >
             Cancel
           </button>

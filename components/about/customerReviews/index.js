@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from "react";
 import classnames from "classnames";
 import Slider from "react-slick";
 

@@ -28,6 +28,9 @@ const URLS = {
     },
     BRAND: {
       BRANDS: `${BIG_COMMERCE_BASE_URL}/catalog/brands`
+    },
+    WISHLIST: {
+      WISHLISTS: `${BIG_COMMERCE_BASE_URL}/wishlists`
     }
   },
   //Next
@@ -35,7 +38,8 @@ const URLS = {
     AUTH: {
       REGISTER: `${NEXT_BASE_URL}/auth/register`,
       LOGIN: `${NEXT_BASE_URL}/auth/login`,
-      CHANGE_PASSWORD: `${NEXT_BASE_URL}/auth/changePassword`,
+      CHANGE_PASSWORD: `${NEXT_BASE_URL}/auth/password/change`,
+      FORGOT_PASSWORD: `${NEXT_BASE_URL}/auth/password/forgot`,
     },
     CATEGORY: {
       CATEGORIES: `${NEXT_BASE_URL}/categories`,
@@ -51,7 +55,7 @@ const URLS = {
       SEARCH: `${NEXT_BASE_URL}/brands/search`,
     },
     REVIEW: {
-      REVIEW: `${NEXT_BASE_URL}/productReviews/get`,
+      REVIEW: `${NEXT_BASE_URL}/products/reviews/get`,
     },
   }
 };

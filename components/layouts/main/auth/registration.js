@@ -112,6 +112,8 @@ const Registration = (props) => {
       && !errorStructure.errorCity && !errorStructure.errorPostalCode
       && !errorStructure.errorAddress) {
       formData.isValidate = true;
+    } else {
+      formData.isValidate = false;
     }
     return errorStructure;
   };

@@ -1,7 +1,7 @@
-import { httpPost, httpGet } from "../../../utils/https";
-import URLS from "../../../utils/urls";
-import { verifyPostMethod } from "../../../utils/helper";
-import { MESSAGES } from "../../../utils/constants";
+import { httpPost, httpGet } from "../../../../utils/https";
+import URLS from "../../../../utils/urls";
+import { verifyPostMethod } from "../../../../utils/helper";
+import { MESSAGES } from "../../../../utils/constants";
 
 const moment = require("moment");
 

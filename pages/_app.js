@@ -1,5 +1,5 @@
 import "../assets/css/index.css";
-import { createWrapper } from 'next-redux-wrapper';
+import { createWrapper } from "next-redux-wrapper";
 import store from "../redux/store";
 import MainLayout from "@/components//layouts/main/index.js";
 
