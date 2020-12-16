@@ -11,9 +11,9 @@ export default async (req, res) => {
   if (products.status === 401) {
     res.status(401);
     res.json({
-      "errors": {
-        "error": MESSAGES.UNAUTHORIZED
-      }
+      errors: {
+        error: MESSAGES.UNAUTHORIZED,
+      },
     });
     return;
   }

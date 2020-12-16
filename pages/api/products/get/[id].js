@@ -9,9 +9,9 @@ export default async (req, res) => {
   if (!id) {
     res.status(400);
     res.json({
-      "errors": {
-        "error": "Required product id"
-      }
+      errors: {
+        error: "Required product id",
+      },
     });
     return;
   }
@@ -21,9 +21,9 @@ export default async (req, res) => {
   if (product.status === 401) {
     res.status(401);
     res.json({
-      "errors": {
-        "error": MESSAGES.UNAUTHORIZED
-      }
+      errors: {
+        error: MESSAGES.UNAUTHORIZED,
+      },
     });
     return;
   }

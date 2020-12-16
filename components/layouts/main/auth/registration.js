@@ -1,25 +1,21 @@
 import React, { useState } from "react";
 import { func, shape } from "prop-types";
 import { connect } from "react-redux";
-import { createStructuredSelector } from 'reselect';
+import { createStructuredSelector } from "reselect";
 import { Menu } from "@headlessui/react";
 import classnames from "classnames";
-import {
-  TiTick as CheckedIcon
-} from "react-icons/ti";
+import { TiTick as CheckedIcon } from "react-icons/ti";
 import {
   AiFillEye as EyeIcon,
-  AiFillEyeInvisible as InvisibleEyeIcon
+  AiFillEyeInvisible as InvisibleEyeIcon,
 } from "react-icons/ai";
-import {
-  VscChromeClose as CloseIcon
-} from "react-icons/vsc";
+import { VscChromeClose as CloseIcon } from "react-icons/vsc";
 import { httpPost } from "../../../../utils/https";
 import URLS from "../../../../utils/urls";
 import {
   validateEmail,
   validateNumberAndCharacter,
-  useStateCallback
+  useStateCallback,
 } from "../../../../utils/helper";
 import { setModal, setUser } from "../../../../redux/user/actions";
 import { getUser } from "../../../../redux/user/selectors";
@@ -51,7 +47,10 @@ const Registration = (props) => {
   };
 
   const toggleCheckbox = () => {
-    setFormData({ ...formData, isTermAndConditions: !formData.isTermAndConditions });
+    setFormData({
+      ...formData,
+      isTermAndConditions: !formData.isTermAndConditions,
+    });
   };
 
   const togglePasswordVisibility = (name) => {
@@ -99,18 +98,25 @@ const Registration = (props) => {
     } else if (formData.password.length < 7) {
       errorStructure.errorPassword = "Password must be at least 7 characters";
     } else if (!validateNumberAndCharacter(formData.password)) {
-      errorStructure.errorPassword = "Password contain at least one letter, one number and one special character.";
+      errorStructure.errorPassword =
+        "Password contain at least one letter, one number and one special character.";
     }
     if (!formData.confirmPassword) {
       errorStructure.errorConfirmPassword = "Please enter confirm password";
     } else if (formData.password != formData.confirmPassword) {
       errorStructure.errorConfirmPassword = "Please enter same password";
     }
-    if (!errorStructure.errorName && !errorStructure.errorEmail
-      && !errorStructure.errorPassword && !errorStructure.errorConfirmPassword
-      && !errorStructure.errorCountryCode && !errorStructure.errorStateOrProvince
-      && !errorStructure.errorCity && !errorStructure.errorPostalCode
-      && !errorStructure.errorAddress) {
+    if (
+      !errorStructure.errorName &&
+      !errorStructure.errorEmail &&
+      !errorStructure.errorPassword &&
+      !errorStructure.errorConfirmPassword &&
+      !errorStructure.errorCountryCode &&
+      !errorStructure.errorStateOrProvince &&
+      !errorStructure.errorCity &&
+      !errorStructure.errorPostalCode &&
+      !errorStructure.errorAddress
+    ) {
       formData.isValidate = true;
     } else {
       formData.isValidate = false;
@@ -137,39 +143,40 @@ const Registration = (props) => {
             postal_code: formData.postalCode,
           },
           authentication: {
-            new_password: formData.password
+            new_password: formData.password,
           },
         };
 
         setFormData({ ...formData, isLoading: true });
-        httpPost(URLS.NEXT.AUTH.REGISTER, params,
-          { traceName: 'create customer' }).then(
-            (res) => {
-              if (res.errors && Object.keys(res.errors).length > 0) {
-                alert(res.errors[Object.keys(res.errors)[0]]);
-                setFormData({ ...formData, isLoading: false });
-              } else {
-                alert("Account created successfully");
-                setUser({ ...user, tempEmail: formData.email });
-                setIsSubmit(false);
-                setFormData({
-                  ...formData,
-                  name: "",
-                  email: "",
-                  password: "",
-                  confirmPassword: "",
-                  isPasswordVisible: false,
-                  isConfirmPasswordVisible: false,
-                  isTermAndConditions: false,
-                  isLoading: false
-                });
-                setModal(MODAL_TYPES.LOGIN);
-              }
-            },
-            (err) => {
+        httpPost(URLS.NEXT.AUTH.REGISTER, params, {
+          traceName: "create customer",
+        }).then(
+          (res) => {
+            if (res.errors && Object.keys(res.errors).length > 0) {
+              alert(res.errors[Object.keys(res.errors)[0]]);
               setFormData({ ...formData, isLoading: false });
+            } else {
+              alert("Account created successfully");
+              setUser({ ...user, tempEmail: formData.email });
+              setIsSubmit(false);
+              setFormData({
+                ...formData,
+                name: "",
+                email: "",
+                password: "",
+                confirmPassword: "",
+                isPasswordVisible: false,
+                isConfirmPasswordVisible: false,
+                isTermAndConditions: false,
+                isLoading: false,
+              });
+              setModal(MODAL_TYPES.LOGIN);
             }
-          );
+          },
+          (err) => {
+            setFormData({ ...formData, isLoading: false });
+          }
+        );
       }
     });
   };
@@ -183,168 +190,256 @@ const Registration = (props) => {
     errorPostalCode,
     errorAddress,
     errorPassword,
-    errorConfirmPassword } = checkValidations();
+    errorConfirmPassword,
+  } = checkValidations();
 
   return (
     <div className="bg-dark fixed inset-0 w-100 h-100 z-10 bg-opacity-75  justify-center items-center overflow-y-auto">
       <div className="flex items-center h-full">
-        <div className="font-ubuntu bg-white rounded shadow-grey-8 py-6 px-8 max-w-400 w-full text-dark m-auto" static="true">
+        <div
+          className="font-ubuntu bg-white rounded shadow-grey-8 py-6 px-8 max-w-400 w-full text-dark m-auto"
+          static="true"
+        >
           <div className="flex justify-end">
-            <CloseIcon className="text-dark text-opacity-50 text-xl cursor-pointer" onClick={() => setModal()} />
+            <CloseIcon
+              className="text-dark text-opacity-50 text-xl cursor-pointer"
+              onClick={() => setModal()}
+            />
           </div>
-          <div className="font-medium mb-3 text-3xl text-sm leading-8 text-center mb-10">New Account</div>
+          <div className="font-medium mb-3 text-3xl text-sm leading-8 text-center mb-10">
+            New Account
+          </div>
           <div className="mb-6">
-            <input type="text"
+            <input
+              type="text"
               value={formData.name}
               onChange={handleFormData}
               name="name"
               placeholder="Name"
-              className={classnames("w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
-                "font-medium": formData.name,
-              })}
+              className={classnames(
+                "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                {
+                  "font-medium": formData.name,
+                }
+              )}
             />
-            {errorName && <div className="text-error text-sm mt-1 pl-4">{errorName}</div>}
+            {errorName && (
+              <div className="text-error text-sm mt-1 pl-4">{errorName}</div>
+            )}
           </div>
           <div className="mb-6">
-            <input type="email"
+            <input
+              type="email"
               value={formData.email}
               onChange={handleFormData}
               name="email"
               placeholder="E-mail"
-              className={classnames("w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
-                "font-medium": formData.email,
-              })}
+              className={classnames(
+                "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                {
+                  "font-medium": formData.email,
+                }
+              )}
             />
-            {errorEmail && <div className="text-error text-sm mt-1 pl-4">{errorEmail}</div>}
+            {errorEmail && (
+              <div className="text-error text-sm mt-1 pl-4">{errorEmail}</div>
+            )}
           </div>
           <div className="mb-6">
             <Menu as="div" className="relative">
-              <input type="text"
+              <input
+                type="text"
                 value={formData.countryCode}
                 onChange={handleFormData}
                 name="countryCode"
                 placeholder="Country Code"
-                className={classnames("w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
-                  "font-medium": formData.countryCode,
-                })}
+                className={classnames(
+                  "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                  {
+                    "font-medium": formData.countryCode,
+                  }
+                )}
               />
             </Menu>
-            {errorCountryCode && <div className="text-error text-sm mt-1 pl-4">{errorCountryCode}</div>}
+            {errorCountryCode && (
+              <div className="text-error text-sm mt-1 pl-4">
+                {errorCountryCode}
+              </div>
+            )}
           </div>
           <div className="mb-6">
-            <input type="text"
+            <input
+              type="text"
               value={formData.stateOrProvince}
               onChange={handleFormData}
               name="stateOrProvince"
               placeholder="State or Province"
-              className={classnames("w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
-                "font-medium": formData.stateOrProvince,
-              })}
+              className={classnames(
+                "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                {
+                  "font-medium": formData.stateOrProvince,
+                }
+              )}
             />
-            {errorStateOrProvince && <div className="text-error text-sm mt-1 pl-4">{errorStateOrProvince}</div>}
+            {errorStateOrProvince && (
+              <div className="text-error text-sm mt-1 pl-4">
+                {errorStateOrProvince}
+              </div>
+            )}
           </div>
           <div className="mb-6">
-            <input type="text"
+            <input
+              type="text"
               value={formData.city}
               onChange={handleFormData}
               name="city"
               placeholder="City"
-              className={classnames("w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
-                "font-medium": formData.city,
-              })}
+              className={classnames(
+                "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                {
+                  "font-medium": formData.city,
+                }
+              )}
             />
-            {errorCity && <div className="text-error text-sm mt-1 pl-4">{errorCity}</div>}
+            {errorCity && (
+              <div className="text-error text-sm mt-1 pl-4">{errorCity}</div>
+            )}
           </div>
           <div className="mb-6">
-            <input type="text"
+            <input
+              type="text"
               value={formData.postalCode}
               onChange={handleFormData}
               name="postalCode"
               placeholder="Postal code"
-              className={classnames("w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
-                "font-medium": formData.postalCode,
-              })}
+              className={classnames(
+                "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                {
+                  "font-medium": formData.postalCode,
+                }
+              )}
             />
-            {errorPostalCode && <div className="text-error text-sm mt-1 pl-4">{errorPostalCode}</div>}
+            {errorPostalCode && (
+              <div className="text-error text-sm mt-1 pl-4">
+                {errorPostalCode}
+              </div>
+            )}
           </div>
           <div className="mb-6">
             <textarea
               name="address"
               placeholder="Address"
               rows="3"
-              className={classnames("w-full border border-dark rounded border-opacity-10 px-4 py-2 font-normal focus:outline-none", {
-                "font-medium": formData.address,
-              })}
+              className={classnames(
+                "w-full border border-dark rounded border-opacity-10 px-4 py-2 font-normal focus:outline-none",
+                {
+                  "font-medium": formData.address,
+                }
+              )}
               value={formData.address}
               onChange={handleFormData}
             >
               {formData.address}
             </textarea>
-            {errorAddress && <div className="text-error text-sm pl-4">{errorAddress}</div>}
+            {errorAddress && (
+              <div className="text-error text-sm pl-4">{errorAddress}</div>
+            )}
           </div>
           <div className="mb-6 relative">
-            <input type={formData.isPasswordVisible ? "text" : "password"}
+            <input
+              type={formData.isPasswordVisible ? "text" : "password"}
               value={formData.password}
               onChange={handleFormData}
               name="password"
               placeholder="Password"
-              className={classnames("w-full border border-dark h-12 rounded border-opacity-10 pl-4 pr-12 font-normal focus:outline-none", {
-                "font-medium": formData.password,
-              })}
+              className={classnames(
+                "w-full border border-dark h-12 rounded border-opacity-10 pl-4 pr-12 font-normal focus:outline-none",
+                {
+                  "font-medium": formData.password,
+                }
+              )}
             />
-            {!formData.isPasswordVisible &&
+            {!formData.isPasswordVisible && (
               <EyeIcon
                 className="absolute right-0 top-0 text-dark text-opacity-50 text-lg h-12 mr-5 cursor-pointer"
                 onClick={() => togglePasswordVisibility("isPasswordVisible")}
               />
-            }
-            {formData.isPasswordVisible &&
+            )}
+            {formData.isPasswordVisible && (
               <InvisibleEyeIcon
                 className="absolute right-0 top-0 text-dark text-opacity-50 text-lg h-12 mr-5 cursor-pointer"
                 onClick={() => togglePasswordVisibility("isPasswordVisible")}
               />
-            }
-            {errorPassword && <div className="text-error text-sm mt-1 pl-4">{errorPassword}</div>}
+            )}
+            {errorPassword && (
+              <div className="text-error text-sm mt-1 pl-4">
+                {errorPassword}
+              </div>
+            )}
           </div>
           <div className="mb-6 relative">
-            <input type={formData.isConfirmPasswordVisible ? "text" : "password"}
+            <input
+              type={formData.isConfirmPasswordVisible ? "text" : "password"}
               value={formData.confirmPassword}
               onChange={handleFormData}
               name="confirmPassword"
               placeholder="Confirm password"
-              className={classnames("w-full border border-dark h-12 rounded border-opacity-10 pl-4 pr-12 font-normal focus:outline-none", {
-                "font-medium": formData.confirmPassword,
-              })}
+              className={classnames(
+                "w-full border border-dark h-12 rounded border-opacity-10 pl-4 pr-12 font-normal focus:outline-none",
+                {
+                  "font-medium": formData.confirmPassword,
+                }
+              )}
             />
-            {!formData.isConfirmPasswordVisible &&
+            {!formData.isConfirmPasswordVisible && (
               <EyeIcon
                 className="absolute right-0 top-0 text-dark text-opacity-50 text-lg h-12 mr-5 cursor-pointer"
-                onClick={() => togglePasswordVisibility("isConfirmPasswordVisible")}
+                onClick={() =>
+                  togglePasswordVisibility("isConfirmPasswordVisible")
+                }
               />
-            }
-            {formData.isConfirmPasswordVisible &&
+            )}
+            {formData.isConfirmPasswordVisible && (
               <InvisibleEyeIcon
                 className="absolute right-0 top-0 text-dark text-opacity-50 text-lg h-12 mr-5 cursor-pointer"
-                onClick={() => togglePasswordVisibility("isConfirmPasswordVisible")}
+                onClick={() =>
+                  togglePasswordVisibility("isConfirmPasswordVisible")
+                }
               />
-            }
-            {errorConfirmPassword && <div className="text-error text-sm mt-1 pl-4">{errorConfirmPassword}</div>}
+            )}
+            {errorConfirmPassword && (
+              <div className="text-error text-sm mt-1 pl-4">
+                {errorConfirmPassword}
+              </div>
+            )}
           </div>
           <div className="mb-6 flex items-center">
             <div
-              className={classnames("border border-dark rounded border-opacity-10 mr-4", {
-                "bg-dark": formData.isTermAndConditions,
-              })}
-              onClick={toggleCheckbox}>
+              className={classnames(
+                "border border-dark rounded border-opacity-10 mr-4",
+                {
+                  "bg-dark": formData.isTermAndConditions,
+                }
+              )}
+              onClick={toggleCheckbox}
+            >
               <CheckedIcon className="text-white text-xl" />
             </div>
-            <div className="text-sm">I accept <a href="#" className="text-primary">Terms & Conditions</a> </div>
+            <div className="text-sm">
+              I accept{" "}
+              <a href="#" className="text-primary">
+                Terms & Conditions
+              </a>{" "}
+            </div>
           </div>
           <button
             onClick={createAccount}
-            className={classnames("font-medium w-full py-3 items-center rounded bg-primary text-white border-alpha-05 focus:outline-none mb-3", {
-              "cursor-not-allowed bg-opacity-70": formData.isLoading,
-            })}
+            className={classnames(
+              "font-medium w-full py-3 items-center rounded bg-primary text-white border-alpha-05 focus:outline-none mb-3",
+              {
+                "cursor-not-allowed bg-opacity-70": formData.isLoading,
+              }
+            )}
             disabled={formData.isLoading}
           >
             {formData.isLoading ? "Loading..." : "Create Account"}
@@ -364,7 +459,6 @@ Registration.propTypes = {
 const mapStateToProps = createStructuredSelector({
   user: getUser(),
 });
-
 
 export default connect(mapStateToProps, {
   setModal,

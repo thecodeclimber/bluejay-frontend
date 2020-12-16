@@ -68,37 +68,45 @@ const ThreadSize = () => {
   return (
     <>
       <div className="flex justify-between items-center mb-4 pr-4">
-        <div className="text-lg font-medium text-dark">
-          Thread Size
-          </div>
+        <div className="text-lg font-medium text-dark">Thread Size</div>
         <div>
-          {isOpen
-            ? <UpIcon className="text-lg text-dark cursor-pointer" onClick={toggleThreadSize} />
-            : <DownIcon className="text-lg text-dark cursor-pointer" onClick={toggleThreadSize} />
-          }
+          {isOpen ? (
+            <UpIcon
+              className="text-lg text-dark cursor-pointer"
+              onClick={toggleThreadSize}
+            />
+          ) : (
+            <DownIcon
+              className="text-lg text-dark cursor-pointer"
+              onClick={toggleThreadSize}
+            />
+          )}
         </div>
       </div>
-      {isOpen &&
+      {isOpen && (
         <div className="flex flex-wrap justify-between pt-4 pr-4">
-          {data.threadSize && data.threadSize.length > 0
-            && data.threadSize.map((thread, index) => (
+          {data.threadSize &&
+            data.threadSize.length > 0 &&
+            data.threadSize.map((thread, index) => (
               <div
                 key={index}
                 onClick={() => setSelectedThread(thread.id)}
-                className={classnames("w-full cursor-pointer max-w-100 text-center py-2 px-3 rounded  border-dark text-dark mb-4", {
-                  "border border-opacity-20": thread.id !== selectedThread,
-                  "text-primary border-2 border-primary border-opacity-100": thread.id === selectedThread,
-                })}
+                className={classnames(
+                  "w-full cursor-pointer max-w-100 text-center py-2 px-3 rounded  border-dark text-dark mb-4",
+                  {
+                    "border border-opacity-20": thread.id !== selectedThread,
+                    "text-primary border-2 border-primary border-opacity-100":
+                      thread.id === selectedThread,
+                  }
+                )}
               >
-                <div className="text-base whitespace-pre">
-                  {thread.size}
-                </div>
+                <div className="text-base whitespace-pre">{thread.size}</div>
               </div>
             ))}
         </div>
-      }
+      )}
     </>
-  )
+  );
 };
 
 export default ThreadSize;

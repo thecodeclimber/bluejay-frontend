@@ -17,33 +17,35 @@ const Auth = (props) => {
   const handleSignOut = () => {
     removeUserLocalStorage();
     setUser(USER_STRUCTURE);
-  }
+  };
 
   return (
     <div className="container mx-auto py-3">
       <div className="">
-        {id && <button
-          className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none mr-3"
-          onClick={handleSignOut}
-        >
-          SignOut
-        </button>
-        }
-        {!id && <>
+        {id && (
           <button
             className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none mr-3"
-            onClick={() => setModal(MODAL_TYPES.REGISTRATION)}
+            onClick={handleSignOut}
           >
-            Registration
-        </button>
-          <button
-            className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none mr-3"
-            onClick={() => setModal(MODAL_TYPES.LOGIN)}
-          >
-            Login
-        </button>
-        </>
-        }
+            SignOut
+          </button>
+        )}
+        {!id && (
+          <>
+            <button
+              className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none mr-3"
+              onClick={() => setModal(MODAL_TYPES.REGISTRATION)}
+            >
+              Registration
+            </button>
+            <button
+              className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none mr-3"
+              onClick={() => setModal(MODAL_TYPES.LOGIN)}
+            >
+              Login
+            </button>
+          </>
+        )}
 
         <button
           className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none mr-3"
@@ -59,7 +61,7 @@ const Auth = (props) => {
         </button>
       </div>
 
-      {activeModal === MODAL_TYPES.REGISTRATION &&
+      {activeModal === MODAL_TYPES.REGISTRATION && (
         <Transition
           show={activeModal === MODAL_TYPES.REGISTRATION}
           enter="transition duration-100 ease-out"
@@ -71,9 +73,10 @@ const Auth = (props) => {
           className="h-full"
         >
           <Registration />
-        </Transition>}
+        </Transition>
+      )}
 
-      {activeModal === MODAL_TYPES.LOGIN &&
+      {activeModal === MODAL_TYPES.LOGIN && (
         <Transition
           show={activeModal === MODAL_TYPES.LOGIN}
           enter="transition duration-100 ease-out"
@@ -85,9 +88,10 @@ const Auth = (props) => {
           className="h-full"
         >
           <Login />
-        </Transition>}
+        </Transition>
+      )}
 
-      {activeModal === MODAL_TYPES.FORGOT_PASSWORD &&
+      {activeModal === MODAL_TYPES.FORGOT_PASSWORD && (
         <Transition
           show={activeModal === MODAL_TYPES.FORGOT_PASSWORD}
           enter="transition duration-100 ease-out"
@@ -99,9 +103,10 @@ const Auth = (props) => {
           className="h-full"
         >
           <ForgotPassword />
-        </Transition>}
+        </Transition>
+      )}
 
-      {activeModal === MODAL_TYPES.NEW_PASSWORD &&
+      {activeModal === MODAL_TYPES.NEW_PASSWORD && (
         <Transition
           show={activeModal === MODAL_TYPES.NEW_PASSWORD}
           enter="transition duration-100 ease-out"
@@ -113,11 +118,11 @@ const Auth = (props) => {
           className="h-full"
         >
           <NewPassword />
-        </Transition>}
+        </Transition>
+      )}
     </div>
   );
 };
-
 
 Auth.propTypes = {
   activeModal: string,

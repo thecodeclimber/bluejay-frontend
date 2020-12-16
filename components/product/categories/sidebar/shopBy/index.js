@@ -14,18 +14,23 @@ const ShopBy = () => {
   return (
     <>
       <div className="flex justify-between items-center mb-4 pr-4">
-        <div className="text-lg font-medium text-dark">
-          Shop By
-          </div>
+        <div className="text-lg font-medium text-dark">Shop By</div>
         <div>
-          {isOpen
-            ? <UpIcon className="text-lg text-dark cursor-pointer" onClick={toggleShopBy} />
-            : <DownIcon className="text-lg text-dark cursor-pointer" onClick={toggleShopBy} />
-          }
+          {isOpen ? (
+            <UpIcon
+              className="text-lg text-dark cursor-pointer"
+              onClick={toggleShopBy}
+            />
+          ) : (
+            <DownIcon
+              className="text-lg text-dark cursor-pointer"
+              onClick={toggleShopBy}
+            />
+          )}
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
 export default ShopBy;

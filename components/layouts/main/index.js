@@ -29,7 +29,7 @@ const MainLayout = (props) => {
       {children}
       <Footer />
     </Base>
-  )
+  );
 };
 
 MainLayout.propTypes = {

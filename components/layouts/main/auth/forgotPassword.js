@@ -2,13 +2,8 @@ import React, { useState } from "react";
 import { func } from "prop-types";
 import { connect } from "react-redux";
 import classnames from "classnames";
-import {
-  VscChromeClose as CloseIcon
-} from "react-icons/vsc";
-import {
-  useStateCallback,
-  validateEmail,
-} from "../../../../utils/helper";
+import { VscChromeClose as CloseIcon } from "react-icons/vsc";
+import { useStateCallback, validateEmail } from "../../../../utils/helper";
 import URLS from "../../../../utils/urls";
 import { httpPost } from "../../../../utils/https";
 import { setModal } from "../../../../redux/user/actions";
@@ -54,27 +49,30 @@ const ForgotPassword = (props) => {
           email: formData.email,
         };
         setFormData({ ...formData, isLoading: true });
-        httpPost(URLS.NEXT.AUTH.FORGOT_PASSWORD, params,
-          { traceName: "login customer" }).then(
-            (res) => {
-              if (res.errors && Object.keys(res.errors).length > 0) {
-                alert(res.errors[Object.keys(res.errors)[0]]);
-                setFormData({ ...formData, isLoading: false });
-              } else {
-                setIsSubmit(false);
-                setFormData({
-                  ...formData,
-                  email: "",
-                  isLoading: false
-                });
-                alert("Reset password link send successfully to your email account");
-                setModal();
-              }
-            },
-            (err) => {
+        httpPost(URLS.NEXT.AUTH.FORGOT_PASSWORD, params, {
+          traceName: "login customer",
+        }).then(
+          (res) => {
+            if (res.errors && Object.keys(res.errors).length > 0) {
+              alert(res.errors[Object.keys(res.errors)[0]]);
               setFormData({ ...formData, isLoading: false });
+            } else {
+              setIsSubmit(false);
+              setFormData({
+                ...formData,
+                email: "",
+                isLoading: false,
+              });
+              alert(
+                "Reset password link send successfully to your email account"
+              );
+              setModal();
             }
-          );
+          },
+          (err) => {
+            setFormData({ ...formData, isLoading: false });
+          }
+        );
       }
     });
   };
@@ -83,32 +81,50 @@ const ForgotPassword = (props) => {
   return (
     <div className="bg-dark fixed inset-0 w-100 h-100 z-10 bg-opacity-75 py-5 justify-center items-center overflow-y-auto">
       <div className="flex items-center h-full">
-        <div className="font-ubuntu bg-white rounded shadow-grey-8 py-6 px-8 max-w-400 w-full text-dark m-auto" static="true">
+        <div
+          className="font-ubuntu bg-white rounded shadow-grey-8 py-6 px-8 max-w-400 w-full text-dark m-auto"
+          static="true"
+        >
           <div className="flex justify-end">
-            <CloseIcon className="text-dark text-opacity-50 text-xl cursor-pointer" onClick={() => setModal()} />
+            <CloseIcon
+              className="text-dark text-opacity-50 text-xl cursor-pointer"
+              onClick={() => setModal()}
+            />
           </div>
-          <div className="font-medium mb-3 text-3xl text-sm leading-8 text-center">Forgot Password</div>
+          <div className="font-medium mb-3 text-3xl text-sm leading-8 text-center">
+            Forgot Password
+          </div>
           <div className="text-dark opacity-75 text-sm font-light py-6 leading-4">
-            Lorem Ipsum is simply dummy text of the printing & typesetting industry. Lorem Ipsum has been the industry's standard dummy
+            Lorem Ipsum is simply dummy text of the printing & typesetting
+            industry. Lorem Ipsum has been the industry's standard dummy
           </div>
           <div className="mb-6">
-            <input type="text"
+            <input
+              type="text"
               value={formData.email}
               onChange={handleFormData}
               name="email"
               placeholder="Email"
-              className={classnames("w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
-                "font-medium": formData.email,
-              })}
+              className={classnames(
+                "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                {
+                  "font-medium": formData.email,
+                }
+              )}
             />
-            {errorEmail && <div className="text-error text-sm mt-1 pl-4">{errorEmail}</div>}
+            {errorEmail && (
+              <div className="text-error text-sm mt-1 pl-4">{errorEmail}</div>
+            )}
           </div>
           <button
             onClick={sendEmail}
             disabled={formData.isLoading}
-            className={classnames("font-medium w-full py-3 items-center rounded bg-primary text-white focus:outline-none mb-4", {
-              "cursor-not-allowed bg-opacity-70": formData.isLoading,
-            })}
+            className={classnames(
+              "font-medium w-full py-3 items-center rounded bg-primary text-white focus:outline-none mb-4",
+              {
+                "cursor-not-allowed bg-opacity-70": formData.isLoading,
+              }
+            )}
           >
             {formData.isLoading ? "Loading..." : "Send"}
           </button>
@@ -124,9 +140,8 @@ const ForgotPassword = (props) => {
   );
 };
 
-
 ForgotPassword.propTypes = {
-  setModal: func
+  setModal: func,
 };
 
 export default connect(null, {

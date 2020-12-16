@@ -12,7 +12,8 @@ const About = () => {
   return (
     <>
       <div className="container mx-auto pt-5 pb-8 text-3xl font-ubuntu text-dark text-center">
-        <span className="font-light">About</span> <span className="font-medium">Us</span>
+        <span className="font-light">About</span>{" "}
+        <span className="font-medium">Us</span>
       </div>
       <AboutBanner />
       <UniqueValue />
@@ -28,6 +29,6 @@ const About = () => {
       <GetYourCompany />
     </>
   );
-}
+};
 
 export default About;

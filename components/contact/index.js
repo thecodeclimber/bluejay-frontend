@@ -9,57 +9,75 @@ const Contact = () => {
     fax: "(773) 281-3131",
     email: "Info@BlueJayFasteners.com",
     address: "1770 W. Berteau Avenue \n Unit 402 \n Chicago, IL 60613",
-  }
+  };
   data.callCenter = {
     title: "Call-center schedule",
-    timing: [{
-      day: "Monday - Thursday",
-      time: "7:30am - 5:00pm",
-    }, {
-      day: "Friday",
-      time: "7:30am - 5:00pm",
-    }, {
-      day: "Saturday - Sunday",
-      time: "Closed",
-    }, {
-      day: "Holidays",
-      time: "Closed",
-    }]
+    timing: [
+      {
+        day: "Monday - Thursday",
+        time: "7:30am - 5:00pm",
+      },
+      {
+        day: "Friday",
+        time: "7:30am - 5:00pm",
+      },
+      {
+        day: "Saturday - Sunday",
+        time: "Closed",
+      },
+      {
+        day: "Holidays",
+        time: "Closed",
+      },
+    ],
   };
   return (
     <>
       <div className="container mx-auto pt-5 pb-6 text-3xl font-ubuntu text-dark">
-        <span className="font-light">Get</span> <span className="font-medium">in Touch</span>
+        <span className="font-light">Get</span>{" "}
+        <span className="font-medium">in Touch</span>
       </div>
       <hr className="mb-8 opacity-10 bg-dark" />
       <div className="container mx-auto flex mb-10">
         <div className="bg-white outline-none p-8 text-dark rounded shadow-grey-8 w-full mr-4">
           <div className="mb-6">
-            <input type="text"
+            <input
+              type="text"
               value="Andrey Babak"
               name="name"
               placeholder="Name"
-              className={classnames("font-ubuntu w-full text-base border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
-                "font-medium": true,
-              })}
+              className={classnames(
+                "font-ubuntu w-full text-base border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                {
+                  "font-medium": true,
+                }
+              )}
             />
           </div>
           <div className="mb-6">
-            <input type="email"
+            <input
+              type="email"
               name="email"
               placeholder="E-mail"
-              className={classnames("font-ubuntu w-full text-base border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
-                "font-medium": false,
-              })}
+              className={classnames(
+                "font-ubuntu w-full text-base border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                {
+                  "font-medium": false,
+                }
+              )}
             />
           </div>
           <div className="mb-6">
-            <input type="text"
+            <input
+              type="text"
               name="phone"
               placeholder="Phone"
-              className={classnames("font-ubuntu w-full text-base border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none", {
-                "font-medium": false,
-              })}
+              className={classnames(
+                "font-ubuntu w-full text-base border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                {
+                  "font-medium": false,
+                }
+              )}
             />
           </div>
           <div className="mb-5">
@@ -67,36 +85,62 @@ const Contact = () => {
               name="message"
               placeholder="Your message"
               rows="10"
-              className={classnames("font-ubuntu w-full text-base border border-dark rounded border-opacity-10 px-4 py-2 font-normal focus:outline-none", {
-                "font-medium": false,
-              })}
-            >
-            </textarea>
+              className={classnames(
+                "font-ubuntu w-full text-base border border-dark rounded border-opacity-10 px-4 py-2 font-normal focus:outline-none",
+                {
+                  "font-medium": false,
+                }
+              )}
+            ></textarea>
           </div>
-          <button
-            className="font-ubuntu inline-flex py-3 text-base font-medium items-center px-10 border-r border-solid rounded bg-primary text-white border-alpha-05 focus:outline-none"
-          >
+          <button className="font-ubuntu inline-flex py-3 text-base font-medium items-center px-10 border-r border-solid rounded bg-primary text-white border-alpha-05 focus:outline-none">
             Send Message
-        </button>
+          </button>
         </div>
         <div className="font-ubuntu bg-white outline-none py-6 px-8 text-dark rounded shadow-grey-8 min-w-500">
-          <div className="font-medium mb-2 focus:outline-none text-xl">{data.contactInformation.title}</div>
-          <div className="font-light text-base truncate opacity-75 focus:outline-none">{data.contactInformation.subTitle}:</div>
+          <div className="font-medium mb-2 focus:outline-none text-xl">
+            {data.contactInformation.title}
+          </div>
+          <div className="font-light text-base truncate opacity-75 focus:outline-none">
+            {data.contactInformation.subTitle}:
+          </div>
           <hr className="my-5 opacity-10" />
-          <div className="flex text-base mb-3 focus:outline-none"><span className="opacity-75 w-24 font-light">Phone:</span><span className="font-medium">{data.contactInformation.phone}</span></div>
-          <div className="flex text-base focus:outline-none"><span className="opacity-75 w-24 font-light">Fax:</span><span className="font-medium">{data.contactInformation.fax}</span></div>
+          <div className="flex text-base mb-3 focus:outline-none">
+            <span className="opacity-75 w-24 font-light">Phone:</span>
+            <span className="font-medium">{data.contactInformation.phone}</span>
+          </div>
+          <div className="flex text-base focus:outline-none">
+            <span className="opacity-75 w-24 font-light">Fax:</span>
+            <span className="font-medium">{data.contactInformation.fax}</span>
+          </div>
           <hr className="my-5 opacity-10" />
-          <div className="flex text-base focus:outline-none"><span className="opacity-75 w-24 truncate font-light">E-mail:</span><span className="font-medium">{data.contactInformation.email}</span></div>
+          <div className="flex text-base focus:outline-none">
+            <span className="opacity-75 w-24 truncate font-light">E-mail:</span>
+            <span className="font-medium">{data.contactInformation.email}</span>
+          </div>
           <hr className="my-5 opacity-10" />
-          <div className="flex text-base whitespace-pre-line focus:outline-none"><span className="opacity-75 w-24 font-light">Address:</span><span className="font-medium">{data.contactInformation.address}</span></div>
+          <div className="flex text-base whitespace-pre-line focus:outline-none">
+            <span className="opacity-75 w-24 font-light">Address:</span>
+            <span className="font-medium">
+              {data.contactInformation.address}
+            </span>
+          </div>
           <hr className="my-5 opacity-10" />
-          <div className="font-medium mb-3 focus:outline-none text-xl">{data.callCenter.title}</div>
-          {data.callCenter.timing.length > 0 && data.callCenter.timing.map((callCenterTiming, index) => (
-            <div className="flex justify-between text-base focus:outline-none py-1" key={index}>
-              <div className="opacity-75 font-light">{callCenterTiming.day}:</div>
-              <div className="font-medium">{callCenterTiming.time}</div>
-            </div>
-          ))}
+          <div className="font-medium mb-3 focus:outline-none text-xl">
+            {data.callCenter.title}
+          </div>
+          {data.callCenter.timing.length > 0 &&
+            data.callCenter.timing.map((callCenterTiming, index) => (
+              <div
+                className="flex justify-between text-base focus:outline-none py-1"
+                key={index}
+              >
+                <div className="opacity-75 font-light">
+                  {callCenterTiming.day}:
+                </div>
+                <div className="font-medium">{callCenterTiming.time}</div>
+              </div>
+            ))}
         </div>
       </div>
       <div className="container mx-auto flex mb-10 rounded overflow-hidden">
@@ -104,11 +148,10 @@ const Contact = () => {
           src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d27727.91580567266!2d77.0146304!3d29.6910848!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1606910776878!5m2!1sen!2sin"
           width="100%"
           height="450"
-        >
-        </iframe>
+        ></iframe>
       </div>
     </>
-  )
+  );
 };
 
 export default Contact;

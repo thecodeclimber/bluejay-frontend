@@ -9,7 +9,9 @@ const AboutBanner = () => {
       <div className="flex mb-5">
         <div className="flex items-center w-full max-h-450 overflow-hidden relative">
           <img src="img/about-banner.svg" className="w-full" />
-          <div className="absolute font-ubuntu text-white text-4xl font-medium whitespace-pre-line pl-16">{data.title}</div>
+          <div className="absolute font-ubuntu text-white text-4xl font-medium whitespace-pre-line pl-16">
+            {data.title}
+          </div>
         </div>
         <div className="flex items-center relative -left-55">
           <div className="bg-about-card bg-no-repeat flex items-center justify-center rounded overflow-hidden p-6">
@@ -25,6 +27,6 @@ const AboutBanner = () => {
       </div>
     </>
   );
-}
+};
 
 export default AboutBanner;

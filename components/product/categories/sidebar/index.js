@@ -20,7 +20,7 @@ const SideBar = () => {
         <ShopBy />
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default SideBar;

@@ -7,13 +7,15 @@ export default async (req, res) => {
   if (!verifyPostMethod(req, res)) return;
 
   const customersUrl = URLS.BIG_COMMERCE.CUSTOMERS.CUSTOMERS;
-  const customer = await httpGet(`${customersUrl}?email:in=${req.body.email}`, { isBigCommerce: true });
+  const customer = await httpGet(`${customersUrl}?email:in=${req.body.email}`, {
+    isBigCommerce: true,
+  });
   if (customer.data.length === 0) {
     res.status(400);
     res.json({
-      "errors": {
-        "email": `There’s no account associated with this email address.`
-      }
+      errors: {
+        email: `There’s no account associated with this email address.`,
+      },
     });
     return;
   }
@@ -23,7 +25,7 @@ export default async (req, res) => {
   const userData = {
     token,
     email: customer.data[0].email,
-  }
+  };
 
   const resetPasswordLink = await sendConfirmationEmail(userData);
   return res.json({

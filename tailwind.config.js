@@ -38,10 +38,12 @@ module.exports = {
       md: "6px",
       lg: "8px",
       default: "10px",
-      xl: "25px",
+      xl: "20px",
+      "2xl": "25px",
     },
     colors: {
       white: "#fff",
+      black: "#262A3B",
       light: "#eaeeee",
       dark: "#232F3E",
       grey: "#9fa5bd",
@@ -92,17 +94,19 @@ module.exports = {
       normal: "400",
       medium: "500",
       bold: "600",
+      bolder: "700",
     },
     extend: {
-      backgroundImage: theme => ({
+      backgroundImage: (theme) => ({
         "about-card": "url('/img/about-card.svg')",
         "customer-review": "url('/img/customer-review.svg')",
-        "account": "url('/img/account-background.png')",
-        "customer-card": "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 2000%)",
+        account: "url('/img/account-background.png')",
+        "customer-card":
+          "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 2000%)",
       }),
       margin: {
         "-2": "-2px",
-        "11": "2.7rem",
+        11: "2.7rem",
       },
       zIndex: {
         "-1": "-1",
@@ -114,12 +118,12 @@ module.exports = {
         "-70": "-70px",
       },
       width: {
-        "3.5": "0.875rem",
+        3.5: "0.875rem",
         600: "640px",
         200: "210px",
       },
       height: {
-        "3.5": "0.875rem",
+        3.5: "0.875rem",
       },
     },
   },

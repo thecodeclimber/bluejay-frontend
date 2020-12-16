@@ -52,36 +52,48 @@ const ProductCategory = () => {
   return (
     <>
       <div className="flex justify-between items-center mb-4 mr-2">
-        <div className="text-lg font-medium text-dark">
-          Product Category
-          </div>
+        <div className="text-lg font-medium text-dark">Product Category</div>
         <div>
-          {isOpen
-            ? <UpIcon className="text-lg text-dark cursor-pointer" onClick={toggleProductCategory} />
-            : <DownIcon className="text-lg text-dark cursor-pointer" onClick={toggleProductCategory} />
-          }
+          {isOpen ? (
+            <UpIcon
+              className="text-lg text-dark cursor-pointer"
+              onClick={toggleProductCategory}
+            />
+          ) : (
+            <DownIcon
+              className="text-lg text-dark cursor-pointer"
+              onClick={toggleProductCategory}
+            />
+          )}
         </div>
       </div>
-      {isOpen && data.productCategory && data.productCategory.length > 0
-        && data.productCategory.map((product, index) => (
-          <div key={index} className="py-3 mr-2 text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer">
+      {isOpen &&
+        data.productCategory &&
+        data.productCategory.length > 0 &&
+        data.productCategory.map((product, index) => (
+          <div
+            key={index}
+            className="py-3 mr-2 text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center justify-start">
                 <div className="w-10">
-                  <img src={product.img} className="object-contain" alt={`img-${index}`} />
+                  <img
+                    src={product.img}
+                    className="object-contain"
+                    alt={`img-${index}`}
+                  />
                 </div>
-                <div className="text-base max-w-200">
-                  {product.name}
-                </div>
+                <div className="text-base max-w-200">{product.name}</div>
               </div>
               <div className="font-light opacity-75 text-base pr-2">
                 ({product.total})
-                </div>
+              </div>
             </div>
           </div>
         ))}
     </>
-  )
-}
+  );
+};
 
 export default ProductCategory;
