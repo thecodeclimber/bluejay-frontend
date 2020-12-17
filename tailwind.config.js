@@ -30,6 +30,9 @@ module.exports = {
       650: "640px",
       700: "692px",
     },
+    minHeight: {
+      300: "320px",
+    },
     maxHeight: {
       450: "480px",
     },
@@ -114,6 +117,7 @@ module.exports = {
       inset: {
         "-5": "-5rem",
         "-8": "-8px",
+        "-30": "-30px",
         "-55": "-55px",
         "-70": "-70px",
       },
