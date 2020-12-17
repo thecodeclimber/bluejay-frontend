@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import classnames from "classnames";
+import { func, string } from "prop-types";
 import {
   IoIosArrowUp as UpIcon,
   IoIosArrowDown as DownIcon,
 } from "react-icons/io";
 
-const ProductCategory = () => {
+const ProductCategory = (props) => {
+  const { selectedCategory, handleSelectedCategory } = props;
   const [isOpen, setIsOpen] = useState(true);
   const data = {};
   data.productCategory = [
@@ -73,7 +76,14 @@ const ProductCategory = () => {
         data.productCategory.map((product, index) => (
           <div
             key={index}
-            className="py-3 mr-2 text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer"
+            onClick={() => handleSelectedCategory(product.name)}
+            className={classnames(
+              "py-3 mr-2 text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer",
+              {
+                "bg-primary bg-opacity-05 text-primary":
+                  product.name === selectedCategory,
+              }
+            )}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center justify-start">
@@ -84,7 +94,9 @@ const ProductCategory = () => {
                     alt={`img-${index}`}
                   />
                 </div>
-                <div className="text-base max-w-200">{product.name}</div>
+                <div className="text-base max-w-200 tracking-tight">
+                  {product.name}
+                </div>
               </div>
               <div className="font-light opacity-75 text-base pr-2">
                 ({product.total})
@@ -94,6 +106,11 @@ const ProductCategory = () => {
         ))}
     </>
   );
+};
+
+ProductCategory.propTypes = {
+  handleSelectedCategory: func,
+  selectedCategory: string,
 };
 
 export default ProductCategory;

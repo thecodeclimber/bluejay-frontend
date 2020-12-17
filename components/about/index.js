@@ -6,7 +6,7 @@ import CompanyAccount from "./companyAccount";
 import GetYourCompany from "./getYourCompany";
 import OurStory from "./ourStory";
 import OurHistory from "./ourHistory";
-import TimeLine from "./timeLine";
+// import TimeLine from "./timeLine";
 
 const About = () => {
   return (

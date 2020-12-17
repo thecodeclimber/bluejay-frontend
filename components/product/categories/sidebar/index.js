@@ -1,15 +1,20 @@
 import React from "react";
+import { func, string } from "prop-types";
 import ProductCategory from "./productCategory";
 import MaterialGrade from "./materialGrade";
 import ThreadSize from "./threadSize";
 import Material from "./material";
 import ShopBy from "./shopBy";
 
-const SideBar = () => {
+const SideBar = (props) => {
+  const { handleSelectedCategory, selectedCategory } = props;
   return (
     <div className="font-ubuntu pb-10">
       <div className="border-r border-opacity-10 border-dark w-full min-w-310 max-w-310">
-        <ProductCategory />
+        <ProductCategory
+          handleSelectedCategory={handleSelectedCategory}
+          selectedCategory={selectedCategory}
+        />
         <hr className="mt-6 mb-8 opacity-10 bg-dark mr-4" />
         <MaterialGrade />
         <hr className="mt-6 mb-8 opacity-10 bg-dark mr-4" />
@@ -21,6 +26,11 @@ const SideBar = () => {
       </div>
     </div>
   );
+};
+
+SideBar.propTypes = {
+  handleSelectedCategory: func,
+  selectedCategory: string,
 };
 
 export default SideBar;

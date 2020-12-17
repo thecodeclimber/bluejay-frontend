@@ -5,6 +5,9 @@ module.exports = {
   },
   purge: ["./components/**/*.js", "./pages/**/*.js"],
   theme: {
+    letterSpacing: {
+      tight: "-0.02em",
+    },
     boxShadow: {
       sm: "0 8px 0 24px hsla(213, 28%, 19%, 0.04)",
       default: "0 12px 0 36px hsla(213, 28%, 19%, 0.08)",
@@ -57,6 +60,7 @@ module.exports = {
       info: "#56a1ff",
       warning: "#ecb937",
       error: "#e64545",
+      green: "#64B14A",
       alpha: "hsla(213, 28%, 19%, 0.1)",
       "alpha-05": "hsla(213, 28%, 19%, 0.05)",
       "alpha-15": "hsla(213, 28%, 19%, 0.15)",
