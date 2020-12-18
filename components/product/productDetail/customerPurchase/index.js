@@ -1,6 +1,5 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import classnames from "classnames";
-import { AiOutlineShoppingCart as CartIcon } from "react-icons/ai/index";
 import { FiHeart as HeartIcon } from "react-icons/fi/index";
 import Slider from "react-slick";
 import { IoIosArrowForward as SlideRightArrow } from "react-icons/io/index";
@@ -8,7 +7,7 @@ import { IoIosArrowBack as SlideLeftArrow } from "react-icons/io/index";
 import { RiSubtractFill as SubtractIcon } from "react-icons/ri/index";
 import { FiPlus as PlusIcon } from "react-icons/fi";
 
-const customerPurchase = () => {
+const CustomerPurchase = () => {
   const slider = useRef(null);
   const settings = {
     dots: false,
@@ -130,13 +129,13 @@ const customerPurchase = () => {
                         <HeartIcon className="text-grey opacity-70 text-xl cursor-pointer" />
                       </div>
                       <img className="m-auto mb-5" src={purchaseItem.img} />
-                      <div className=" font-medium text-center text-dark text-xl mb-3 whitespace-pre-line leading-7">
+                      <div className=" font-medium text-center text-dark text-xl mb-3 whitespace-pre-line tracking-tight leading-7">
                         {purchaseItem.title}
                       </div>
                     </div>
 
                     <div>
-                      <div className="text-primary  text-center font-normal text-lg mb-4">
+                      <div className="text-primary  text-center font-normal text-lg mb-4 tracking-tight">
                         {purchaseItem.price}
                       </div>
                       <div className="flex justify-between items-center mb-4 border rounded border-dark border-opacity-10">
@@ -170,4 +169,4 @@ const customerPurchase = () => {
   );
 };
 
-export default customerPurchase;
+export default CustomerPurchase;

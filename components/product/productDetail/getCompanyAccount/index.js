@@ -31,8 +31,11 @@ const GetCompanyAccount = () => {
       <div className="font-ubuntu">
         <div className="container mx-auto">
           <div className="flex items-center justify-center pb-12 py-16">
-            <div className="text-3xl text-dark font-light whitespace-pre">
-              Get <span className="font-medium">Your Company An Account</span>
+            <div className="text-3xl text-dark font-light whitespace-pre tracking-tight ">
+              Get{" "}
+              <span className="font-medium tracking-tight ">
+                Your Company An Account
+              </span>
             </div>
           </div>
           {data.GetCompanyAccount.map((data, index) => (
@@ -50,11 +53,11 @@ const GetCompanyAccount = () => {
                 <div>
                   <div className="relative pb-2">
                     <img src={data.sno} />
-                    <div className="absolute -mt-16 ml-12 text-2xl font-bolder text-dark">
+                    <div className="absolute -mt-16 ml-12 text-2xl font-bolder tracking-tight text-dark">
                       {data.title}
                     </div>
                   </div>
-                  <div className="font-light text-base text-dark opacity-75 ml-12 whitespace-pre-line ">
+                  <div className="font-light text-base text-dark opacity-75 ml-12 tracking-tight  whitespace-pre-line ">
                     {data.description}
                   </div>
                 </div>

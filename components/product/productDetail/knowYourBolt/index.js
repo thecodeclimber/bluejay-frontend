@@ -39,7 +39,7 @@ const KnowYourBolt = () => {
           <div
             key={index}
             className={classnames(
-              "font-ubuntu rounded shadow-grey-8 cursor-pointer bg-white hover:bg-opacity-100 text-center bg-opacity-05 px-2 sm:px-2 py-4 lg:px-5",
+              "font-ubuntu rounded shadow-grey-8 cursor-pointer bg-white bg-opacity-05 hover:bg-white text-center px-2 sm:px-2 py-4 lg:px-5",
               {
                 "mr-4 ": index != 3,
               }
@@ -48,11 +48,11 @@ const KnowYourBolt = () => {
             <div className="flex justify-center pt-4 pb-6">
               <img src={dataValue.img} alt={`img-${index}`} />
             </div>
-            <div className="text-xl text-dark font-medium ">
+            <div className="text-xl text-dark font-medium tracking-tight ">
               {dataValue.boltOrg}
             </div>
             <hr className="my-5 opacity-10 bg-dark" />
-            <div className="font-light text-base text-dark leading-relaxed whitespace-pre-line">
+            <div className="font-light text-base text-dark leading-relaxed tracking-tight  whitespace-pre-line">
               {dataValue.description}
             </div>
           </div>
