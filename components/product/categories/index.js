@@ -3,6 +3,7 @@ import classnames from "classnames";
 import SideBar from "./sidebar";
 import CategoryGrid from "./categoryGrid";
 import CategoryList from "./categoryList";
+import MainCategories from "./mainCategories";
 import Filters from "./filters";
 import { BsGrid3X3GapFill as GridIcon } from "react-icons/bs";
 import { FaList as ListIcon } from "react-icons/fa";
@@ -73,10 +74,11 @@ const ProductCategories = () => {
           selectedCategory={selectedCategory}
         />
         <div>
-          {!selectedCategory && <CategoryList />}
+          {!selectedCategory && <MainCategories />}
           {selectedCategory && <Filters selectedCategory={selectedCategory} />}
           <hr className="my-5 opacity-10 bg-dark ml-5" />
           {selectedCategory && viewType === VIEW_TYPE.GRID && <CategoryGrid />}
+          {selectedCategory && viewType === VIEW_TYPE.LIST && <CategoryList />}
         </div>
       </div>
     </div>
