@@ -14,11 +14,11 @@ const Footer = () => {
     },
     {
       title: "About Us",
-      link: "about",
+      link: "/about",
     },
     {
       title: "Contact Us",
-      link: "contact",
+      link: "/contact",
     },
     {
       title: "Request Quote",

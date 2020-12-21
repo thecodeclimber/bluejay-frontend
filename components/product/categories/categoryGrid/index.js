@@ -1,8 +1,8 @@
 import React from "react";
 import classnames from "classnames";
-import { FiHeart as HearIcon } from "react-icons/fi/index";
+import { FiHeart as HearIcon, FiPlus as PlusIcon } from "react-icons/fi/index";
 import { RiSubtractFill as SubtractIcon } from "react-icons/ri/index";
-import { FiPlus as PlusIcon } from "react-icons/fi";
+import Pagination from "../../../elements/pagination";
 
 const categoryGrid = () => {
   const data = {};
@@ -83,61 +83,67 @@ const categoryGrid = () => {
   ];
 
   return (
-    <div className="font-ubuntu w-full pl-5">
-      <div className="flex  flex-wrap">
+    <div className="font-ubuntu w-full pl-5 pb-12">
+      <div className="flex flex-wrap">
         {data.productItems &&
           data.productItems.length > 0 &&
-          data.productItems.map((item, index) => (
-            <div
-              key={index}
-              className={classnames("sm:w-full md:w-1/2 lg:w-1/3 mb-5", {
-                "lg:pr-6": index % 3 === 0,
-                "lg:pl-6": (index + 1) % 3 === 0,
-              })}
-            >
-              <div className="h-full flex flex-col justify-between bg-white border border-dark border-opacity-10 rounded px-6 py-5">
-                <div>
-                  <div className="flex justify-between">
-                    <div className="bg-green text-xs font-normal text-white rounded-2xl px-3 h-5 h-full">
-                      New
+          data.productItems.map((item, index) => {
+            return (
+              <div
+                key={index}
+                className={classnames(
+                  "sm:w-full md:w-1/2 px-3 lg:w-1/3 mb-6 pb-3",
+                  {
+                    "lg:pl-0 lg:pr-6": index % 3 === 0,
+                    "lg:pr-0 lg:pl-6": (index + 1) % 3 === 0,
+                  }
+                )}
+              >
+                <div className="h-full flex flex-col justify-between bg-white border border-dark border-opacity-10 rounded px-6 py-5">
+                  <div>
+                    <div className="flex justify-between">
+                      <div className="bg-green text-xs font-normal text-white rounded-2xl px-3 h-5 h-full">
+                        New
+                      </div>
+                      <HearIcon className="text-grey opacity-70 text-xl cursor-pointer" />
                     </div>
-                    <HearIcon className="text-grey opacity-70 text-xl cursor-pointer" />
-                  </div>
-                  <div className="max-w-250 mb-3">
-                    <img className="w-full" src={item.img} />
-                  </div>
-                  <div className="font-medium text-center text-dark text-xl mb-3 whitespace-pre-line leading-7">
-                    {item.title}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-primary text-center font-normal text-lg mb-5">
-                    {item.price}
+                    <div className="max-w-250 mb-3">
+                      <img className="w-full" src={item.img} />
+                    </div>
+                    <div className="font-medium text-center text-dark text-xl mb-3 whitespace-pre-line leading-7">
+                      {item.title}
+                    </div>
                   </div>
                   <div>
-                    <div className="flex justify-between items-center mb-4 border rounded border-dark border-opacity-10">
-                      <div className="flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center p-4 px-4">
-                        <SubtractIcon className="text-black" />
-                      </div>
-                      <div>{item.count}</div>
-                      <div className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4 px-4">
-                        <PlusIcon className="text-dark" />
+                    <div className="text-primary text-center font-normal text-lg mb-5">
+                      {item.price}
+                    </div>
+                    <div>
+                      <div className="flex justify-between items-center mb-4 border rounded border-dark border-opacity-10">
+                        <div className="flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center p-4 px-4">
+                          <SubtractIcon className="text-black" />
+                        </div>
+                        <div>{item.count}</div>
+                        <div className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4 px-4">
+                          <PlusIcon className="text-dark" />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4">
-                    <span className="mr-4">
-                      <img src="/img/add-to-cart.svg" alt="cart" />
-                    </span>
-                    <span className="font-medium font-base tracking-tight">
-                      Add to Cart
-                    </span>
+                    <div className="flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4">
+                      <span className="mr-4">
+                        <img src="/img/add-to-cart.svg" alt="cart" />
+                      </span>
+                      <span className="font-medium font-base tracking-tight">
+                        Add to Cart
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
       </div>
+      <Pagination />
     </div>
   );
 };
