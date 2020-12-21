@@ -25,7 +25,7 @@ const materialData = [
 ];
 
 const BoxSize = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [materials, setMaterials] = useState(materialData);
 
   const toggleMaterial = () => {
@@ -47,7 +47,7 @@ const BoxSize = () => {
   };
 
   return (
-    <div className="">
+    <>
       <div className="flex items-center justify-between font-medium text-dark not-italic text-lg opacity-75 tracking-tight pt-8 pb-3 ">
         Box Size
         <div>
@@ -88,7 +88,7 @@ const BoxSize = () => {
             ))}
         </div>
       )}
-    </div>
+    </>
   );
 };
 

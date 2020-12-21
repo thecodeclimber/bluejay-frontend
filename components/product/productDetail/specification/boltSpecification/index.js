@@ -6,12 +6,12 @@ const BoltSpecification = () => {
   return (
     <div className="container mx-auto  font-ubuntu ">
       <div className="flex items-center justify-between">
-        <div className="text-medium text-dark text-3xl tracking-tight pb-6 font-medium">
+        <div className="text-dark text-3xl tracking-tight pb-6 font-medium">
           Hex Nut Cap Screw
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <BookmarkIcon className="text-xl text-primary mr-10" />
-          <HeartIcon className="text-xl text-primary" />
+          <HeartIcon className="text-lg text-primary" />
         </div>
       </div>
       <hr className="text-dark opacity-10 " />

@@ -1,37 +1,41 @@
 import BoltSpecification from "./boltSpecification";
-import ImageGallery from "./imageGallery";
+import ProductImages from "./productImages";
 import ProductInfo from "./productInfo";
 import ThreadSize from "./threadSize";
 import Grade from "./grade";
 import Quantity from "./quantity";
-import VideoGallery from "./videoGallery";
+import ProductVideos from "./productVideos";
+import TechnicalSpecs from "./technicalSpecs";
+import Material from "./material";
 
-const index = () => {
+const Specification = () => {
   return (
     <div>
       <div className="container mx-auto flex">
         <div className="flex-col">
-          <ImageGallery />
-          <hr className="text-dark opacity-10 my-10 mr-8" />
-          <VideoGallery />
+          <ProductImages />
+          <hr className="text-dark opacity-10 mb-10 mr-8" />
+          <ProductVideos />
         </div>
-        <div className="w-full border-l border-dark border-opacity-10 mb-16 pl-8">
+        <div className="w-full border-l border-dark border-opacity-10 mb-16 pl-10">
           <BoltSpecification />
           <div className="flex">
-            <div className="">
+            <div>
               <ProductInfo />
               <ThreadSize />
               <Grade />
+              <Material />
             </div>
             <div>
               <Quantity />
             </div>
           </div>
           <hr className="text-dark opacity-10 py-3" />
+          <TechnicalSpecs />
         </div>
       </div>
     </div>
   );
 };
 
-export default index;
+export default Specification;
