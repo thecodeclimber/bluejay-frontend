@@ -1,48 +1,46 @@
 import React, { useRef, useState } from "react";
-import Image from "next/Image";
 import { IoIosArrowForward as SlideRightArrow } from "react-icons/io";
-import { FaSearchPlus as ZoomIcon } from "react-icons/fa";
 import Slider from "react-slick";
 import classnames from "classnames";
 
 const data = [
   {
     id: 1,
-    img: "/img/boltImg4.png",
+    img: "/img/bolt-image-1.svg",
   },
   {
     id: 2,
-    img: "/img/boltImg3.png",
+    img: "/img/bolt-image-2.svg",
   },
   {
     id: 3,
-    img: "/img/boltImg1.png",
+    img: "/img/bolt-image-3.svg",
   },
   {
     id: 4,
-    img: "/img/boltImg2.png",
+    img: "/img/bolt-image-4.svg",
   },
   {
     id: 5,
-    img: "/img/boltImg4.png",
+    img: "/img/bolt-image-1.svg",
   },
   {
     id: 6,
-    img: "/img/boltImg3.png",
+    img: "/img/bolt-image-2.svg",
   },
   {
     id: 7,
-    img: "/img/boltImg1.png",
+    img: "/img/bolt-image-3.svg",
   },
   {
     id: 8,
-    img: "/img/boltImg2.png",
+    img: "/img/bolt-image-4.svg",
   },
 ];
 
 const ProductImages = () => {
   const [images] = useState(data);
-  const [imageUrl, setImageUrl] = useState("/img/boltImg4.png");
+  const [imageUrl, setImageUrl] = useState(data[0].img);
 
   const slider = useRef(null);
   const settings = {
@@ -65,11 +63,17 @@ const ProductImages = () => {
 
   return (
     <div className="max-w-310 mr-8 py-8">
-      <div className="relative ">
-        <div className="absolute h-full w-full flex items-center justify-center max-w-310 top-0 z-30 ">
-          <ZoomIcon className="text-4xl hover:block text-primary" />
+      <div className="relative group cursor-pointer">
+        <div className="absolute h-full w-full z-30 flex items-center justify-center top-0 opacity-0 hover:opacity-100">
+          <img src="/img/zoom.svg" alt="zoom-image" />
         </div>
-        <Image className="z-20" src={imageUrl} width="350px" height="260px" />
+        <img
+          className="z-20 group-hover:opacity-25"
+          src={imageUrl}
+          width="350px"
+          height="260px"
+          alt="bolt-image"
+        />
       </div>
       <div className="relative flex mt-16">
         <Slider {...settings} className="overflow-hidden " ref={slider}>
@@ -89,7 +93,7 @@ const ProductImages = () => {
                   }
                 )}
               >
-                <Image
+                <img
                   className={classnames(
                     "cursor-pointer focus:outline-none opacity-50  hover:opacity-100",
                     { "opacity-100": imageUrl === item.img }
