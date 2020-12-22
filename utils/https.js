@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 import { MESSAGES } from "./constants";
 
 /**
@@ -15,7 +15,7 @@ let cancelHttpTokens = [];
 const HELPER_PARAMS = {
   callback: null, // Function|Null
   headers: {}, // Additional Headers
-  traceName: 'untraced_event',
+  traceName: "untraced_event",
   isBigCommerce: false,
 };
 /**
@@ -42,8 +42,8 @@ export const getCommonHeaders = (url, additional_headers = {}) => {
     };
 
     const bigCommerce = {
-      'X-Auth-Client': process.env.NEXT_PUBLIC_CLIENT_ID,
-      'X-Auth-Token': process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+      "X-Auth-Client": process.env.NEXT_PUBLIC_CLIENT_ID,
+      "X-Auth-Token": process.env.NEXT_PUBLIC_ACCESS_TOKEN,
     };
 
     if (isBigCommerce) {
@@ -65,7 +65,7 @@ export const extractJSON = (json) => {
   try {
     return JSON.parse(json);
   } catch (err) {
-    return '';
+    return "";
   }
 };
 /**
@@ -94,7 +94,7 @@ export const httpHandleError = (error) => {
     if (!error) return Promise.reject({});
     /* Handle Cancel Request */
     cancelHttpTokens = [];
-    if (!error.request) return Promise.reject('cancelled');
+    if (!error.request) return Promise.reject("cancelled");
     const xhr = error.response.data;
     let err = {};
     if (xhr) err = xhr;
@@ -122,8 +122,8 @@ export const httpHandleError = (error) => {
           console.log(err.response);
           break;
         case 412:
-          if (Object.keys(err.errors)[0] === 'q') {
-            console.log('Please enter valid location.');
+          if (Object.keys(err.errors)[0] === "q") {
+            console.log("Please enter valid location.");
           } else {
             console.log(err.errors[Object.keys(err.errors)[0]][0]);
           }
@@ -135,7 +135,7 @@ export const httpHandleError = (error) => {
             console.log(err.message[0]);
           } else if (err.message) {
             console.log(err.message);
-          } else if (err.error && typeof err.error == 'string') {
+          } else if (err.error && typeof err.error == "string") {
             console.log(err.error);
           } else {
             console.log(err[Object.keys(err)[0]]);
@@ -145,7 +145,7 @@ export const httpHandleError = (error) => {
           console.log(MESSAGES.BAD_GATEWAY);
           break;
         case 503:
-          if (err.error && typeof err.error == 'string') {
+          if (err.error && typeof err.error == "string") {
             console.log(err.error);
           } else {
             console.log(MESSAGES.BAD_GATEWAY);
@@ -159,7 +159,7 @@ export const httpHandleError = (error) => {
     }
     return xhr;
   } catch (e) {
-    console.error('-- HTTP HANDLE ERROR -- ', e);
+    console.error("-- HTTP HANDLE ERROR -- ", e);
     return Promise.reject({});
   }
 };
@@ -194,7 +194,7 @@ export const httpGet = async (
         return httpHandleError(err);
       });
   } catch (e) {
-    console.error('-- HTTP GET -- ', e);
+    console.error("-- HTTP GET -- ", e);
     return Promise.reject({});
   }
 };
@@ -231,7 +231,7 @@ export const httpPost = (
         return httpHandleError(err);
       });
   } catch (e) {
-    console.error('-- HTTP POST -- ', e);
+    console.error("-- HTTP POST -- ", e);
     return Promise.reject({});
   }
 };
@@ -268,7 +268,7 @@ export const httpPut = (
         return httpHandleError(err);
       });
   } catch (e) {
-    console.error('-- HTTP PUT -- ', e);
+    console.error("-- HTTP PUT -- ", e);
     return Promise.reject({});
   }
 };
@@ -303,7 +303,7 @@ export const httpDelete = (
         return httpHandleError(err);
       });
   } catch (e) {
-    console.error('-- HTTP DELETE -- ', e);
+    console.error("-- HTTP DELETE -- ", e);
     return Promise.reject({});
   }
 };

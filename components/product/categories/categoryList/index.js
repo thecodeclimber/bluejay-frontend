@@ -9,7 +9,7 @@ const categoryList = () => {
     {
       id: 1,
       totalPrice: "",
-      count: "01",
+      count: 1,
       img: "/img/boltImg1.png",
       title: "High-Profile Socket Head",
       price: "$5.64",
@@ -18,7 +18,7 @@ const categoryList = () => {
     {
       id: 2,
       totalPrice: "",
-      count: "01",
+      count: 1,
       img: "/img/boltImg1.png",
       title: "High-Profile Socket Head",
       price: "$5.64",
@@ -27,7 +27,7 @@ const categoryList = () => {
     {
       id: 3,
       totalPrice: "",
-      count: "01",
+      count: 1,
       img: "/img/boltImg1.png",
       title: "High-Profile Socket Head",
       price: "$5.64",
@@ -36,7 +36,7 @@ const categoryList = () => {
     {
       id: 4,
       totalPrice: "",
-      count: "01",
+      count: 1,
       img: "/img/boltImg1.png",
       title: "High-Profile Socket Head",
       price: "$5.64",
@@ -45,7 +45,7 @@ const categoryList = () => {
     {
       id: 5,
       totalPrice: "",
-      count: "01",
+      count: 1,
       img: "/img/boltImg1.png",
       title: "High-Profile Socket Head",
       price: "$5.64",
@@ -54,7 +54,7 @@ const categoryList = () => {
     {
       id: 6,
       totalPrice: "",
-      count: "01",
+      count: 1,
       img: "/img/boltImg1.png",
       title: "High-Profile Socket Head",
       price: "$5.64",
@@ -101,6 +101,7 @@ const categoryList = () => {
                         <SubtractIcon className="text-dark text-base" />
                       </div>
                       <div className="text-base text-dark min-w-60 text-center">
+                        {item.count < 10 && 0}
                         {item.count}
                       </div>
                       <div className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4">

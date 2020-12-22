@@ -123,7 +123,10 @@ const categoryGrid = () => {
                         <div className="flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center p-4 px-4">
                           <SubtractIcon className="text-black" />
                         </div>
-                        <div>{item.count}</div>
+                        <div className="text-dark">
+                          {item.count < 10 && 0}
+                          {item.count}
+                        </div>
                         <div className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4 px-4">
                           <PlusIcon className="text-dark" />
                         </div>

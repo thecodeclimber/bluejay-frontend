@@ -4,9 +4,9 @@ const BIG_COMMERCE_STORE_HASH = process.env.NEXT_PUBLIC_BIG_COMMERCE_STORE_HASH;
 const BIG_COMMERCE_VERSION_2 = "v2";
 const BIG_COMMERCE_VERSION_3 = "v3";
 const BIG_COMMERCE_BASE_URL = `${BIG_COMMERCE_URL}/${BIG_COMMERCE_APP_PREFIX}/${BIG_COMMERCE_STORE_HASH}/${BIG_COMMERCE_VERSION_3}`;
-const NEXT_DOMAIN = process.env.NEXT_PUBLIC_NEXT_URL;
+const NEXT_ORIGIN = process.env.NEXT_PUBLIC_NEXT_URL || "";
 const NEXT_PREFIX = "api";
-const NEXT_BASE_URL = `${NEXT_DOMAIN}/${NEXT_PREFIX}`;
+const NEXT_BASE_URL = `${NEXT_ORIGIN}/${NEXT_PREFIX}`;
 
 const URLS = {
   //Big_ commerce
@@ -14,25 +14,29 @@ const URLS = {
     // Customers
     CUSTOMERS: {
       CUSTOMERS: `${BIG_COMMERCE_BASE_URL}/customers`,
-      VALIDATE_PASSWORD: `${BIG_COMMERCE_BASE_URL.replace(BIG_COMMERCE_VERSION_3, BIG_COMMERCE_VERSION_2)}/customers/{CUSTOMER_ID}/validate`,
-      ATTRIBUTES: `${BIG_COMMERCE_BASE_URL}/customers/attributes`
+      VALIDATE_PASSWORD: `${BIG_COMMERCE_BASE_URL.replace(
+        BIG_COMMERCE_VERSION_3,
+        BIG_COMMERCE_VERSION_2
+      )}/customers/{CUSTOMER_ID}/validate`,
+      ATTRIBUTES: `${BIG_COMMERCE_BASE_URL}/customers/attributes`,
     },
     CATEGORY: {
-      CATEGORIES: `${BIG_COMMERCE_BASE_URL}/catalog/categories`
+      CATEGORIES: `${BIG_COMMERCE_BASE_URL}/catalog/categories`,
     },
     PRODUCT: {
-      PRODUCTS: `${BIG_COMMERCE_BASE_URL}/catalog/products`
+      PRODUCTS: `${BIG_COMMERCE_BASE_URL}/catalog/products`,
     },
     REVIEW: {
       REVIEWS: `${BIG_COMMERCE_BASE_URL}/catalog/products/{PRODUCT_ID}/reviews`,
     },
     BRAND: {
-      BRANDS: `${BIG_COMMERCE_BASE_URL}/catalog/brands`
+      BRANDS: `${BIG_COMMERCE_BASE_URL}/catalog/brands`,
     },
     WISHLIST: {
-      WISHLISTS: `${BIG_COMMERCE_BASE_URL}/wishlists`
-    }
+      WISHLISTS: `${BIG_COMMERCE_BASE_URL}/wishlists`,
+    },
   },
+
   //Next
   NEXT: {
     AUTH: {
@@ -57,7 +61,7 @@ const URLS = {
     REVIEW: {
       REVIEW: `${NEXT_BASE_URL}/products/reviews/get`,
     },
-  }
+  },
 };
 
 export default URLS;
