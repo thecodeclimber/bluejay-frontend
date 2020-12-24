@@ -20,13 +20,6 @@ const basketList = [
     img: "/img/basket-1.png",
     itemsSelected: 1,
   },
-  {
-    id: 3,
-    name: "Carriage Bolts 1/4-20 UNC Steel Zinc",
-    price: 5.64,
-    img: "/img/basket-1.png",
-    itemsSelected: 1,
-  },
 ];
 
 const saveForLater = () => {
