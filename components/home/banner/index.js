@@ -73,10 +73,10 @@ const Banner = () => {
           />
         </div>
         <div className="h-full w-full ">
-          <Slider {...settings} className="w-full " ref={slider}>
+          <Slider {...settings} className="w-full" ref={slider}>
             {data.length > 0 &&
               data.map((dataItem, index) => (
-                <div className="h-full w-full">
+                <div className="h-full w-full" key={index}>
                   <div className="relative flex justify-center">
                     <img
                       className="min-h-300 h-full w-full"
