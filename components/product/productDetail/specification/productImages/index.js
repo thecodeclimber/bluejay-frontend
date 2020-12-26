@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import Image from "next/Image";
+import Image from "next/image";
 import { IoIosArrowForward as SlideRightArrow } from "react-icons/io";
 import { FaSearchPlus as ZoomIcon } from "react-icons/fa";
 import Slider from "react-slick";
