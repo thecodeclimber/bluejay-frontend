@@ -34,6 +34,7 @@ module.exports = {
       310: "315px",
       350: "350px",
       400: "472px",
+      550: "584px",
       650: "640px",
       700: "692px",
     },
@@ -121,6 +122,9 @@ module.exports = {
       },
       zIndex: {
         "-1": "-1",
+      },
+      lineHeight: {
+        2: "0.875rem",
       },
       inset: {
         "-5": "-5rem",
