@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import ReactPlayer from "react-player/lazy";
 import { IoIosArrowForward as SlideRightArrow } from "react-icons/io";
+import { ImPlay3 as PlayIcon } from "react-icons/im";
 import Slider from "react-slick";
 
 const data = [
@@ -48,10 +49,8 @@ const ProductVideos = () => {
   };
 
   const handleVideo = (id) => {
-    console.log(id);
     const getVideos = [...videos];
     const video = getVideos.find((video) => video.id === id);
-    console.log(video);
     setVideoUrl(video.videoUrl);
   };
 
@@ -66,10 +65,13 @@ const ProductVideos = () => {
             videos.map((item, index) => (
               <div
                 key={index}
-                className="max-w-100 rounded-lg overflow-hidden"
+                className="relative max-w-100 rounded-lg overflow-hidden focus:outline-none cursor-pointer"
                 onClick={() => handleVideo(item.id)}
               >
-                <ReactPlayer url={item.videoUrl} width="90px" height="60px" />
+                <img src="/img/video-image.svg" width="90px" height="60px" />
+                <div className="absolute top-0 h-full w-full flex items-center justify-center focus:outline-none">
+                  <PlayIcon className="text-white text-lg cursor-pointer" />
+                </div>
               </div>
             ))}
         </Slider>

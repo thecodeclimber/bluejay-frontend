@@ -18,7 +18,9 @@ module.exports = {
       none: "none",
     },
     minWidth: {
+      50: "50px",
       60: "60px",
+      150: "150px",
       200: "200px",
       300: "300px",
       310: "315px",
@@ -80,6 +82,7 @@ module.exports = {
       "05": "0.05",
       "07": "0.07",
       10: "0.10",
+      15: "0.15",
       20: "0.20",
       25: "0.25",
       50: "0.50",
@@ -138,6 +141,8 @@ module.exports = {
       },
     },
   },
-  variants: {},
+  variants: {
+    opacity: ["responsive", "hover", "focus", "group-hover"],
+  },
   plugins: [],
 };
