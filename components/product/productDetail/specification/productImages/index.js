@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { IoIosArrowForward as SlideRightArrow } from "react-icons/io";
 import Slider from "react-slick";
 import { Transition } from "@headlessui/react";

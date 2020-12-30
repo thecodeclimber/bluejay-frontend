@@ -7,33 +7,32 @@ import Slider from "react-slick";
 const data = [
   {
     id: 1,
-    videoUrl: "https://www.youtube.com/watch?v=ysz5S6PUM-U",
+    videoUrl: "/img/video-image.svg",
   },
   {
     id: 2,
-    videoUrl: "https://www.youtube.com/watch?v=jNgP6d9HraI",
+    videoUrl: "/img/video-image.svg",
   },
   {
     id: 3,
-    videoUrl: "https://www.youtube.com/watch?v=oUFJJNQGwhk",
+    videoUrl: "/img/video-image.svg",
   },
   {
     id: 4,
-    videoUrl: "https://www.youtube.com/watch?v=ysz5S6PUM-U",
+    videoUrl: "/img/video-image.svg",
   },
   {
     id: 5,
-    videoUrl: "https://www.youtube.com/watch?v=jNgP6d9HraI",
+    videoUrl: "/img/video-image.svg",
   },
   {
     id: 6,
-    videoUrl: "https://www.youtube.com/watch?v=oUFJJNQGwhk",
+    videoUrl: "/img/video-image.svg",
   },
 ];
 
 const ProductVideos = () => {
   const [videos] = useState(data);
-  const [videoUrl, setVideoUrl] = useState(data[0].videoUrl);
 
   const slider = useRef(null);
   const settings = {
@@ -57,7 +56,12 @@ const ProductVideos = () => {
   return (
     <div className="max-w-310">
       <div className="rounded-lg overflow-hidden">
-        <ReactPlayer url={videoUrl} controls width="315px" height="180px" />
+        <ReactPlayer
+          url="https://www.youtube.com/watch?v=ysz5S6PUM-U"
+          controls
+          width="315px"
+          height="180px"
+        />
       </div>
       <div className="relative overflow-hidden flex items-center py-6 ">
         <Slider {...settings} className="max-w-300 " ref={slider}>
