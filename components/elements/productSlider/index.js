@@ -7,53 +7,11 @@ import { IoIosArrowBack as SlideLeftArrow } from "react-icons/io/index";
 import { RiSubtractFill as SubtractIcon } from "react-icons/ri/index";
 import { FiPlus as PlusIcon } from "react-icons/fi";
 
-const data = [
-  {
-    id: 1,
-    totalPrice: "",
-    count: "01",
-    img: "/img/boltImg1.png",
-    title: "Carriage Bolts 1/4-20 \n UNC Steel Zinc",
-    price: "$5.64",
-  },
-  {
-    id: 2,
-    totalPrice: "",
-    count: "01",
-    img: "/img/boltImg2.png",
-    title: "High-Profile Socket \n Head Screws",
-    price: "$5.64",
-  },
-  {
-    id: 3,
-    totalPrice: "",
-    count: "01",
-    img: "/img/boltImg3.png",
-    title: "Conical Plastic Anchors",
-    price: "$5.64",
-  },
-  {
-    id: 4,
-    totalPrice: "",
-    count: "01",
-    img: "/img/boltImg4.png",
-    title: "0-80 Alloy Steel \n Coarse Thread",
-    price: "$5.64",
-  },
-  {
-    id: 5,
-    totalPrice: "",
-    count: "01",
-    img: "/img/boltImg1.png",
-    title: "Carriage Bolts 1/4-20 \n UNC Steel Zinc",
-    price: "$5.64",
-  },
-];
-
 const ProductSlider = (props) => {
-  const { sliderDots } = props || {};
+  const { sliderDots, products } = props || {};
   const slider = useRef(null);
   const [activeSlide, setActiveSlide] = useState(0);
+
   const settings = {
     dots: false,
     infinite: true,
@@ -76,6 +34,13 @@ const ProductSlider = (props) => {
     setActiveSlide(index);
   };
 
+  const handelFavouriteIcon = (id) => {
+    const products = [...products];
+    const index = products.findIndex((item) => item.id === id);
+    products[index].liked = !products[index].liked;
+    setProductData(products);
+  };
+
   return (
     <div className="container mx-auto pb-6 tracking-tight">
       <div className="relative">
@@ -93,64 +58,69 @@ const ProductSlider = (props) => {
         </div>
         <div className="container mx-auto flex justify-between">
           <Slider {...settings} className="overflow-hidden" ref={slider}>
-            {data.length > 0 &&
-              data.map((item, index) => (
-                <div
-                  className="mr-6 focus:outline-none py-10 h-full"
-                  key={index}
-                >
+            {products.length > 0 &&
+              products.map((item, index) => {
+                return (
                   <div
-                    className={classnames(
-                      "max-w-310  border h-full rounded border-dark border-opacity-10 mx-4 lg:px-5 bg-white hover:shadow-grey-8 hover:border-white"
-                    )}
+                    className="mr-6 focus:outline-none py-10 h-full"
+                    key={index}
                   >
-                    <div className="py-6 flex-col justify-between h-full">
-                      <div className="h-full">
-                        <div className="relative flex justify-between -mb-6 h-full">
-                          <div className="bg-green text-xs flex items-center font-normal text-white rounded-2xl h-full px-3 h-5">
-                            New
+                    <div
+                      className={classnames(
+                        "max-w-310  border h-full rounded border-dark border-opacity-10 mx-4 lg:px-5 bg-white hover:shadow-grey-8 hover:border-white"
+                      )}
+                    >
+                      <div className="py-6 flex-col justify-between h-full">
+                        <div className="h-full">
+                          <div className="relative flex justify-between -mb-6 h-full mb-2">
+                            <div className="bg-green text-xs flex items-center font-normal text-white rounded-2xl h-full px-3 h-5">
+                              New
+                            </div>
+                            <HeartIcon
+                              className="text-grey opacity-70 text-xl cursor-pointer"
+                              onClick={() => handelFavouriteIcon(item.id)}
+                            />
                           </div>
-                          <HeartIcon className="text-grey opacity-70 text-xl cursor-pointer" />
-                        </div>
-                        <img className="m-auto mb-5" src={item.img} />
-                        <div className=" font-medium text-center text-dark text-xl mb-3 whitespace-pre-line tracking-tight leading-7">
-                          {item.title}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-primary  text-center font-normal text-lg mb-4 tracking-tight">
-                          {item.price}
-                        </div>
-                        <div className="flex justify-between items-center mb-4 border rounded border-dark border-opacity-10">
-                          <div className="flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center p-4 px-4">
-                            <SubtractIcon className="text-dark" />
-                          </div>
-                          <div>{item.count}</div>
-                          <div className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4 px-4">
-                            <PlusIcon className="text-dark" />
+                          <img className="m-auto " src="/img/boltImg1.png" />
+                          <div className="pt-8 font-medium text-center text-dark text-xl mb-3 whitespace-pre-line tracking-tight leading-7">
+                            {item.name}
                           </div>
                         </div>
-                        <div className="flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4">
-                          <img
-                            className="mr-4"
-                            src="/img/add-to-cart.svg"
-                            alt="cart"
-                          />
-                          <span className="font-medium font-base tracking-tight">
-                            Add to Cart
-                          </span>
+                        <div>
+                          <div className="text-primary  text-center font-normal text-lg mb-4 tracking-tight">
+                            ${item.price}
+                          </div>
+                          <div className="flex justify-between items-center mb-4 border rounded border-dark border-opacity-10">
+                            <div className="flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center p-4 px-4">
+                              <SubtractIcon className="text-dark" />
+                            </div>
+                            <div>{item.count}</div>
+                            <div className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4 px-4">
+                              <PlusIcon className="text-dark" />
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4">
+                            <img
+                              className="mr-4"
+                              src="/img/add-to-cart.svg"
+                              alt="cart"
+                            />
+                            <span className="font-medium font-base tracking-tight">
+                              Add to Cart
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
           </Slider>
         </div>
         {sliderDots && (
           <div className="flex justify-center items-center">
-            {data.length > 0 &&
-              data.map((item, index) => {
+            {products.length > 0 &&
+              products.map((item, index) => {
                 return (
                   <div
                     className={classnames("  rounded mx-4 cursor-pointer", {
@@ -160,7 +130,7 @@ const ProductSlider = (props) => {
                     })}
                     onClick={() => handleSlideGoTo(index)}
                     key={index}
-                  ></div>
+                  />
                 );
               })}
           </div>
