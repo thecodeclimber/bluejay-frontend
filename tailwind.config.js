@@ -7,13 +7,15 @@ module.exports = {
   theme: {
     letterSpacing: {
       tight: "-0.02em",
+      widest: "0.14em",
     },
     boxShadow: {
       sm: "0 8px 0 24px hsla(213, 28%, 19%, 0.04)",
       default: "0 12px 0 36px hsla(213, 28%, 19%, 0.08)",
       blue: "0 12px 0 36px hsla(213, 80%, 35%, 0.4)",
-      "blue-15": "0 12px 0 36px hsla(213, 80%, 35%, 0.15)",
       "blue-05": "0 8px 0 20px hsla(213, 28%, 19%, 0.05)",
+      "blue-10": "0px 12px 36px hsl(213deg 80% 35% / 15%)",
+      "blue-15": "0 12px 0 36px hsla(213, 80%, 35%, 0.15)",
       "grey-8": "0px 12px 36px hsl(213deg 28% 19% / 8%)",
       none: "none",
     },
@@ -143,6 +145,8 @@ module.exports = {
       },
     },
   },
-  variants: {},
+  variants: {
+    opacity: ["responsive", "hover", "focus", "group-hover"],
+  },
   plugins: [],
 };

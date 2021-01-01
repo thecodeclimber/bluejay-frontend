@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 const Price = () => {
   return (
     <div className="">
@@ -11,7 +9,12 @@ const Price = () => {
       </div>
       <div className="flex items-center justify-center cursor-pointer text-white bg-primary rounded py-3">
         <div className="mr-4">
-          <Image src="/img/cart-icon.svg" width="23" height="23" />
+          <img
+            src="/img/cart-icon.svg"
+            width="23"
+            height="23"
+            alt="cart-image"
+          />
         </div>
         <span className="font-normal font-base">Add to Cart</span>
       </div>
