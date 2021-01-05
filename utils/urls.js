@@ -47,11 +47,15 @@ const URLS = {
     },
     CATEGORY: {
       CATEGORIES: `${NEXT_BASE_URL}/categories`,
+      POPULAR: `${NEXT_BASE_URL}/categories/popular`,
     },
     PRODUCT: {
       PRODUDCT: `${NEXT_BASE_URL}/products/get`,
       PRODUCTS: `${NEXT_BASE_URL}/products`,
       SEARCH: `${NEXT_BASE_URL}/products/search`,
+      BEST: `${NEXT_BASE_URL}/products/best`,
+      FEATURED: `${NEXT_BASE_URL}/products/featured`,
+      TOP_DEALS: `${NEXT_BASE_URL}/products/top-deals`,
     },
     BRAND: {
       BRAND: `${NEXT_BASE_URL}/products/get`,

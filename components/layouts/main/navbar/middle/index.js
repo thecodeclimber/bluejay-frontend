@@ -186,7 +186,7 @@ const Search = (props) => {
       {activeSearchType === SearchType.history && (
         <Menu
           as="div"
-          className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b"
+          className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b z-30"
         >
           <SearchHistory />
         </Menu>
@@ -194,7 +194,7 @@ const Search = (props) => {
       {activeSearchType === SearchType.result && (
         <Menu
           as="div"
-          className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b"
+          className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b z-30"
         >
           <SearchResult
             {...data}
