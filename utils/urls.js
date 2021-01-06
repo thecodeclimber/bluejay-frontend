@@ -48,6 +48,7 @@ const URLS = {
     CATEGORY: {
       CATEGORIES: `${NEXT_BASE_URL}/categories`,
       POPULAR: `${NEXT_BASE_URL}/categories/popular`,
+      PRODUCTS: `${NEXT_BASE_URL}/categories/products`,
     },
     PRODUCT: {
       PRODUDCT: `${NEXT_BASE_URL}/products/get`,

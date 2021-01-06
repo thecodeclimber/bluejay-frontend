@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import classnames from "classnames";
 import { BsArrowRight as RightArrowIcon } from "react-icons/bs";
 import { httpGet } from "../../../utils/https";
@@ -53,13 +54,14 @@ const PopularCategories = () => {
                 }
               )}
             >
-              <div className="bg-white h-full shadow-grey-8 hover:shadow-blue-10 cursor-pointer rounded px-6 pt-5 mb-6">
+              <div className="bg-white h-full shadow-grey-8 hover:shadow-blue-10 rounded px-6 pt-5 mb-6">
                 <div className="flex pt-1 items-center">
                   <div className="mr-6">
                     <img
                       src={category.image_url}
                       alt={`img-${index}`}
-                      width="60"
+                      width="60px"
+                      className="h-60 object-cover"
                     />
                   </div>
                   <div className="font-medium text-primary text-2lg whitespace-pre-line">
@@ -80,11 +82,18 @@ const PopularCategories = () => {
                     ))}
                 </div>
                 <hr className="my-5 opacity-10 bg-dark" />
-                <div className="font-medium text-primary text-base flex items-center">
-                  <span className="mr-3">Show all</span>
-                  <span>
-                    <RightArrowIcon className="text-2lg" />
-                  </span>
+                <div>
+                  <Link
+                    href="/categories/[id]"
+                    as={`/categories/${category.id}`}
+                  >
+                    <a className="font-medium text-primary text-base flex items-center cursor-pointer">
+                      <span className="mr-3">Show all</span>
+                      <span>
+                        <RightArrowIcon className="text-2lg" />
+                      </span>
+                    </a>
+                  </Link>
                 </div>
               </div>
             </div>
