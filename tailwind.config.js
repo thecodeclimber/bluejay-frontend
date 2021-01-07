@@ -44,6 +44,7 @@ module.exports = {
       300: "320px",
     },
     maxHeight: {
+      350: "360px",
       450: "480px",
     },
     borderRadius: {
@@ -140,6 +141,7 @@ module.exports = {
       },
       height: {
         3.5: "0.875rem",
+        60: "60px",
       },
     },
   },

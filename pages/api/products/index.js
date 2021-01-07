@@ -17,5 +17,23 @@ export default async (req, res) => {
     });
     return;
   }
-  return res.json(products);
+
+  const imagesUrl = URLS.BIG_COMMERCE.PRODUCT.IMAGES;
+  const productsWithImages = [];
+  if (products && products.data && products.data.length > 0) {
+    await products.data.map(async (data, index) => {
+      const productimagesUrl = imagesUrl.replace("{PRODUCT_ID}", data.id);
+      const productImages = await httpGet(productimagesUrl, {
+        isBigCommerce: true,
+      });
+      const updatedProduct = {
+        ...products.data[index],
+        product_images: productImages,
+      };
+      productsWithImages.push(updatedProduct);
+    });
+  }
+  console.log("productsWithImages====>>>>", productsWithImages);
+
+  return res.json(productsWithImages);
 };
