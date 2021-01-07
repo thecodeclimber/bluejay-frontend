@@ -1,4 +1,6 @@
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { httpGet } from "../../../../../utils/https";
 import URLS from "../../../../../utils/urls";
 import {
@@ -9,7 +11,6 @@ import { func, array } from "prop-types";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { Menu, Transition } from "@headlessui/react";
-import { useEffect, useState } from "react";
 import classnames from "classnames";
 import {
   MdAccountCircle as UserIcon,
@@ -186,7 +187,7 @@ const Search = (props) => {
       {activeSearchType === SearchType.history && (
         <Menu
           as="div"
-          className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b"
+          className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b z-30"
         >
           <SearchHistory />
         </Menu>
@@ -194,7 +195,7 @@ const Search = (props) => {
       {activeSearchType === SearchType.result && (
         <Menu
           as="div"
-          className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b"
+          className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b z-30"
         >
           <SearchResult
             {...data}
@@ -227,19 +228,21 @@ const SearchCategory = (props) => {
         static
       >
         <span className="w-5 h-5 -mt-2 ml-8 rounded-sm bg-white absolute -z-1 left-0 top-0 transform rotate-45" />
-        {categories.length > 0 &&
-          categories.map((category, index) => {
-            const { name } = category || {};
-            return (
-              <Menu.Item
-                as="div"
-                key={index}
-                className="text-base flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
-              >
-                {name}
-              </Menu.Item>
-            );
-          })}
+        <div className="max-h-350 overflow-y-auto">
+          {categories.length > 0 &&
+            categories.map((category, index) => {
+              const { name, id } = category || {};
+              return (
+                <Menu.Item as="div" key={index}>
+                  <Link href="/categories/[id]" as={`/categories/${id}`}>
+                    <a className="text-base flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none">
+                      {name}
+                    </a>
+                  </Link>
+                </Menu.Item>
+              );
+            })}
+        </div>
       </Menu.Items>
     </Transition>
   );
@@ -285,11 +288,11 @@ const SearchHistory = () => {
               >
                 <div className="flex">
                   <div className="pr-3">
-                    <img
+                    <Image
                       key={index}
                       src="/img/screw-img.svg"
                       className="w-6 object-contain"
-                      alt="product-img"
+                      alt={`product-img-${index}`}
                     />
                   </div>
                   <div className="text-sm flex items-center text-dark">
@@ -334,10 +337,7 @@ const SearchResult = (props) => {
               name="search"
               onChange={handleSearch}
               id="search_result"
-              className={classnames(
-                "focus:outline-none form-input text-dark text-opacity-75 font-ubuntu w-full font-light",
-                {}
-              )}
+              className="focus:outline-none form-input text-dark text-opacity-75 font-ubuntu w-full font-light"
               placeholder="Search Result"
             />
           </div>
@@ -373,7 +373,7 @@ const SearchResult = (props) => {
                           <img
                             src={img}
                             className="w-10 object-contain"
-                            alt="product-img"
+                            alt={`product-img-${index}`}
                           />
                         </div>
                         <div className="pl-4">
@@ -395,43 +395,36 @@ const SearchResult = (props) => {
 
 const Categories = (props) => {
   const [isActiveCategory, setIsActiveCategory] = useState(false);
-  const [activeList, setActiveList] = useState(1);
-  const [activeSubList, setActiveSubList] = useState(1);
+  const [activeList, setActiveList] = useState("");
+  const [activeSubList, setActiveSubList] = useState("");
   const [subCategories, setSubCategories] = useState([]);
+  const [categoryProducts, setCategoryProducts] = useState([]);
+  const [capturedCategoryId, setCapturedCategoryId] = useState("");
+  const [isFetchingCategoryProducts, setIsFetchingCategoryProducts] = useState(
+    false
+  );
   const { isFetching, categories } = props;
-  const data = {};
-  data.products = [
-    {
-      id: 1,
-      img: "/img/category-img1.svg",
-      name: "6-32 Slotted Flat Head",
-    },
-    {
-      id: 1,
-      img: "/img/category-img2.svg",
-      name: "6-32 Slotted Flat Head",
-    },
-    {
-      id: 1,
-      img: "/img/category-img3.svg ",
-      name: "6-32 Slotted Flat Head",
-    },
-    {
-      id: 1,
-      img: "/img/category-img1.svg",
-      name: "6-32 Slotted Flat Head",
-    },
-    {
-      id: 1,
-      img: "/img/category-img2.svg",
-      name: "6-32 Slotted Flat Head",
-    },
-    {
-      id: 1,
-      img: "/img/category-img3.svg ",
-      name: "6-32 Slotted Flat Head",
-    },
-  ];
+
+  const getCategoryProducts = (id) => {
+    if (!id || id === capturedCategoryId) return;
+    setCapturedCategoryId(id);
+    setIsFetchingCategoryProducts(true);
+    const categoryProductsUrl = `${URLS.NEXT.CATEGORY.PRODUCTS}?id=${id}`;
+    httpGet(categoryProductsUrl, { traceName: "get category products" }).then(
+      (res) => {
+        if (res.errors && Object.keys(res.errors).length > 0) {
+          alert(res.errors[Object.keys(res.errors)[0]]);
+          setFormData({ ...formData, isLoading: false });
+        } else {
+          setCategoryProducts(res.data || []);
+        }
+        setIsFetchingCategoryProducts(false);
+      },
+      (err) => {
+        setIsFetchingCategoryProducts(false);
+      }
+    );
+  };
 
   const getParentCategories = () => {
     if (categories && categories.length > 0) {
@@ -454,23 +447,27 @@ const Categories = (props) => {
     if (activeChildMenu?.id) {
       setActiveSubList(activeChildMenu.id);
       handleSubCategories(id);
+      getCategoryProducts(activeChildMenu.id);
     } else {
+      getCategoryProducts(id);
       handleSubCategories();
     }
   };
 
   const handleActiveSubList = (id) => {
+    getCategoryProducts(id);
     setActiveSubList(id);
   };
 
   const setActiveCategory = (open = false) => {
     setIsActiveCategory(open);
-    setActiveList(1);
-    handleSubCategories(1);
-    handleActiveSubList(1);
+    if (parentCategories && parentCategories.length > 0) {
+      handleActiveList(parentCategories[0].id);
+    }
   };
 
   const parentCategories = getParentCategories();
+
   return (
     <Menu
       as="div"
@@ -494,7 +491,7 @@ const Categories = (props) => {
           leave="transition duration-75 ease-out"
           leaveFrom="transform scale-100 opacity-100"
           leaveTo="transform scale-95 opacity-0"
-          className="absolute z-10 -left-5"
+          className="absolute z-30 -left-5"
         >
           <div className="mt-4">
             <Menu.Items
@@ -510,26 +507,35 @@ const Categories = (props) => {
               {!isFetching && (
                 <div className="flex">
                   <div className="bg-opacity-03 bg-dark  min-w-300">
-                    {parentCategories.length > 0 &&
+                    {parentCategories &&
+                      parentCategories.length > 0 &&
                       parentCategories.map((menu, index) => {
                         const { id, name } = menu || {};
                         return (
                           <Menu.Item
                             as="div"
                             key={index}
-                            onMouseOver={() => handleActiveList(id)}
-                            className={classnames(
-                              "text-base focus:outline-none flex items-center justify-between px-4 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer",
-                              {
-                                "bg-primary bg-opacity-05 text-primary":
-                                  activeList == id,
-                              }
-                            )}
+                            onMouseEnter={() => handleActiveList(id)}
                           >
-                            <div>{name}</div>
-                            <div className="ml-10">
-                              {<ChevronRight className="text-lg" />}
-                            </div>
+                            <Link
+                              href="/categories/[id]"
+                              as={`/categories/${id}`}
+                            >
+                              <a
+                                className={classnames(
+                                  "text-base focus:outline-none flex items-center justify-between px-4 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer",
+                                  {
+                                    "bg-primary bg-opacity-05 text-primary":
+                                      activeList == id,
+                                  }
+                                )}
+                              >
+                                <div>{name}</div>
+                                <div className="ml-10">
+                                  {<ChevronRight className="text-lg" />}
+                                </div>
+                              </a>
+                            </Link>
                           </Menu.Item>
                         );
                       })}
@@ -543,28 +549,41 @@ const Categories = (props) => {
                             as="div"
                             key={index}
                             onMouseOver={() => handleActiveSubList(id)}
-                            className={classnames(
-                              "text-base focus:outline-none flex items-center justify-between px-4 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer",
-                              {
-                                "bg-primary bg-opacity-05 text-primary":
-                                  activeSubList == id,
-                              }
-                            )}
                           >
-                            <div>{name}</div>
-                            <div className="ml-10">
-                              {<ChevronRight className="text-lg" />}
-                            </div>
+                            <Link href={`/categories/${id}`}>
+                              <a
+                                className={classnames(
+                                  "text-base focus:outline-none flex items-center justify-between px-4 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer",
+                                  {
+                                    "bg-primary bg-opacity-05 text-primary":
+                                      activeSubList == id,
+                                  }
+                                )}
+                              >
+                                <div>{name}</div>
+                                <div className="ml-10">
+                                  {<ChevronRight className="text-lg" />}
+                                </div>
+                              </a>
+                            </Link>
                           </Menu.Item>
                         );
                       })}
                     </div>
                   )}
                   <div className="w-600 flex flex-wrap">
-                    {data.products &&
-                      data.products.length > 0 &&
-                      data.products.map((row, index) => {
-                        const { img, name } = row || {};
+                    {isFetchingCategoryProducts && (
+                      <div className="bg-opacity-03 bg-dark flex py-32 w-full min-w-300 justify-center">
+                        Loading....
+                      </div>
+                    )}
+                    {!isFetchingCategoryProducts &&
+                      categoryProducts &&
+                      categoryProducts.length > 0 &&
+                      categoryProducts.map((row, index) => {
+                        const { id, name, images } = row || {};
+                        const image =
+                          (images && images.length > 0 && images[0]) || "";
                         return (
                           <Menu.Item
                             as="div"
@@ -575,34 +594,51 @@ const Categories = (props) => {
                                 "pl-10": index == 0,
                                 "pr-10": index == 2 || index == 5,
                                 "pt-10": index <= 2,
-                                "pb-10": index >= 3,
+                                "pb-10":
+                                  index >= 3 || categoryProducts.length <= 3,
                               }
                             )}
                           >
-                            <div
-                              className={classnames(
-                                "h-full flex items-center justify-center border-opacity-10 border-dark",
-                                {
-                                  "border-b": index <= 2,
-                                  "border-r": index != 2 && index != 5,
-                                }
-                              )}
-                            >
-                              <div>
-                                <Image
-                                  src={img}
-                                  width="120"
-                                  height="120"
-                                  className="object-contain"
-                                />
-                                <div className="py-4 text-center px-2  font-medium leading-4 w-32 leading-5">
-                                  {name}
+                            <Link href="/product/[id]" as={`/product/${id}`}>
+                              <a>
+                                <div
+                                  className={classnames(
+                                    "h-full flex items-center justify-center border-opacity-10 border-dark",
+                                    {
+                                      "border-b":
+                                        index <= 2 &&
+                                        categoryProducts.length > 3,
+                                      "border-r": index != 2 && index != 5,
+                                    }
+                                  )}
+                                >
+                                  <div>
+                                    {image?.url_standard && (
+                                      <img
+                                        src={image?.url_standard}
+                                        width="120px"
+                                        height="120px"
+                                        className="object-contain"
+                                        alt={`product-img-${index}`}
+                                      />
+                                    )}
+                                    <div className="py-4 text-center px-2  font-medium leading-4 w-32 leading-5">
+                                      {name}
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
+                              </a>
+                            </Link>
                           </Menu.Item>
                         );
                       })}
+                    {!isFetchingCategoryProducts &&
+                      categoryProducts &&
+                      categoryProducts.length === 0 && (
+                        <div className="bg-opacity-03 bg-dark flex py-32 w-full min-w-300 justify-center">
+                          Sorry! no products are available
+                        </div>
+                      )}
                   </div>
                 </div>
               )}
