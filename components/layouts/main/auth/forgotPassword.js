@@ -82,7 +82,7 @@ const ForgotPassword = (props) => {
     <div className="bg-dark fixed inset-0 w-100 h-100 z-30 bg-opacity-75 py-5 justify-center items-center overflow-y-auto">
       <div className="flex items-center h-full">
         <div
-          className="font-ubuntu bg-white rounded shadow-grey-8 py-6 px-8 max-w-400 w-full text-dark m-auto"
+          className="font-ubuntu bg-white rounded shadow-grey-8 py-6 px-8 max-w-400 w-full text-dark m-auto z-50"
           static="true"
         >
           <div className="flex justify-end">
@@ -91,51 +91,59 @@ const ForgotPassword = (props) => {
               onClick={() => setModal()}
             />
           </div>
-          <div className="font-medium mb-3 text-3xl text-sm leading-8 text-center">
+          <div className="font-medium mb-2 text-3xl text-sm leading-8 text-center">
             Forgot Password
           </div>
-          <div className="text-dark opacity-75 text-sm font-light py-6 leading-4">
+          <div className="text-dark opacity-75 text-sm font-light py-5 leading-4">
             Lorem Ipsum is simply dummy text of the printing & typesetting
             industry. Lorem Ipsum has been the industry's standard dummy
           </div>
-          <div className="mb-6">
-            <input
-              type="text"
-              value={formData.email}
-              onChange={handleFormData}
-              name="email"
-              placeholder="Email"
+          <div className="flex-col space-y-3">
+            <div>
+              <input
+                type="text"
+                value={formData.email}
+                onChange={handleFormData}
+                name="email"
+                placeholder="Email"
+                className={classnames(
+                  "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                  {
+                    "font-medium": formData.email,
+                  }
+                )}
+              />
+              {errorEmail && (
+                <div className="text-error text-sm mt-1 pl-4">{errorEmail}</div>
+              )}
+            </div>
+            <button
+              onClick={sendEmail}
+              disabled={formData.isLoading}
               className={classnames(
-                "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                "font-medium w-full py-3 items-center rounded bg-primary text-white focus:outline-none mb-4",
                 {
-                  "font-medium": formData.email,
+                  "cursor-not-allowed bg-opacity-70": formData.isLoading,
                 }
               )}
-            />
-            {errorEmail && (
-              <div className="text-error text-sm mt-1 pl-4">{errorEmail}</div>
-            )}
+            >
+              {formData.isLoading ? "Loading..." : "Send"}
+            </button>
+            <button
+              className="font-medium w-full py-3 items-center rounded bg-white text-dark border border-dark border-opacity-25 opacity-50 focus:outline-none mb-6"
+              onClick={() => setModal()}
+            >
+              Cancel
+            </button>
           </div>
-          <button
-            onClick={sendEmail}
-            disabled={formData.isLoading}
-            className={classnames(
-              "font-medium w-full py-3 items-center rounded bg-primary text-white focus:outline-none mb-4",
-              {
-                "cursor-not-allowed bg-opacity-70": formData.isLoading,
-              }
-            )}
-          >
-            {formData.isLoading ? "Loading..." : "Send"}
-          </button>
-          <button
-            className="font-medium w-full py-3 items-center rounded bg-white text-dark border border-dark border-opacity-25 opacity-50 focus:outline-none mb-6"
-            onClick={() => setModal()}
-          >
-            Cancel
-          </button>
         </div>
       </div>
+      {!formData.isLoading && (
+        <div
+          className="fixed top-0 h-full w-full z-20"
+          onClick={() => setModal()}
+        />
+      )}
     </div>
   );
 };

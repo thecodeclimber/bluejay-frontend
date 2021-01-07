@@ -194,11 +194,11 @@ const Registration = (props) => {
   } = checkValidations();
 
   return (
-    <div className="bg-dark fixed inset-0 w-100 h-100 z-30 bg-opacity-75  justify-center items-center overflow-y-auto">
+    <div className="bg-dark fixed inset-0 w-100 h-100 z-30 bg-opacity-75 justify-center items-center overflow-y-auto">
       <div className="flex items-center h-full">
         <div
-          className="font-ubuntu bg-white rounded shadow-grey-8 py-6 px-8 max-w-400 w-full text-dark m-auto"
           static="true"
+          className="font-ubuntu bg-white rounded shadow-grey-8 py-4 px-8 max-w-400 w-full text-dark m-auto   z-50"
         >
           <div className="flex justify-end">
             <CloseIcon
@@ -206,246 +206,252 @@ const Registration = (props) => {
               onClick={() => setModal()}
             />
           </div>
-          <div className="font-medium mb-3 text-3xl text-sm leading-8 text-center mb-10">
+          <div className="font-medium mb-3 text-3xl text-sm leading-8 text-center mb-6">
             New Account
           </div>
-          <div className="mb-6">
-            <input
-              type="text"
-              value={formData.name}
-              onChange={handleFormData}
-              name="name"
-              placeholder="Name"
-              className={classnames(
-                "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
-                {
-                  "font-medium": formData.name,
-                }
-              )}
-            />
-            {errorName && (
-              <div className="text-error text-sm mt-1 pl-4">{errorName}</div>
-            )}
-          </div>
-          <div className="mb-6">
-            <input
-              type="email"
-              value={formData.email}
-              onChange={handleFormData}
-              name="email"
-              placeholder="E-mail"
-              className={classnames(
-                "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
-                {
-                  "font-medium": formData.email,
-                }
-              )}
-            />
-            {errorEmail && (
-              <div className="text-error text-sm mt-1 pl-4">{errorEmail}</div>
-            )}
-          </div>
-          <div className="mb-6">
-            <Menu as="div" className="relative">
+          <div className="flex-col space-y-3">
+            <div>
               <input
                 type="text"
-                value={formData.countryCode}
+                value={formData.name}
                 onChange={handleFormData}
-                name="countryCode"
-                placeholder="Country Code"
+                name="name"
+                placeholder="Name"
                 className={classnames(
                   "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
                   {
-                    "font-medium": formData.countryCode,
+                    "font-medium": formData.name,
                   }
                 )}
               />
-            </Menu>
-            {errorCountryCode && (
-              <div className="text-error text-sm mt-1 pl-4">
-                {errorCountryCode}
-              </div>
-            )}
-          </div>
-          <div className="mb-6">
-            <input
-              type="text"
-              value={formData.stateOrProvince}
-              onChange={handleFormData}
-              name="stateOrProvince"
-              placeholder="State or Province"
-              className={classnames(
-                "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
-                {
-                  "font-medium": formData.stateOrProvince,
-                }
+              {errorName && (
+                <div className="text-error text-sm mt-1 pl-4">{errorName}</div>
               )}
-            />
-            {errorStateOrProvince && (
-              <div className="text-error text-sm mt-1 pl-4">
-                {errorStateOrProvince}
-              </div>
-            )}
-          </div>
-          <div className="mb-6">
-            <input
-              type="text"
-              value={formData.city}
-              onChange={handleFormData}
-              name="city"
-              placeholder="City"
-              className={classnames(
-                "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
-                {
-                  "font-medium": formData.city,
-                }
-              )}
-            />
-            {errorCity && (
-              <div className="text-error text-sm mt-1 pl-4">{errorCity}</div>
-            )}
-          </div>
-          <div className="mb-6">
-            <input
-              type="text"
-              value={formData.postalCode}
-              onChange={handleFormData}
-              name="postalCode"
-              placeholder="Postal code"
-              className={classnames(
-                "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
-                {
-                  "font-medium": formData.postalCode,
-                }
-              )}
-            />
-            {errorPostalCode && (
-              <div className="text-error text-sm mt-1 pl-4">
-                {errorPostalCode}
-              </div>
-            )}
-          </div>
-          <div className="mb-6">
-            <textarea
-              name="address"
-              placeholder="Address"
-              rows="3"
-              className={classnames(
-                "w-full border border-dark rounded border-opacity-10 px-4 py-2 font-normal focus:outline-none",
-                {
-                  "font-medium": formData.address,
-                }
-              )}
-              value={formData.address}
-              onChange={handleFormData}
-            >
-              {formData.address}
-            </textarea>
-            {errorAddress && (
-              <div className="text-error text-sm pl-4">{errorAddress}</div>
-            )}
-          </div>
-          <div className="mb-6 relative">
-            <input
-              type={formData.isPasswordVisible ? "text" : "password"}
-              value={formData.password}
-              onChange={handleFormData}
-              name="password"
-              placeholder="Password"
-              className={classnames(
-                "w-full border border-dark h-12 rounded border-opacity-10 pl-4 pr-12 font-normal focus:outline-none",
-                {
-                  "font-medium": formData.password,
-                }
-              )}
-            />
-            {!formData.isPasswordVisible && (
-              <EyeIcon
-                className="absolute right-0 top-0 text-dark text-opacity-50 text-lg h-12 mr-5 cursor-pointer"
-                onClick={() => togglePasswordVisibility("isPasswordVisible")}
-              />
-            )}
-            {formData.isPasswordVisible && (
-              <InvisibleEyeIcon
-                className="absolute right-0 top-0 text-dark text-opacity-50 text-lg h-12 mr-5 cursor-pointer"
-                onClick={() => togglePasswordVisibility("isPasswordVisible")}
-              />
-            )}
-            {errorPassword && (
-              <div className="text-error text-sm mt-1 pl-4">
-                {errorPassword}
-              </div>
-            )}
-          </div>
-          <div className="mb-6 relative">
-            <input
-              type={formData.isConfirmPasswordVisible ? "text" : "password"}
-              value={formData.confirmPassword}
-              onChange={handleFormData}
-              name="confirmPassword"
-              placeholder="Confirm password"
-              className={classnames(
-                "w-full border border-dark h-12 rounded border-opacity-10 pl-4 pr-12 font-normal focus:outline-none",
-                {
-                  "font-medium": formData.confirmPassword,
-                }
-              )}
-            />
-            {!formData.isConfirmPasswordVisible && (
-              <EyeIcon
-                className="absolute right-0 top-0 text-dark text-opacity-50 text-lg h-12 mr-5 cursor-pointer"
-                onClick={() =>
-                  togglePasswordVisibility("isConfirmPasswordVisible")
-                }
-              />
-            )}
-            {formData.isConfirmPasswordVisible && (
-              <InvisibleEyeIcon
-                className="absolute right-0 top-0 text-dark text-opacity-50 text-lg h-12 mr-5 cursor-pointer"
-                onClick={() =>
-                  togglePasswordVisibility("isConfirmPasswordVisible")
-                }
-              />
-            )}
-            {errorConfirmPassword && (
-              <div className="text-error text-sm mt-1 pl-4">
-                {errorConfirmPassword}
-              </div>
-            )}
-          </div>
-          <div className="mb-6 flex items-center">
-            <div
-              className={classnames(
-                "border border-dark rounded border-opacity-10 mr-4",
-                {
-                  "bg-dark": formData.isTermAndConditions,
-                }
-              )}
-              onClick={toggleCheckbox}
-            >
-              <CheckedIcon className="text-white text-xl" />
             </div>
-            <div className="text-sm">
-              I accept{" "}
-              <a href="#" className="text-primary">
-                Terms & Conditions
-              </a>{" "}
+            <div>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={handleFormData}
+                name="email"
+                placeholder="E-mail"
+                className={classnames(
+                  "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                  {
+                    "font-medium": formData.email,
+                  }
+                )}
+              />
+              {errorEmail && (
+                <div className="text-error text-sm mt-1 pl-4">{errorEmail}</div>
+              )}
             </div>
+            <div>
+              <Menu as="div" className="relative">
+                <input
+                  type="text"
+                  value={formData.countryCode}
+                  onChange={handleFormData}
+                  name="countryCode"
+                  placeholder="Country Code"
+                  className={classnames(
+                    "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                    {
+                      "font-medium": formData.countryCode,
+                    }
+                  )}
+                />
+              </Menu>
+              {errorCountryCode && (
+                <div className="text-error text-sm mt-1 pl-4">
+                  {errorCountryCode}
+                </div>
+              )}
+            </div>
+            <div>
+              <input
+                type="text"
+                value={formData.stateOrProvince}
+                onChange={handleFormData}
+                name="stateOrProvince"
+                placeholder="State or Province"
+                className={classnames(
+                  "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                  {
+                    "font-medium": formData.stateOrProvince,
+                  }
+                )}
+              />
+              {errorStateOrProvince && (
+                <div className="text-error text-sm mt-1 pl-4">
+                  {errorStateOrProvince}
+                </div>
+              )}
+            </div>
+            <div>
+              <input
+                type="text"
+                value={formData.city}
+                onChange={handleFormData}
+                name="city"
+                placeholder="City"
+                className={classnames(
+                  "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                  {
+                    "font-medium": formData.city,
+                  }
+                )}
+              />
+              {errorCity && (
+                <div className="text-error text-sm mt-1 pl-4">{errorCity}</div>
+              )}
+            </div>
+            <div>
+              <input
+                type="text"
+                value={formData.postalCode}
+                onChange={handleFormData}
+                name="postalCode"
+                placeholder="Postal code"
+                className={classnames(
+                  "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                  {
+                    "font-medium": formData.postalCode,
+                  }
+                )}
+              />
+              {errorPostalCode && (
+                <div className="text-error text-sm mt-1 pl-4">
+                  {errorPostalCode}
+                </div>
+              )}
+            </div>
+            <div>
+              <input
+                name="address"
+                placeholder="Address"
+                rows="3"
+                className={classnames(
+                  "w-full border border-dark rounded border-opacity-10 px-4 py-2 font-normal focus:outline-none",
+                  {
+                    "font-medium": formData.address,
+                  }
+                )}
+                value={formData.address}
+                onChange={handleFormData}
+              />
+              {errorAddress && (
+                <div className="text-error text-sm pl-4">{errorAddress}</div>
+              )}
+            </div>
+            <div className="relative">
+              <input
+                type={formData.isPasswordVisible ? "text" : "password"}
+                value={formData.password}
+                onChange={handleFormData}
+                name="password"
+                placeholder="Password"
+                className={classnames(
+                  "w-full border border-dark h-12 rounded border-opacity-10 pl-4 pr-12 font-normal focus:outline-none",
+                  {
+                    "font-medium": formData.password,
+                  }
+                )}
+              />
+              {!formData.isPasswordVisible && (
+                <EyeIcon
+                  className="absolute right-0 top-0 text-dark text-opacity-50 text-lg h-12 mr-5 cursor-pointer"
+                  onClick={() => togglePasswordVisibility("isPasswordVisible")}
+                />
+              )}
+              {formData.isPasswordVisible && (
+                <InvisibleEyeIcon
+                  className="absolute right-0 top-0 text-dark text-opacity-50 text-lg h-12 mr-5 cursor-pointer"
+                  onClick={() => togglePasswordVisibility("isPasswordVisible")}
+                />
+              )}
+              {errorPassword && (
+                <div className="text-error text-sm mt-1 pl-4">
+                  {errorPassword}
+                </div>
+              )}
+            </div>
+            <div className="relative">
+              <input
+                type={formData.isConfirmPasswordVisible ? "text" : "password"}
+                value={formData.confirmPassword}
+                onChange={handleFormData}
+                name="confirmPassword"
+                placeholder="Confirm password"
+                className={classnames(
+                  "w-full border border-dark h-12 rounded border-opacity-10 pl-4 pr-12 font-normal focus:outline-none",
+                  {
+                    "font-medium": formData.confirmPassword,
+                  }
+                )}
+              />
+              {!formData.isConfirmPasswordVisible && (
+                <EyeIcon
+                  className="absolute right-0 top-0 text-dark text-opacity-50 text-lg h-12 mr-5 cursor-pointer"
+                  onClick={() =>
+                    togglePasswordVisibility("isConfirmPasswordVisible")
+                  }
+                />
+              )}
+              {formData.isConfirmPasswordVisible && (
+                <InvisibleEyeIcon
+                  className="absolute right-0 top-0 text-dark text-opacity-50 text-lg h-12 mr-5 cursor-pointer"
+                  onClick={() =>
+                    togglePasswordVisibility("isConfirmPasswordVisible")
+                  }
+                />
+              )}
+              {errorConfirmPassword && (
+                <div className="text-error text-sm mt-1 pl-4">
+                  {errorConfirmPassword}
+                </div>
+              )}
+            </div>
+            <div className="flex items-center">
+              <div
+                className={classnames(
+                  "border border-dark rounded border-opacity-10 mr-4",
+                  {
+                    "bg-dark": formData.isTermAndConditions,
+                  }
+                )}
+                onClick={toggleCheckbox}
+              >
+                <CheckedIcon className="text-white text-xl" />
+              </div>
+              <div className="text-sm">
+                I accept{" "}
+                <a href="#" className="text-primary">
+                  Terms & Conditions
+                </a>{" "}
+              </div>
+            </div>
+            <button
+              onClick={createAccount}
+              className={classnames(
+                "font-medium w-full py-3 items-center rounded bg-primary text-white border-alpha-05 focus:outline-none mb-3",
+                {
+                  "cursor-not-allowed bg-opacity-70": formData.isLoading,
+                }
+              )}
+              disabled={formData.isLoading}
+            >
+              {formData.isLoading ? "Loading..." : "Create Account"}
+            </button>
           </div>
-          <button
-            onClick={createAccount}
-            className={classnames(
-              "font-medium w-full py-3 items-center rounded bg-primary text-white border-alpha-05 focus:outline-none mb-3",
-              {
-                "cursor-not-allowed bg-opacity-70": formData.isLoading,
-              }
-            )}
-            disabled={formData.isLoading}
-          >
-            {formData.isLoading ? "Loading..." : "Create Account"}
-          </button>
         </div>
       </div>
+      {!formData.isLoading && (
+        <div
+          className="fixed top-0 h-full w-full z-20"
+          onClick={() => setModal()}
+        />
+      )}
     </div>
   );
 };
