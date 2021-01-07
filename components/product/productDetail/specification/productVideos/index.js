@@ -1,38 +1,38 @@
 import React, { useRef, useState } from "react";
 import ReactPlayer from "react-player/lazy";
 import { IoIosArrowForward as SlideRightArrow } from "react-icons/io";
+import { IoMdPlay as PlayIcon } from "react-icons/io";
 import Slider from "react-slick";
 
 const data = [
   {
     id: 1,
-    videoUrl: "https://www.youtube.com/watch?v=ysz5S6PUM-U",
+    videoUrl: "/img/video-image.svg",
   },
   {
     id: 2,
-    videoUrl: "https://www.youtube.com/watch?v=jNgP6d9HraI",
+    videoUrl: "/img/video-image.svg",
   },
   {
     id: 3,
-    videoUrl: "https://www.youtube.com/watch?v=oUFJJNQGwhk",
+    videoUrl: "/img/video-image.svg",
   },
   {
     id: 4,
-    videoUrl: "https://www.youtube.com/watch?v=ysz5S6PUM-U",
+    videoUrl: "/img/video-image.svg",
   },
   {
     id: 5,
-    videoUrl: "https://www.youtube.com/watch?v=jNgP6d9HraI",
+    videoUrl: "/img/video-image.svg",
   },
   {
     id: 6,
-    videoUrl: "https://www.youtube.com/watch?v=oUFJJNQGwhk",
+    videoUrl: "/img/video-image.svg",
   },
 ];
 
 const ProductVideos = () => {
   const [videos] = useState(data);
-  const [videoUrl, setVideoUrl] = useState(data[0].videoUrl);
 
   const slider = useRef(null);
   const settings = {
@@ -47,29 +47,30 @@ const ProductVideos = () => {
     slider.current.slickNext();
   };
 
-  const handleVideo = (id) => {
-    console.log(id);
-    const getVideos = [...videos];
-    const video = getVideos.find((video) => video.id === id);
-    console.log(video);
-    setVideoUrl(video.videoUrl);
-  };
-
   return (
     <div className="max-w-310">
       <div className="rounded-lg overflow-hidden">
-        <ReactPlayer url={videoUrl} controls width="315px" height="180px" />
+        <ReactPlayer
+          url="https://www.youtube.com/watch?v=ysz5S6PUM-U"
+          controls
+          width="315px"
+          height="180px"
+        />
       </div>
       <div className="relative overflow-hidden flex items-center py-6 ">
         <Slider {...settings} className="max-w-300 " ref={slider}>
           {videos.length > 0 &&
             videos.map((item, index) => (
-              <div
-                key={index}
-                className="max-w-100 rounded-lg overflow-hidden"
-                onClick={() => handleVideo(item.id)}
-              >
-                <ReactPlayer url={item.videoUrl} width="90px" height="60px" />
+              <div key={index} className="relative max-w-100 overflow-hidden">
+                <div className="absolute flex justify-center items-center top-0 w-full h-full cursor-pointer ">
+                  <PlayIcon className="text-base text-white" />
+                </div>
+                <img
+                  src={item.videoUrl}
+                  width="90px"
+                  height="60px"
+                  alt="bolt-video"
+                />
               </div>
             ))}
         </Slider>
