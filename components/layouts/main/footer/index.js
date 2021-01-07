@@ -29,16 +29,19 @@ const Footer = () => {
     {
       name: "Phone:",
       detail: "(773) 281-3100",
+      href: "tel: +(773) 281-3100",
     },
     {
       name: "Fax:",
       detail: "(773) 281-3131",
+      href: "fax: +(773) 281-3131",
     },
   ];
   data.emailDetails = [
     {
       name: "Email:",
       detail: "Info@BlueJayFasteners.com",
+      href: "mailto: Info@BlueJayFasteners.com",
     },
   ];
   data.addressDetails = [
@@ -99,7 +102,11 @@ const Footer = () => {
                       className="flex justify-between pb-2 text-xs font-light sm:text-base md:w-48 md:pb-1"
                     >
                       <div className="font-normal">{contact.name}</div>
-                      <div className="font-medium">{contact.detail}</div>
+                      <Link href={contact.href}>
+                        <div className="font-medium cursor-pointer">
+                          {contact.detail}
+                        </div>
+                      </Link>
                     </div>
                   );
                 })}
@@ -113,7 +120,11 @@ const Footer = () => {
                       className="text-xs font-light flex justify-between sm:text-base"
                     >
                       <div className="font-normal">{email.name}</div>
-                      <div className="pl-10 font-medium">{email.detail}</div>
+                      <Link href={email.href}>
+                        <div className="pl-10 font-medium cursor-pointer">
+                          {email.detail}
+                        </div>
+                      </Link>
                     </div>
                   );
                 })}
