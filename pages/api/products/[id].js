@@ -1,7 +1,7 @@
-import { httpGet } from "../../../../../utils/https";
-import URLS from "../../../../../utils/urls";
-import { MESSAGES } from "../../../../../utils/constants";
-import { verifyGetMethod } from "../../../../../utils/helper";
+import { httpGet } from "../../../utils/https";
+import URLS from "../../../utils/urls";
+import { MESSAGES } from "../../../utils/constants";
+import { verifyGetMethod } from "../../../utils/helper";
 
 export default async (req, res) => {
   if (!verifyGetMethod(req, res)) return;
@@ -27,5 +27,13 @@ export default async (req, res) => {
     });
     return;
   }
+
+  const productImageUrl = `${URLS.BIG_COMMERCE.PRODUCT.PRODUCTS}/${id}/images`;
+  const productImages = await httpGet(productImageUrl, {
+    isBigCommerce: true,
+  });
+
+  product.data = { ...product.data, images: productImages.data };
+
   return res.json(product);
 };

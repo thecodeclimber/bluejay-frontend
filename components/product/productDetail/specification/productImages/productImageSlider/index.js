@@ -1,12 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
+import { array, func, shape } from "prop-types";
 import { VscChromeClose as CloseIcon } from "react-icons/vsc";
 import Slider from "react-slick";
 
 const ProductImageSlider = (props) => {
-  const { closeModal, productImages, selectedImage } = props;
+  const { closeModal, productImages, selectedImage, productDetail } = props;
   const [data, setData] = useState([]);
   const slider = useRef(null);
-
   const settings = {
     dots: false,
     infinite: true,
@@ -41,7 +41,7 @@ const ProductImageSlider = (props) => {
             <div className="font-ubuntu bg-white rounded shadow-grey-8 py-5 px-8 w-full text-dark m-auto ">
               <div className="flex w-full items-center justify-between">
                 <div className="text-dark font-medium text-3xl font-ubuntu">
-                  Hex Nut Cap Screw
+                  {productDetail?.name}
                 </div>
                 <div className="flex justify-end">
                   <CloseIcon
@@ -71,11 +71,11 @@ const ProductImageSlider = (props) => {
                     <Slider {...settings} className="w-full" ref={slider}>
                       {data.map((dataItem, index) => (
                         <div key={index} className="focus:outline-none">
-                          <div className="relative flex justify-center">
+                          <div className="relative flex justify-center pt-6">
                             <img
                               width="600px"
                               height="360px"
-                              src={dataItem.img}
+                              src={dataItem.url_standard}
                               alt={`img-${index}`}
                             />
                           </div>
@@ -87,7 +87,7 @@ const ProductImageSlider = (props) => {
                 <hr className="opacity-10 bg-dark mt-5 mb-10" />
                 <div className="flex justify-center items-center pb-4">
                   <div className="text-dark font-medium text-2xl tracking-tight mr-8">
-                    $249.99
+                    ${productDetail?.price}
                   </div>
                   <div className="flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4 px-10">
                     <img
@@ -107,6 +107,20 @@ const ProductImageSlider = (props) => {
       )}
     </div>
   );
+};
+
+ProductImageSlider.defaultProps = {
+  productDetail: {},
+  productImages: [],
+  selectedImage: {},
+  closeModal: () => {},
+};
+
+ProductImageSlider.propTypes = {
+  closeModal: func,
+  productDetail: shape({}),
+  productImages: array,
+  selectedImage: shape({}),
 };
 
 export default ProductImageSlider;

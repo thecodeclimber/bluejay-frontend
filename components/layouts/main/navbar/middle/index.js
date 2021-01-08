@@ -288,7 +288,7 @@ const SearchHistory = () => {
               >
                 <div className="flex">
                   <div className="pr-3">
-                    <Image
+                    <img
                       key={index}
                       src="/img/screw-img.svg"
                       className="w-6 object-contain"

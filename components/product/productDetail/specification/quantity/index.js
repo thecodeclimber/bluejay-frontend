@@ -1,27 +1,65 @@
-import { RiSubtractFill as SubtractIcon } from "react-icons/ri/index";
-import { BsPlus as PlusIcon } from "react-icons/bs/index";
-import BoxSize from "./boxSize";
-import Price from "./price";
+import React from "react";
+import { shape, func } from "prop-types";
+import { connect } from "react-redux";
+import { RiSubtractFill as SubtractIcon } from "react-icons/ri";
+import { BsPlus as PlusIcon } from "react-icons/bs";
+import { setProductDetail } from "../../../../../redux/product/actions";
 
-const Quantity = () => {
+const Quantity = (props) => {
+  const { productDetail, setProductDetail } = props;
+  const decreaseQuantity = () => {
+    const data = {
+      ...productDetail,
+      quantity:
+        productDetail?.quantity && productDetail.quantity > 1
+          ? productDetail.quantity - 1
+          : 1,
+    };
+    setProductDetail(data);
+  };
+
+  const increaseQuantity = (id) => {
+    const data = {
+      ...productDetail,
+      quantity: productDetail?.quantity ? productDetail.quantity + 1 : 1,
+    };
+    setProductDetail(data);
+  };
+
   return (
-    <div className="flex flex-col border-l border-dark border-opacity-10 pl-8 h-full">
+    <>
       <div className="font-medium text-dark not-italic text-lg opacity-75 tracking-tight pt-8 pb-5 ">
         Quantity
       </div>
       <div className="flex justify-between items-center mb-4 border rounded border-dark border-opacity-10">
-        <div className="flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center py-4 px-4">
+        <div
+          onClick={decreaseQuantity}
+          className="flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center py-4 px-4"
+        >
           <SubtractIcon className="text-black" />
         </div>
-        <div className="px-8 text-dark tracking-tight ">01</div>
-        <div className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center py-4  px-4">
+        <div className="px-8 text-dark tracking-tight ">
+          {productDetail?.quantity < 10 && 0}
+          {productDetail?.quantity}
+        </div>
+        <div
+          onClick={increaseQuantity}
+          className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center py-4  px-4"
+        >
           <PlusIcon className="text-black" />
         </div>
       </div>
-      <BoxSize />
-      <Price />
-    </div>
+    </>
   );
 };
 
-export default Quantity;
+Quantity.defaultProps = {
+  productDetail: {},
+};
+
+Quantity.propTypes = {
+  productDetail: shape({}),
+  setProductDetail: func,
+};
+
+export default connect(null, { setProductDetail })(Quantity);

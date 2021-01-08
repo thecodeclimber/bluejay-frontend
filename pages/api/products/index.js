@@ -5,7 +5,6 @@ import { verifyGetMethod } from "../../../utils/helper";
 
 export default async (req, res) => {
   if (!verifyGetMethod(req, res)) return;
-
   const productsUrl = URLS.BIG_COMMERCE.PRODUCT.PRODUCTS;
   const products = await httpGet(productsUrl, { isBigCommerce: true });
   if (products.status === 401) {
@@ -33,7 +32,6 @@ export default async (req, res) => {
       productsWithImages.push(updatedProduct);
     });
   }
-  console.log("productsWithImages====>>>>", productsWithImages);
 
   return res.json(productsWithImages);
 };

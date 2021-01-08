@@ -1,14 +1,15 @@
 /**
  * Import Dependencies
  */
-import { combineReducers } from 'redux-immutable';
+import { combineReducers } from "redux-immutable";
 
 /**
  * Import Reducers
  * All Reducers used in the App must be declared here!
  */
-import UserReducer from './user/reducer';
-import CategoryReducer from './category/reducer';
+import UserReducer from "./user/reducer";
+import CategoryReducer from "./category/reducer";
+import ProductReducer from "./product/reducer";
 
 /**
  * Combine the Reducers
@@ -16,6 +17,7 @@ import CategoryReducer from './category/reducer';
 const reducers = combineReducers({
   user: UserReducer,
   category: CategoryReducer,
+  product: ProductReducer,
 });
 
 /**
