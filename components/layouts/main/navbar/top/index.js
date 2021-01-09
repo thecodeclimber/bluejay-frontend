@@ -1,9 +1,10 @@
-import { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
+import Image from "next/image";
 import { shape, func } from "prop-types";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import Image from "next/image";
 import { Menu, Transition } from "@headlessui/react";
+import { httpGet } from "../../../../../utils/https";
 import {
   MdAccountCircle as UserIcon,
   MdArrowDropDown as ArrowIcon,
@@ -22,6 +23,7 @@ import {
   MODAL_TYPES,
 } from "../../../../../redux/user/constants";
 import { removeUserLocalStorage } from "../../../../../utils/helper";
+import URLS from "../../../../../utils/urls";
 
 const LeftMenuTitles = {
   AboutUs: "About Us",
@@ -49,9 +51,33 @@ const OrderStatus = {
 const TopNavbar = (props) => {
   const [activeMenu, setActiveMenu] = useState(null);
   const { user, setUser, setModal } = props;
+  const [wishlists, setWishlists] = useState([]);
+  const [isFetchingWishlists, setIsFetchingWishlists] = useState(false);
   const setActiveMenuName = (name = null) => {
     setActiveMenu(name);
   };
+
+  useEffect(() => {
+    if (user.id) {
+      setIsFetchingWishlists(true);
+      const wishlistUrl = `${URLS.NEXT.WISHLIST.WISHLISTS}/customer?id=${user.id}`;
+      httpGet(wishlistUrl, {
+        traceName: "get_customer_wishlists",
+      }).then(
+        (res) => {
+          if (res.errors && Object.keys(res.errors).length > 0) {
+            alert(res.errors[Object.keys(res.errors)[0]]);
+          } else {
+            setWishlists(res.data || []);
+          }
+          setIsFetchingWishlists(false);
+        },
+        (err) => {
+          setIsFetchingWishlists(false);
+        }
+      );
+    }
+  }, [user.id]);
 
   const handleSignOut = () => {
     removeUserLocalStorage();
@@ -76,28 +102,7 @@ const TopNavbar = (props) => {
     {
       title: RightMenuTitles.Favorites,
       icon: FavoriteIcon,
-      subMenuList: [
-        {
-          img: "/img/screw.png",
-          title: "Alloy Steel Ultra-Low-Profile Socket Head Screws",
-          price: "5.64",
-        },
-        {
-          img: "/img/screw.png",
-          title: "Alloy Steel Ultra-Low-Profile Socket Head Screws",
-          price: "5.64",
-        },
-        {
-          img: "/img/screw.png",
-          title: "Alloy Steel Ultra-Low-Profile Socket Head Screws",
-          price: "5.64",
-        },
-        {
-          img: "/img/screw.png",
-          title: "Alloy Steel Ultra-Low-Profile Socket Head Screws",
-          price: "5.64",
-        },
-      ],
+      subMenuList: wishlists,
       show: Boolean(user?.id),
     },
     {
@@ -272,7 +277,7 @@ const TopNavbar = (props) => {
                       className="absolute z-40 right-0"
                     >
                       {menu.title === RightMenuTitles.Favorites &&
-                        FavoritesMenuItems(subMenuList)}
+                        FavoritesMenuItems(subMenuList, isFetchingWishlists)}
                       {menu.title === RightMenuTitles.Account &&
                         AccountMenuItems(subMenuList)}
                       {menu.title === RightMenuTitles.Orders &&
@@ -332,37 +337,41 @@ const ContactUsDetail = (detail) => (
   </Menu.Items>
 );
 
-const FavoritesMenuItems = (subMenuList) => (
+const FavoritesMenuItems = (wishlists, isFetchingWishlists) => (
   <Menu.Items
     className="font-ubuntu bg-white outline-none pt-3 mt-3 -right-8 text-dark rounded relative min-w-300 shadow-grey-8"
     static
   >
     <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
-    {subMenuList.map((subMenu, index) => {
-      const { img, title, price } = subMenu || {};
-      return (
-        <Fragment key={index}>
-          <Menu.Item
-            as="div"
-            className="flex justify-between items-center text-dark py-4 cursor-pointer hover:bg-opacity-05 hover:bg-primary focus:outline-none"
-          >
-            <div className="pl-6 pr-4 flex items-center">
-              <Image
-                src={img}
-                width="30"
-                height="30"
-                className="object-contain"
-              />
-            </div>
-            <div className="text-xs leading-4 w-48">{title}</div>
-            <div className="text-sm font-medium pr-6 pl-10">${price}</div>
-          </Menu.Item>
-          {index !== subMenuList.length - 1 && (
-            <hr className="opacity-05 mx-6" />
-          )}
-        </Fragment>
-      );
-    })}
+    {isFetchingWishlists && <div>Loading...</div>}
+    {!isFetchingWishlists &&
+      wishlists.length > 0 &&
+      wishlists.map((subMenu, index) => {
+        return (
+          <Fragment key={index}>
+            <Menu.Item
+              as="div"
+              className="flex justify-between items-center text-dark py-4 cursor-pointer hover:bg-opacity-05 hover:bg-primary focus:outline-none"
+            >
+              <div className="pl-6 pr-4 flex items-center">
+                <img
+                  src={subMenu.primary_image.url_thumbnail}
+                  width="30"
+                  height="30"
+                  className="object-contain"
+                />
+              </div>
+              <div className="text-xs leading-4 w-48">{subMenu.name}</div>
+              <div className="text-sm font-medium pr-6 pl-10">
+                ${subMenu.price}
+              </div>
+            </Menu.Item>
+            {index !== wishlists.length - 1 && (
+              <hr className="opacity-05 mx-6" />
+            )}
+          </Fragment>
+        );
+      })}
     <Menu.Item
       as="div"
       className="text-primary text-sm text-center w-full py-4 bg-primary bg-opacity-05 rounded-b  focus:outline-none cursor-pointer"

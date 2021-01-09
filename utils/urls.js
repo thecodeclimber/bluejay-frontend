@@ -58,6 +58,10 @@ const URLS = {
       FEATURED: `${NEXT_BASE_URL}/products/featured`,
       TOP_DEALS: `${NEXT_BASE_URL}/products/top-deals`,
     },
+    WISHLIST: {
+      WISHLISTS: `${NEXT_BASE_URL}/wishlists`,
+      CREATEWISHLIST: `${NEXT_BASE_URL}/wishlists/customer/add`,
+    },
     BRAND: {
       BRAND: `${NEXT_BASE_URL}/products/get`,
       BRANDS: `${NEXT_BASE_URL}/brands`,
