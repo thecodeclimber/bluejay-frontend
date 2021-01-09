@@ -8,59 +8,13 @@ import ForgotPassword from "./forgotPassword";
 import NewPassword from "./newPassword";
 import { setModal, setUser } from "../../../../redux/user/actions";
 import { getModal, getUser } from "../../../../redux/user/selectors";
-import { USER_STRUCTURE, MODAL_TYPES } from "../../../../redux/user/constants";
-import { removeUserLocalStorage } from "../../../../utils/helper";
+import { MODAL_TYPES } from "../../../../redux/user/constants";
 
 const Auth = (props) => {
-  const { activeModal, setModal, setUser, user } = props;
-  const { id } = user || {};
-  const handleSignOut = () => {
-    removeUserLocalStorage();
-    setUser(USER_STRUCTURE);
-  };
+  const { activeModal } = props;
 
   return (
     <div className="container mx-auto py-3">
-      <div className="">
-        {id && (
-          <button
-            className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none mr-3"
-            onClick={handleSignOut}
-          >
-            SignOut
-          </button>
-        )}
-        {!id && (
-          <>
-            <button
-              className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none mr-3"
-              onClick={() => setModal(MODAL_TYPES.REGISTRATION)}
-            >
-              Registration
-            </button>
-            <button
-              className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none mr-3"
-              onClick={() => setModal(MODAL_TYPES.LOGIN)}
-            >
-              Login
-            </button>
-          </>
-        )}
-
-        <button
-          className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none mr-3"
-          onClick={() => setModal(MODAL_TYPES.FORGOT_PASSWORD)}
-        >
-          Forgot Password
-        </button>
-        <button
-          className="inline-flex py-2 items-center px-4 border-r border-solid rounded bg-primary text-white border-alpha-05 sm:text-sm focus:outline-none"
-          onClick={() => setModal(MODAL_TYPES.NEW_PASSWORD)}
-        >
-          New Password
-        </button>
-      </div>
-
       {activeModal === MODAL_TYPES.REGISTRATION && (
         <Transition
           show={activeModal === MODAL_TYPES.REGISTRATION}
