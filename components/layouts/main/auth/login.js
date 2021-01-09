@@ -1,21 +1,20 @@
-import { useEffect, useState } from "react";
-import { func, shape } from "prop-types";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import React, { useEffect, useState, useContext } from "react";
 import classnames from "classnames";
 import { TiTick as CheckedIcon } from "react-icons/ti";
 import { VscChromeClose as CloseIcon } from "react-icons/vsc";
-import URLS from "../../../../utils/urls";
 import { httpPost } from "../../../../utils/https";
 import {
+  getUserData,
   useStateCallback,
   setUserLocalStorage,
 } from "../../../../utils/helper";
-import { setModal, setUser } from "../../../../redux/user/actions";
-import { getUser } from "../../../../redux/user/selectors";
-import { MODAL_TYPES } from "../../../../redux/user/constants";
+import { setUser } from "../../../../hooks/user/actions";
+import { setModal } from "../../../../hooks/modal/actions";
+import { MODAL_TYPES } from "../../../../hooks/modal/constants";
+import { Context } from "../../../../hooks/store";
+import URLS from "../../../../utils/urls";
 
-const Login = (props) => {
+const Login = () => {
   const state = {
     email: "",
     password: "",
@@ -23,19 +22,19 @@ const Login = (props) => {
     isLoading: false,
     isValidate: false,
   };
-  const { user, setUser, setModal } = props;
   const [formData, setFormData] = useState(state);
   const [isSubmit, setIsSubmit] = useStateCallback(false);
+  const [, dispatchModal] = useContext(Context).modal;
+  const [userState, dispatchUser] = useContext(Context).user;
 
   useEffect(() => {
-    const { tempEmail } = user || {};
+    const { tempEmail } = userState.user || {};
     if (tempEmail) setFormData({ ...formData, email: tempEmail });
   }, []);
 
   const handleModal = () => {
-    const { user, setUser } = props;
-    setUser({ ...user, tempEmail: "" });
-    setModal();
+    dispatchUser(setUser({ ...userState.user, tempEmail: "" }));
+    dispatchModal(setModal());
   };
 
   const handleFormData = (e) => {
@@ -94,9 +93,10 @@ const Login = (props) => {
                 isLoading: false,
               });
               const data = { token: res.token, user: res.user };
-              const userData = setUserLocalStorage(data);
-              setUser(userData);
-              setModal();
+              setUserLocalStorage(data);
+              const userData = getUserData(userState);
+              dispatchUser(setUser(userData));
+              dispatchModal(setModal());
             }
           },
           (err) => {
@@ -179,7 +179,9 @@ const Login = (props) => {
               <span>Remember me</span>
               <span
                 className="text-primary cursor-pointer"
-                onClick={() => setModal(MODAL_TYPES.FORGOT_PASSWORD)}
+                onClick={() =>
+                  dispatchModal(setModal(MODAL_TYPES.FORGOT_PASSWORD))
+                }
               >
                 Forgot Password?
               </span>
@@ -215,17 +217,4 @@ const Login = (props) => {
   );
 };
 
-Login.propTypes = {
-  setModal: func,
-  setUser: func,
-  user: shape({}),
-};
-
-const mapStateToProps = createStructuredSelector({
-  user: getUser(),
-});
-
-export default connect(mapStateToProps, {
-  setModal,
-  setUser,
-})(Login);
+export default Login;

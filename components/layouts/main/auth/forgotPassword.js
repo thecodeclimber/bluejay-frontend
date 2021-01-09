@@ -1,15 +1,13 @@
-import React, { useState } from "react";
-import { func } from "prop-types";
-import { connect } from "react-redux";
+import React, { useState, useContext } from "react";
 import classnames from "classnames";
 import { VscChromeClose as CloseIcon } from "react-icons/vsc";
 import { useStateCallback, validateEmail } from "../../../../utils/helper";
 import URLS from "../../../../utils/urls";
 import { httpPost } from "../../../../utils/https";
-import { setModal } from "../../../../redux/user/actions";
+import { setModal } from "../../../../hooks/modal/actions";
+import { Context } from "../../../../hooks/store";
 
-const ForgotPassword = (props) => {
-  const { setModal } = props;
+const ForgotPassword = () => {
   const state = {
     email: "",
     isLoading: false,
@@ -17,6 +15,7 @@ const ForgotPassword = (props) => {
   };
   const [formData, setFormData] = useState(state);
   const [isSubmit, setIsSubmit] = useStateCallback(false);
+  const [, dispatchModal] = useContext(Context).modal;
 
   const handleFormData = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -66,7 +65,7 @@ const ForgotPassword = (props) => {
               alert(
                 "Reset password link send successfully to your email account"
               );
-              setModal();
+              dispatchModal(setModal());
             }
           },
           (err) => {
@@ -88,7 +87,7 @@ const ForgotPassword = (props) => {
           <div className="flex justify-end">
             <CloseIcon
               className="text-dark text-opacity-50 text-xl cursor-pointer"
-              onClick={() => setModal()}
+              onClick={() => dispatchModal(setModal())}
             />
           </div>
           <div className="font-medium mb-3 text-3xl text-sm leading-8 text-center">
@@ -130,7 +129,7 @@ const ForgotPassword = (props) => {
           </button>
           <button
             className="font-medium w-full py-3 items-center rounded bg-white text-dark border border-dark border-opacity-25 opacity-50 focus:outline-none mb-6"
-            onClick={() => setModal()}
+            onClick={() => dispatchModal(setModal())}
           >
             Cancel
           </button>
@@ -140,10 +139,4 @@ const ForgotPassword = (props) => {
   );
 };
 
-ForgotPassword.propTypes = {
-  setModal: func,
-};
-
-export default connect(null, {
-  setModal,
-})(ForgotPassword);
+export default ForgotPassword;

@@ -1,7 +1,4 @@
-import { Fragment, useState } from "react";
-import { shape, func } from "prop-types";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import React, { Fragment, useState, useContext } from "react";
 import Image from "next/image";
 import { Menu, Transition } from "@headlessui/react";
 import {
@@ -15,13 +12,12 @@ import {
   BsCardList as ListIcon,
   BsArrowRight as ArrorForwardIcon,
 } from "react-icons/bs";
-import { getUser } from "../../../../../redux/user/selectors";
-import { setUser, setModal } from "../../../../../redux/user/actions";
-import {
-  USER_STRUCTURE,
-  MODAL_TYPES,
-} from "../../../../../redux/user/constants";
 import { removeUserLocalStorage } from "../../../../../utils/helper";
+import { setUser } from "../../../../../hooks/user/actions";
+import { USER_STRUCTURE } from "../../../../../hooks/user/constants";
+import { setModal } from "../../../../../hooks/modal/actions";
+import { MODAL_TYPES } from "../../../../../hooks/modal/constants";
+import { Context } from "../../../../../hooks/store";
 
 const LeftMenuTitles = {
   AboutUs: "About Us",
@@ -46,16 +42,17 @@ const OrderStatus = {
   Canceled: "Canceled",
 };
 
-const TopNavbar = (props) => {
+const TopNavbar = () => {
   const [activeMenu, setActiveMenu] = useState(null);
-  const { user, setUser, setModal } = props;
+  const [, dispatchModal] = useContext(Context).modal;
+  const [userState, dispatchUser] = useContext(Context).user;
   const setActiveMenuName = (name = null) => {
     setActiveMenu(name);
   };
 
   const handleSignOut = () => {
     removeUserLocalStorage();
-    setUser(USER_STRUCTURE);
+    dispatchUser(setUser(USER_STRUCTURE));
     setActiveMenuName();
   };
 
@@ -98,7 +95,7 @@ const TopNavbar = (props) => {
           price: "5.64",
         },
       ],
-      show: Boolean(user?.id),
+      show: Boolean(userState.user?.id),
     },
     {
       title: RightMenuTitles.Orders,
@@ -133,7 +130,7 @@ const TopNavbar = (props) => {
           price: "697.00",
         },
       ],
-      show: Boolean(user?.id),
+      show: Boolean(userState.user?.id),
     },
     {
       title: RightMenuTitles.Cart,
@@ -145,21 +142,21 @@ const TopNavbar = (props) => {
           subTitle: "Keep Shopping",
         },
       ],
-      show: Boolean(user?.id),
+      show: Boolean(userState.user?.id),
     },
     {
       title: RightMenuTitles.SignUp,
       icon: "",
       subMenuList: [],
-      show: !Boolean(user?.id),
-      onClick: () => setModal(MODAL_TYPES.REGISTRATION),
+      show: !Boolean(userState.user?.id),
+      onClick: () => dispatchModal(setModal(MODAL_TYPES.REGISTRATION)),
     },
     {
       title: RightMenuTitles.Login,
       icon: "",
       subMenuList: [],
-      show: !Boolean(user?.id),
-      onClick: () => setModal(MODAL_TYPES.LOGIN),
+      show: !Boolean(userState.user?.id),
+      onClick: () => dispatchModal(setModal(MODAL_TYPES.LOGIN)),
     },
     {
       title: RightMenuTitles.Account,
@@ -183,7 +180,7 @@ const TopNavbar = (props) => {
           onClick: handleSignOut,
         },
       ],
-      show: Boolean(user?.id),
+      show: Boolean(userState.user?.id),
     },
     {
       title: RightMenuTitles.ContactUs,
@@ -251,7 +248,9 @@ const TopNavbar = (props) => {
                     >
                       {menu.icon && <menu.icon className={classes.icon} />}
                       {menu.title === RightMenuTitles.Account ? (
-                        <span className="capitalize">{user?.firstName}</span>
+                        <span className="capitalize">
+                          {userState.user?.firstName}
+                        </span>
                       ) : (
                         menu.title
                       )}
@@ -532,14 +531,4 @@ const DropDownOld = ({ children, icon, ...props }) => (
   </div>
 );
 
-TopNavbar.propTypes = {
-  user: shape({}),
-  setUser: func,
-  setModal: func,
-};
-
-const mapStateToProps = createStructuredSelector({
-  user: getUser(),
-});
-
-export default connect(mapStateToProps, { setModal, setUser })(TopNavbar);
+export default TopNavbar;

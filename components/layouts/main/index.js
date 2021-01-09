@@ -1,28 +1,28 @@
-import React, { useEffect } from "react";
-import { func, string } from "prop-types";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import React, { useEffect, useContext } from "react";
+import { useRouter } from "next/router";
+import { getUserData } from "../../../utils/helper";
+import { setUser } from "../../../hooks/user/actions";
+import { setModal } from "../../../hooks/modal/actions";
+import { MODAL_TYPES } from "../../../hooks/modal/constants";
+import { Context } from "../../../hooks/store";
 import Base from "../base";
 import Navbar from "./navbar";
 import Footer from "./footer";
 import Auth from "./auth";
-import { setModal, setUser } from "../../../redux/user/actions";
-import { getModal } from "../../../redux/user/selectors";
-import { MODAL_TYPES } from "../../../redux/user/constants";
-import { getUserData } from "../../../utils/helper";
-import { useRouter } from "next/router";
 
 const MainLayout = (props) => {
   const router = useRouter();
-  const { children, activeModal, setModal, setUser } = props;
+  const { children } = props;
+  const [modalState, dispatchModal] = useContext(Context).modal;
+  const [userState, dispatchUser] = useContext(Context).user;
 
   useEffect(() => {
     const { reset, token } = router.query || {};
-    if (reset && token && activeModal !== MODAL_TYPES.NEW_PASSWORD) {
-      setModal(MODAL_TYPES.NEW_PASSWORD);
+    if (reset && token && modalState.activeModal !== MODAL_TYPES.NEW_PASSWORD) {
+      dispatchModal(setModal(MODAL_TYPES.NEW_PASSWORD));
     }
-    const userData = getUserData();
-    if (userData) setUser(userData);
+    const userData = getUserData(userState);
+    if (userData) dispatchUser(setUser(userData));
   }, [router]);
 
   return (
@@ -35,17 +35,4 @@ const MainLayout = (props) => {
   );
 };
 
-MainLayout.propTypes = {
-  activeModal: string,
-  setModal: func,
-  setUser: func,
-};
-
-const mapStateToProps = createStructuredSelector({
-  activeModal: getModal(),
-});
-
-export default connect(mapStateToProps, {
-  setModal,
-  setUser,
-})(MainLayout);
+export default MainLayout;
