@@ -1,6 +1,6 @@
 import React from "react";
-import { shape } from "prop-types";
 import Link from "next/link";
+import { shape } from "prop-types";
 import { FaHeart as HeartIcon } from "react-icons/fa";
 import { BsFillBookmarkFill as BookmarkIcon } from "react-icons/bs";
 

@@ -1,7 +1,7 @@
 const PREFIX = "hooks/modal";
 
 /**
- * Redux Constants
+ * Hooks Constants
  */
 export const SET_MODAL = `${PREFIX}/SET_MODAL`;
 

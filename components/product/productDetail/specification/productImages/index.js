@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import { shape } from "prop-types";
 import { IoIosArrowForward as SlideRightArrow } from "react-icons/io";
-import Slider from "react-slick";
 import { Transition } from "@headlessui/react";
+import Slider from "react-slick";
 import classnames from "classnames";
 import ProductImageSlider from "./productImageSlider";
 
@@ -17,7 +17,7 @@ const ProductImages = (props) => {
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: productImagesLength,
+    slidesToShow: productImagesLength > 4 ? 4 : productImagesLength,
     slidesToScroll: 1,
   };
 
@@ -41,10 +41,10 @@ const ProductImages = (props) => {
   };
 
   return (
-    <div className="max-w-310 mr-8 py-8">
+    <div className="max-w-350 py-8">
       <div className="relative group cursor-pointer">
         <div
-          className="absolute h-full w-full z-30 flex items-center justify-center top-0 opacity-0 hover:opacity-100"
+          className="absolute h-full w-full z-10 flex items-center justify-center top-0 opacity-0 hover:opacity-100"
           onClick={() => setIsOpen(!isOpen)}
         >
           <img src="/img/zoom-icon.png" alt="zoom-image" />
@@ -54,7 +54,7 @@ const ProductImages = (props) => {
           src={selectedImage.url_standard}
           width="350px"
           height="260px"
-          alt="bolt-image"
+          alt="img"
         />
       </div>
       <div className="relative flex mt-16">

@@ -13,8 +13,8 @@ const CustomerPurchase = () => {
 
   const fetchPurchasedProducts = () => {
     setIsFetching(true);
-
-    httpGet(URLS.NEXT.PRODUCT.FEATURED, {
+    const purchasedProductsUrl = `${URLS.NEXT.PRODUCT.PURCHASED}?limit=5`;
+    httpGet(purchasedProductsUrl, {
       traceName: "get_customer_purchased_products",
     }).then(
       (res) => {

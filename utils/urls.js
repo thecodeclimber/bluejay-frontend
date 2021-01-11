@@ -26,6 +26,8 @@ const URLS = {
     PRODUCT: {
       PRODUCTS: `${BIG_COMMERCE_BASE_URL}/catalog/products`,
       IMAGES: `${BIG_COMMERCE_BASE_URL}/catalog/products/{PRODUCT_ID}/images`,
+      VIDEOS: `${BIG_COMMERCE_BASE_URL}/catalog/products/{PRODUCT_ID}/videos`,
+      OPTIONS: `${BIG_COMMERCE_BASE_URL}/catalog/products/{PRODUCT_ID}/options`,
       REVIEWS: `${BIG_COMMERCE_BASE_URL}/catalog/products/{PRODUCT_ID}/reviews`,
     },
     BRAND: {

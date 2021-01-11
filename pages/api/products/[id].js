@@ -16,7 +16,7 @@ export default async (req, res) => {
     return;
   }
 
-  const productUrl = URLS.BIG_COMMERCE.PRODUCT.PRODUCTS + "/" + id;
+  const productUrl = `${URLS.BIG_COMMERCE.PRODUCT.PRODUCTS}/${id}?include=images,videos,options`;
   const product = await httpGet(productUrl, { isBigCommerce: true });
   if (product.status === 401) {
     res.status(401);
@@ -27,13 +27,5 @@ export default async (req, res) => {
     });
     return;
   }
-
-  const productImageUrl = `${URLS.BIG_COMMERCE.PRODUCT.PRODUCTS}/${id}/images`;
-  const productImages = await httpGet(productImageUrl, {
-    isBigCommerce: true,
-  });
-
-  product.data = { ...product.data, images: productImages.data };
-
   return res.json(product);
 };

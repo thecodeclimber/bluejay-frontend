@@ -75,7 +75,7 @@ const ProductImageSlider = (props) => {
                             <img
                               width="600px"
                               height="360px"
-                              src={dataItem.url_standard}
+                              src={dataItem.url_zoom}
                               alt={`img-${index}`}
                             />
                           </div>

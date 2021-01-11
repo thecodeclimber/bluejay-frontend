@@ -16,9 +16,9 @@ export default async (req, res) => {
     return;
   }
 
-  const categorieUrl = URLS.BIG_COMMERCE.CATEGORY.CATEGORIES + "/" + id;
-  const categorie = await httpGet(categorieUrl, { isBigCommerce: true });
-  if (categorie.status === 401) {
+  const categoriesUrl = URLS.BIG_COMMERCE.CATEGORY.CATEGORIES + "/" + id;
+  const categories = await httpGet(categoriesUrl, { isBigCommerce: true });
+  if (categories.status === 401) {
     res.status(401);
     res.json({
       errors: {
@@ -27,5 +27,5 @@ export default async (req, res) => {
     });
     return;
   }
-  return res.json(categorie);
+  return res.json(categories);
 };

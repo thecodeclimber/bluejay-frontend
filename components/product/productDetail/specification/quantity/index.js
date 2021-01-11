@@ -1,12 +1,11 @@
 import React from "react";
 import { shape, func } from "prop-types";
-import { connect } from "react-redux";
 import { RiSubtractFill as SubtractIcon } from "react-icons/ri";
 import { BsPlus as PlusIcon } from "react-icons/bs";
-import { setProductDetail } from "../../../../../redux/product/actions";
 
 const Quantity = (props) => {
   const { productDetail, setProductDetail } = props;
+
   const decreaseQuantity = () => {
     const data = {
       ...productDetail,
@@ -18,7 +17,7 @@ const Quantity = (props) => {
     setProductDetail(data);
   };
 
-  const increaseQuantity = (id) => {
+  const increaseQuantity = () => {
     const data = {
       ...productDetail,
       quantity: productDetail?.quantity ? productDetail.quantity + 1 : 1,
@@ -38,7 +37,7 @@ const Quantity = (props) => {
         >
           <SubtractIcon className="text-black" />
         </div>
-        <div className="px-8 text-dark tracking-tight ">
+        <div className="px-10 text-dark tracking-tight">
           {productDetail?.quantity < 10 && 0}
           {productDetail?.quantity}
         </div>
@@ -55,6 +54,7 @@ const Quantity = (props) => {
 
 Quantity.defaultProps = {
   productDetail: {},
+  setProductDetail: () => {},
 };
 
 Quantity.propTypes = {
@@ -62,4 +62,4 @@ Quantity.propTypes = {
   setProductDetail: func,
 };
 
-export default connect(null, { setProductDetail })(Quantity);
+export default Quantity;
