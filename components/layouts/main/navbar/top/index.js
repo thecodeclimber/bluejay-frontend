@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import React, { Fragment, useState, useContext } from "react";
 import Image from "next/image";
 import { Menu, Transition } from "@headlessui/react";
 import {
@@ -12,12 +12,17 @@ import {
   BsCardList as ListIcon,
   BsArrowRight as ArrorForwardIcon,
 } from "react-icons/bs";
+import { removeUserLocalStorage } from "../../../../../utils/helper";
+import { setUser } from "../../../../../hooks/user/actions";
+import { USER_STRUCTURE } from "../../../../../hooks/user/constants";
+import { setModal } from "../../../../../hooks/modal/actions";
+import { MODAL_TYPES } from "../../../../../hooks/modal/constants";
+import { Context } from "../../../../../hooks/store";
 import Drawer from "../../../../elements/drawer";
 import CartAdded from "../../../../cart/cartAdded";
 
 const LeftMenuTitles = {
   AboutUs: "About Us",
-  Contact: "Contact",
   RequestaQuote: "Request a Quote",
   SiteMap: "Site Map",
 };
@@ -27,6 +32,9 @@ const RightMenuTitles = {
   Account: "Account",
   Orders: "Orders",
   Cart: "Cart",
+  SignUp: "Sign up",
+  Login: "Login",
+  ContactUs: "Contact Us",
 };
 
 const OrderStatus = {
@@ -37,28 +45,23 @@ const OrderStatus = {
 };
 
 const TopNavbar = () => {
-  const data = {};
   const [activeMenu, setActiveMenu] = useState(null);
   const [isCartDrawer, setIsCartDrawer] = useState(false);
-
+  const { userState, dispatchUser, dispatchModal } = useContext(Context);
   const setActiveMenuName = (name = null) => {
     setActiveMenu(name);
   };
 
+  const handleSignOut = () => {
+    removeUserLocalStorage();
+    dispatchUser(setUser(USER_STRUCTURE));
+    setActiveMenuName();
+  };
+
+  const data = {};
   data.menuLeft = [
     {
       title: LeftMenuTitles.AboutUs,
-    },
-    {
-      title: LeftMenuTitles.Contact,
-      subMenu: {
-        title: "Contact Information",
-        subTitle: "Consultations and ordering by phones:",
-        phone: "(773) 281-3100",
-        fax: "(773) 281-3131",
-        email: "Info@BlueJayFasteners.com",
-        address: "1770 W. Berteau Avenue \n Unit 402 \n Chicago, IL 60613",
-      },
     },
     {
       title: LeftMenuTitles.RequestaQuote,
@@ -94,28 +97,7 @@ const TopNavbar = () => {
           price: "5.64",
         },
       ],
-    },
-    {
-      title: RightMenuTitles.Account,
-      icon: UserIcon,
-      subMenuList: [
-        {
-          name: "My Account",
-          isExpanded: true,
-        },
-        {
-          name: "Basket (2 item)",
-          isExpanded: true,
-        },
-        {
-          name: "My Wish List (0)",
-          isExpanded: true,
-        },
-        {
-          name: "Sign Out",
-          isExpanded: false,
-        },
-      ],
+      show: Boolean(userState.user?.id),
     },
     {
       title: RightMenuTitles.Orders,
@@ -150,6 +132,7 @@ const TopNavbar = () => {
           price: "697.00",
         },
       ],
+      show: Boolean(userState.user?.id),
     },
     {
       title: RightMenuTitles.Cart,
@@ -161,6 +144,60 @@ const TopNavbar = () => {
           subTitle: "Keep Shopping",
         },
       ],
+      show: Boolean(userState.user?.id),
+      onClick: () => openCartDrawer(),
+    },
+    {
+      title: RightMenuTitles.SignUp,
+      icon: "",
+      subMenuList: [],
+      show: !Boolean(userState.user?.id),
+      onClick: () => dispatchModal(setModal(MODAL_TYPES.REGISTRATION)),
+    },
+    {
+      title: RightMenuTitles.Login,
+      icon: "",
+      subMenuList: [],
+      show: !Boolean(userState.user?.id),
+      onClick: () => dispatchModal(setModal(MODAL_TYPES.LOGIN)),
+    },
+    {
+      title: RightMenuTitles.Account,
+      icon: UserIcon,
+      subMenuList: [
+        {
+          name: "My Account",
+          isExpanded: true,
+        },
+        {
+          name: "Basket (2 item)",
+          isExpanded: true,
+        },
+        {
+          name: "My Wish List (0)",
+          isExpanded: true,
+        },
+        {
+          name: "Sign Out",
+          isExpanded: false,
+          onClick: handleSignOut,
+        },
+      ],
+      show: Boolean(userState.user?.id),
+    },
+    {
+      title: RightMenuTitles.ContactUs,
+      icon: "",
+      subMenuList: [],
+      detail: {
+        title: "Contact Information",
+        subTitle: "Consultations and ordering by phones:",
+        phone: "(773) 281-3100",
+        fax: "(773) 281-3131",
+        email: "Info@BlueJayFasteners.com",
+        address: "1770 W. Berteau Avenue \n Unit 402 \n Chicago, IL 60613",
+      },
+      show: true,
     },
   ];
 
@@ -181,12 +218,6 @@ const TopNavbar = () => {
     setIsCartDrawer(false);
   };
 
-  const handleOnClick = (title) => {
-    if (title === RightMenuTitles.Cart) {
-      openCartDrawer();
-    }
-  };
-
   return (
     <div className="flex items-center bg-primary">
       <Drawer isOpen={isCartDrawer} closeDrawer={closeCartDrawer}>
@@ -194,94 +225,27 @@ const TopNavbar = () => {
       </Drawer>
       <div className="container flex justify-between mx-auto">
         <div className="relative flex items-center">
-          {data.menuLeft.map((menu, index) => {
-            const { subMenu } = menu || {};
-            return (
-              <Menu
-                as="div"
-                key={index}
-                className="relative"
-                onMouseLeave={() => setActiveMenuName()}
+          {data.menuLeft.map((menu, index) => (
+            <Menu
+              as="div"
+              key={index}
+              className="relative"
+              onMouseLeave={() => setActiveMenuName()}
+            >
+              <Menu.Button
+                className={classes.button}
+                onMouseOver={() => setActiveMenuName(menu.title)}
               >
-                <Menu.Button
-                  className={subMenu ? classes.dropdown : classes.button}
-                  onMouseOver={() => setActiveMenuName(menu.title)}
-                >
-                  {menu.title}
-                  {subMenu && <ArrowIcon className={classes.arrow} />}
-                </Menu.Button>
-                {activeMenu == menu.title && subMenu && (
-                  <Transition
-                    show={activeMenu == menu.title}
-                    enter="transition duration-100 ease-out"
-                    enterFrom="transform scale-95 opacity-0"
-                    enterTo="transform scale-100 opacity-100"
-                    leave="transition duration-75 ease-out"
-                    leaveFrom="transform scale-100 opacity-100"
-                    leaveTo="transform scale-95 opacity-0"
-                    className="absolute z-10"
-                  >
-                    <Menu.Items
-                      className="font-ubuntu bg-white outline-none p-6 text-dark rounded-b shadow-grey-8"
-                      static
-                    >
-                      <Menu.Item
-                        as="div"
-                        className="font-medium mb-3 focus:outline-none"
-                      >
-                        {subMenu.title}
-                      </Menu.Item>
-                      <Menu.Item
-                        as="div"
-                        className="font-light text-sm truncate opacity-75 focus:outline-none"
-                      >
-                        {subMenu.subTitle}
-                      </Menu.Item>
-                      <hr className="my-3 opacity-05" />
-                      <Menu.Item
-                        as="div"
-                        className="flex text-sm mb-3 focus:outline-none"
-                      >
-                        <span className="opacity-75 w-16">Phone:</span>
-                        {subMenu.phone}
-                      </Menu.Item>
-                      <Menu.Item
-                        as="div"
-                        className="flex text-sm focus:outline-none"
-                      >
-                        <span className="opacity-75 w-16">Fax:</span>
-                        {subMenu.fax}
-                      </Menu.Item>
-                      <hr className="my-3 opacity-05" />
-                      <Menu.Item
-                        as="div"
-                        className="flex text-sm mb-3 focus:outline-none"
-                      >
-                        <span className="opacity-75 w-16 truncate ">
-                          E-mail:
-                        </span>
-                        {subMenu.email}
-                      </Menu.Item>
-                      <hr className="my-3 opacity-05" />
-                      <Menu.Item
-                        as="div"
-                        className="flex text-sm whitespace-pre-line focus:outline-none"
-                      >
-                        <span className="opacity-75 w-16">Address:</span>
-                        {subMenu.address}
-                      </Menu.Item>
-                    </Menu.Items>
-                  </Transition>
-                )}
-              </Menu>
-            );
-          })}
+                {menu.title}
+              </Menu.Button>
+            </Menu>
+          ))}
         </div>
         <div className="relative flex items-center">
           {data.menuRight.map((menu, index) => {
-            const { subMenuList } = menu || {};
+            const { subMenuList, detail, show, onClick } = menu || {};
             const isSubMenuList = subMenuList && subMenuList.length > 0;
-
+            const isDetail = detail && Object.keys(detail).length > 0;
             return (
               <Menu
                 as="div"
@@ -290,18 +254,26 @@ const TopNavbar = () => {
                 onMouseLeave={() => setActiveMenuName()}
               >
                 <Fragment>
-                  <Menu.Button
-                    className={classes.dropdown}
-                    onMouseOver={() => setActiveMenuName(menu.title)}
-                    onClick={() => handleOnClick(menu.title)}
-                  >
-                    <div className="flex items-center">
+                  {show && (
+                    <Menu.Button
+                      className={classes.dropdown}
+                      onMouseOver={() => setActiveMenuName(menu.title)}
+                      onClick={onClick}
+                    >
                       {menu.icon && <menu.icon className={classes.icon} />}
-                      {menu.title}
-                      {isSubMenuList && <ArrowIcon className={classes.arrow} />}
-                    </div>
-                  </Menu.Button>
-                  {activeMenu == menu.title && isSubMenuList && (
+                      {menu.title === RightMenuTitles.Account ? (
+                        <span className="capitalize">
+                          {userState.user?.firstName}
+                        </span>
+                      ) : (
+                        menu.title
+                      )}
+                      {(isSubMenuList || isDetail) && (
+                        <ArrowIcon className={classes.arrow} />
+                      )}
+                    </Menu.Button>
+                  )}
+                  {activeMenu == menu.title && (isSubMenuList || isDetail) && (
                     <Transition
                       show={activeMenu == menu.title}
                       enter="transition duration-100 ease-out"
@@ -310,7 +282,7 @@ const TopNavbar = () => {
                       leave="transition duration-75 ease-out"
                       leaveFrom="transform scale-100 opacity-100"
                       leaveTo="transform scale-95 opacity-0"
-                      className="absolute z-10 right-0"
+                      className="absolute z-40 right-0"
                     >
                       {menu.title === RightMenuTitles.Favorites &&
                         FavoritesMenuItems(subMenuList)}
@@ -320,6 +292,8 @@ const TopNavbar = () => {
                         OrdersMenuItems(subMenuList)}
                       {menu.title === RightMenuTitles.Cart &&
                         CartMenuItems(subMenuList)}
+                      {menu.title === RightMenuTitles.ContactUs &&
+                        ContactUsDetail(detail)}
                     </Transition>
                   )}
                 </Fragment>
@@ -331,6 +305,45 @@ const TopNavbar = () => {
     </div>
   );
 };
+
+const ContactUsDetail = (detail) => (
+  <Menu.Items
+    className="font-ubuntu bg-white outline-none p-6 text-dark rounded-b shadow-grey-8"
+    static
+  >
+    <Menu.Item as="div" className="font-medium mb-3 focus:outline-none">
+      {detail.title}
+    </Menu.Item>
+    <Menu.Item
+      as="div"
+      className="font-light text-sm truncate opacity-75 focus:outline-none"
+    >
+      {detail.subTitle}
+    </Menu.Item>
+    <hr className="my-3 opacity-05" />
+    <Menu.Item as="div" className="flex text-sm mb-3 focus:outline-none">
+      <span className="opacity-75 w-16">Phone:</span>
+      {detail.phone}
+    </Menu.Item>
+    <Menu.Item as="div" className="flex text-sm focus:outline-none">
+      <span className="opacity-75 w-16">Fax:</span>
+      {detail.fax}
+    </Menu.Item>
+    <hr className="my-3 opacity-05" />
+    <Menu.Item as="div" className="flex text-sm mb-3 focus:outline-none">
+      <span className="opacity-75 w-16 truncate ">E-mail:</span>
+      {detail.email}
+    </Menu.Item>
+    <hr className="my-3 opacity-05" />
+    <Menu.Item
+      as="div"
+      className="flex text-sm whitespace-pre-line focus:outline-none"
+    >
+      <span className="opacity-75 w-16">Address:</span>
+      {detail.address}
+    </Menu.Item>
+  </Menu.Items>
+);
 
 const FavoritesMenuItems = (subMenuList) => (
   <Menu.Items
@@ -379,10 +392,11 @@ const AccountMenuItems = (subMenuList) => (
   >
     <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
     {subMenuList.map((subMenu, index) => {
-      const { name, isExpanded } = subMenu || {};
+      const { name, isExpanded, onClick } = subMenu || {};
       return (
         <Fragment key={index}>
           <Menu.Item
+            onClick={onClick}
             as="div"
             className="text-base flex items-center justify-between px-6 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
           >

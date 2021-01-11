@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { array, bool, func } from "prop-types";
+import { array, bool, func, number } from "prop-types";
 import classnames from "classnames";
 import { FiHeart as HeartIcon } from "react-icons/fi/index";
 import Slider from "react-slick";
@@ -9,14 +9,16 @@ import { RiSubtractFill as SubtractIcon } from "react-icons/ri/index";
 import { FiPlus as PlusIcon } from "react-icons/fi";
 
 const ProductSlider = (props) => {
-  const { dots, products, isLoading, handleProducts } = props || {};
+  const { dots, products, isLoading, handleProducts, displayProducts } =
+    props || {};
   const slider = useRef(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const settings = {
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: 4,
+    slidesToShow:
+      products.length > displayProducts ? displayProducts : products.length,
     slidesToScroll: 1,
     afterChange: (current) => setActiveSlide(current),
   };
@@ -57,30 +59,31 @@ const ProductSlider = (props) => {
         )}
         {!isLoading && (
           <>
-            <div className="absolute -left-30 flex items-center h-full pb-32 mt-8">
-              <SlideLeftArrow
-                className="text-2xl z-20 text-dark cursor-pointer"
-                onClick={moveLeft}
-              />
-            </div>
-            <div className="absolute -right-30 flex items-center h-full pb-32 mt-8">
-              <SlideRightArrow
-                className="text-2xl z-20 text-dark cursor-pointer"
-                onClick={moveRight}
-              />
-            </div>
+            {products.length === 0 && (
+              <div className="text-dark text-center mt-6">
+                No data available
+              </div>
+            )}
+            {products.length > displayProducts && (
+              <>
+                <div className="absolute -left-30 flex items-center h-full pb-32 mt-8">
+                  <SlideLeftArrow
+                    className="text-2xl z-20 text-dark cursor-pointer"
+                    onClick={moveLeft}
+                  />
+                </div>
+                <div className="absolute -right-30 flex items-center h-full pb-32 mt-8">
+                  <SlideRightArrow
+                    className="text-2xl z-20 text-dark cursor-pointer"
+                    onClick={moveRight}
+                  />
+                </div>
+              </>
+            )}
             <div className="container mx-auto flex justify-between">
               {products.length > 0 && (
                 <Slider {...settings} className="overflow-hidden" ref={slider}>
                   {products.map((product, index) => {
-                    let productImgUrl = "";
-                    if (product.images && product.images.length > 0) {
-                      const filteredImage =
-                        product.images.find(
-                          (img) => img.is_thumbnail === true
-                        ) || product.images[0];
-                      productImgUrl = filteredImage.url_thumbnail;
-                    }
                     return (
                       <div
                         className="mr-6 focus:outline-none py-10 h-full"
@@ -101,7 +104,7 @@ const ProductSlider = (props) => {
                               </div>
                               <img
                                 className="m-auto mb-5"
-                                src={productImgUrl}
+                                src={product.primary_image?.url_thumbnail}
                                 alt={`img-${index}`}
                               />
                               <div className=" font-medium text-center text-dark text-xl mb-3 whitespace-pre-line tracking-tight leading-7">
@@ -179,6 +182,7 @@ ProductSlider.defaultProps = {
   isLoading: false,
   products: [],
   handleProducts: () => {},
+  displayProducts: 4,
 };
 
 ProductSlider.propTypes = {
@@ -186,6 +190,7 @@ ProductSlider.propTypes = {
   products: array,
   isLoading: bool,
   handleProducts: func,
+  displayProducts: number,
 };
 
 export default ProductSlider;
