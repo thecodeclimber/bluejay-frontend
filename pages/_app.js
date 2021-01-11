@@ -1,10 +1,6 @@
-import "../assets/css/index.css";
-import { createWrapper } from "next-redux-wrapper";
-import store from "../redux/store";
 import MainLayout from "@/components//layouts/main/index.js";
 import Store from "../hooks/store";
-
-const wrapper = createWrapper(store);
+import "../assets/css/index.css";
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -16,4 +12,4 @@ function MyApp({ Component, pageProps }) {
   );
 }
 
-export default wrapper.withRedux(MyApp);
+export default MyApp;

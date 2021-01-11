@@ -8,7 +8,7 @@ import { MODAL_TYPES } from "../../../../hooks/modal/constants";
 import { Context } from "../../../../hooks/store";
 
 const Auth = () => {
-  const [modalState] = useContext(Context).modal;
+  const { modalState } = useContext(Context);
 
   return (
     <div className="container mx-auto py-3">

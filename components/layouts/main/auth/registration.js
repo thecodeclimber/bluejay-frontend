@@ -38,8 +38,7 @@ const Registration = () => {
   };
   const [formData, setFormData] = useState(state);
   const [isSubmit, setIsSubmit] = useStateCallback(false);
-  const [, dispatchModal] = useContext(Context).modal;
-  const [userState, dispatchUser] = useContext(Context).user;
+  const { userState, dispatchUser, dispatchModal } = useContext(Context);
 
   const handleFormData = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

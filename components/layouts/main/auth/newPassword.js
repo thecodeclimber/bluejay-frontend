@@ -19,7 +19,7 @@ import { Context } from "../../../../hooks/store";
 
 const NewPassword = () => {
   const router = useRouter();
-  const [, dispatchModal] = useContext(Context).modal;
+  const { dispatchModal } = useContext(Context);
 
   useEffect(() => {
     // returned function will be called on component unmount

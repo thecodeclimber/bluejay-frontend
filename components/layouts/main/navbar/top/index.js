@@ -44,8 +44,7 @@ const OrderStatus = {
 
 const TopNavbar = () => {
   const [activeMenu, setActiveMenu] = useState(null);
-  const [, dispatchModal] = useContext(Context).modal;
-  const [userState, dispatchUser] = useContext(Context).user;
+  const { userState, dispatchUser, dispatchModal } = useContext(Context);
   const setActiveMenuName = (name = null) => {
     setActiveMenu(name);
   };

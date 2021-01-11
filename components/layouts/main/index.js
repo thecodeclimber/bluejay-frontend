@@ -13,8 +13,9 @@ import Auth from "./auth";
 const MainLayout = (props) => {
   const router = useRouter();
   const { children } = props;
-  const [modalState, dispatchModal] = useContext(Context).modal;
-  const [userState, dispatchUser] = useContext(Context).user;
+  const { userState, dispatchUser, modalState, dispatchModal } = useContext(
+    Context
+  );
 
   useEffect(() => {
     const { reset, token } = router.query || {};

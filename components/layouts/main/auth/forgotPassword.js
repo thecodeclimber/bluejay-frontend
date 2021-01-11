@@ -15,7 +15,7 @@ const ForgotPassword = () => {
   };
   const [formData, setFormData] = useState(state);
   const [isSubmit, setIsSubmit] = useStateCallback(false);
-  const [, dispatchModal] = useContext(Context).modal;
+  const { dispatchModal } = useContext(Context);
 
   const handleFormData = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
