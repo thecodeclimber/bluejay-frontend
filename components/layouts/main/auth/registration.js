@@ -449,7 +449,7 @@ const Registration = () => {
       {!formData.isLoading && (
         <div
           className="fixed top-0 h-full w-full z-20"
-          onClick={() => setModal()}
+          onClick={() => dispatchModal(setModal())}
         />
       )}
     </div>
