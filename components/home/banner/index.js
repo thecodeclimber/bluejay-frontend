@@ -58,7 +58,7 @@ const Banner = () => {
   };
 
   return (
-    <div className="container mx-auto pt-8 font-ubuntu mb-16">
+    <div className="container mx-auto pt-6 font-ubuntu mb-16">
       <div className="relative w-full">
         <div className="absolute z-10 flex pb-20 h-full items-center left-0 ml-16 focus:outline-none">
           <LeftArrow

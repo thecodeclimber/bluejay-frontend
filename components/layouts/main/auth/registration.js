@@ -1,7 +1,4 @@
-import React, { useState } from "react";
-import { func, shape } from "prop-types";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import React, { useState, useContext } from "react";
 import { Menu } from "@headlessui/react";
 import classnames from "classnames";
 import { TiTick as CheckedIcon } from "react-icons/ti";
@@ -17,12 +14,12 @@ import {
   validateNumberAndCharacter,
   useStateCallback,
 } from "../../../../utils/helper";
-import { setModal, setUser } from "../../../../redux/user/actions";
-import { getUser } from "../../../../redux/user/selectors";
-import { MODAL_TYPES } from "../../../../redux/user/constants";
+import { setUser } from "../../../../hooks/user/actions";
+import { setModal } from "../../../../hooks/modal/actions";
+import { MODAL_TYPES } from "../../../../hooks/modal/constants";
+import { Context } from "../../../../hooks/store";
 
-const Registration = (props) => {
-  const { user, setModal, setUser } = props;
+const Registration = () => {
   const state = {
     name: "",
     email: "",
@@ -41,6 +38,7 @@ const Registration = (props) => {
   };
   const [formData, setFormData] = useState(state);
   const [isSubmit, setIsSubmit] = useStateCallback(false);
+  const { userState, dispatchUser, dispatchModal } = useContext(Context);
 
   const handleFormData = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -157,7 +155,9 @@ const Registration = (props) => {
               setFormData({ ...formData, isLoading: false });
             } else {
               alert("Account created successfully");
-              setUser({ ...user, tempEmail: formData.email });
+              dispatchUser(
+                setUser({ ...userState.user, tempEmail: formData.email })
+              );
               setIsSubmit(false);
               setFormData({
                 ...formData,
@@ -170,7 +170,7 @@ const Registration = (props) => {
                 isTermAndConditions: false,
                 isLoading: false,
               });
-              setModal(MODAL_TYPES.LOGIN);
+              dispatchModal(setModal(MODAL_TYPES.LOGIN));
             }
           },
           (err) => {
@@ -203,7 +203,7 @@ const Registration = (props) => {
           <div className="flex justify-end">
             <CloseIcon
               className="text-dark text-opacity-50 text-xl cursor-pointer"
-              onClick={() => setModal()}
+              onClick={() => dispatchModal(setModal())}
             />
           </div>
           <div className="font-medium mb-3 text-3xl text-sm leading-8 text-center mb-10">
@@ -450,17 +450,4 @@ const Registration = (props) => {
   );
 };
 
-Registration.propTypes = {
-  setUser: func,
-  setModal: func,
-  user: shape({}),
-};
-
-const mapStateToProps = createStructuredSelector({
-  user: getUser(),
-});
-
-export default connect(mapStateToProps, {
-  setModal,
-  setUser,
-})(Registration);
+export default Registration;
