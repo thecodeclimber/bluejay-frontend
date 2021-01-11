@@ -47,21 +47,6 @@ const additionalProducts = [
     name: "Alloy Steel Socket Head Screws",
     price: "5.64",
   },
-  {
-    img: "/img/cart-added.png",
-    name: "Head Screws Socket Head Screws",
-    price: "5.64",
-  },
-  {
-    img: "/img/cart-added.png",
-    name: "Alloy Steel Socket Head Screws",
-    price: "5.64",
-  },
-  {
-    img: "/img/cart-added.png",
-    name: "Alloy Steel Socket Head Screws",
-    price: "5.64",
-  },
 ];
 
 const AdditionalProducts = () => {
@@ -82,6 +67,7 @@ const AdditionalProducts = () => {
                     "border-l border-dark border-opacity-05 pl-4 pr-2":
                       index % 3 !== 0,
                   },
+
                   {
                     "pr-4": index % 3 === 0,
                   }

@@ -3,7 +3,7 @@ import CartItems from "./cartItems";
 import SaveForLater from "./saveForLater";
 import Shipping from "./shipping";
 import Total from "./total";
-import CustomerPurchase from "../../product/productDetail/customerPurchase";
+import CustomerPurchase from "./customerPurchase";
 
 const Basket = () => {
   return (

@@ -21,7 +21,7 @@ const addedData = [
 
 const AddedToCart = () => {
   return (
-    <div>
+    <div className="mb-40">
       {addedData.length > 0 &&
         addedData.map((data, index) => (
           <div key={index}>
