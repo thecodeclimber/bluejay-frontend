@@ -14,8 +14,8 @@ const FeaturedProduct = () => {
 
   const fetchFeaturedProducts = () => {
     setIsFetching(true);
-
-    httpGet(URLS.NEXT.PRODUCT.FEATURED, {
+    const featuredProductsUrl = `${URLS.NEXT.PRODUCT.FEATURED}?limit=5`;
+    httpGet(featuredProductsUrl, {
       traceName: "get_featured_products",
     }).then(
       (res) => {

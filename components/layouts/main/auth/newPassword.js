@@ -1,6 +1,4 @@
-import { useState, useEffect } from "react";
-import { func } from "prop-types";
-import { connect } from "react-redux";
+import React, { useState, useEffect } from "react";
 import classnames from "classnames";
 import {
   AiFillEye as EyeIcon,
@@ -11,16 +9,17 @@ import {
   useStateCallback,
   validateNumberAndCharacter,
 } from "../../../../utils/helper";
-import { setModal } from "../../../../redux/user/actions";
 import { httpPut } from "../../../../utils/https";
 import { MESSAGES } from "../../../../utils/constants";
 import URLS from "../../../../utils/urls";
-import { MODAL_TYPES } from "../../../../redux/user/constants";
 import { useRouter } from "next/router";
+import { setModal } from "../../../../hooks/modal/actions";
+import { MODAL_TYPES } from "../../../../hooks/modal/constants";
+import { Context } from "../../../../hooks/store";
 
-const NewPassword = (props) => {
-  const { setModal } = props;
+const NewPassword = () => {
   const router = useRouter();
+  const { dispatchModal } = useContext(Context);
 
   useEffect(() => {
     // returned function will be called on component unmount
@@ -111,7 +110,7 @@ const NewPassword = (props) => {
                 repeatPassword: "",
                 isLoading: false,
               });
-              setModal(MODAL_TYPES.LOGIN);
+              dispatchModal(setModal(MODAL_TYPES.LOGIN));
             }
           },
           (err) => {
@@ -134,7 +133,7 @@ const NewPassword = (props) => {
           <div className="flex justify-end">
             <CloseIcon
               className="text-dark text-opacity-50 text-xl cursor-pointer"
-              onClick={() => setModal()}
+              onClick={() => dispatchModal(setModal())}
             />
           </div>
           <div className="font-medium mb-2 text-3xl text-sm leading-8 text-center">
@@ -212,7 +211,7 @@ const NewPassword = (props) => {
             </button>
             <button
               className="font-medium w-full py-3 items-center rounded bg-white text-dark border border-dark border-opacity-25 opacity-50 focus:outline-none mb-6"
-              onClick={() => setModal()}
+              onClick={() => dispatchModal(setModal())}
             >
               Cancel
             </button>
@@ -222,17 +221,11 @@ const NewPassword = (props) => {
       {!formData.isLoading && (
         <div
           className="fixed top-0 h-full w-full z-20"
-          onClick={() => setModal()}
+          onClick={() => dispatchModal(setModal())}
         />
       )}
     </div>
   );
 };
 
-NewPassword.propTypes = {
-  setModal: func,
-};
-
-export default connect(null, {
-  setModal,
-})(NewPassword);
+export default NewPassword;
