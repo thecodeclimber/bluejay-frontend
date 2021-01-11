@@ -14,8 +14,8 @@ const TopDeals = () => {
 
   const fetchTopDeals = () => {
     setIsFetching(true);
-
-    httpGet(URLS.NEXT.PRODUCT.TOP_DEALS, {
+    const topDealProductsUrl = `${URLS.NEXT.PRODUCT.TOP_DEALS}?limit=5`;
+    httpGet(topDealProductsUrl, {
       traceName: "get_top_deal_products",
     }).then(
       (res) => {

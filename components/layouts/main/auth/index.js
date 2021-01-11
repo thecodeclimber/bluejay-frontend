@@ -1,23 +1,20 @@
-import { string, func, shape } from "prop-types";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import React, { useContext } from "react";
 import { Transition } from "@headlessui/react";
 import Registration from "./registration";
 import Login from "./login";
 import ForgotPassword from "./forgotPassword";
 import NewPassword from "./newPassword";
-import { setModal, setUser } from "../../../../redux/user/actions";
-import { getModal, getUser } from "../../../../redux/user/selectors";
-import { MODAL_TYPES } from "../../../../redux/user/constants";
+import { MODAL_TYPES } from "../../../../hooks/modal/constants";
+import { Context } from "../../../../hooks/store";
 
-const Auth = (props) => {
-  const { activeModal } = props;
+const Auth = () => {
+  const { modalState } = useContext(Context);
 
   return (
     <div className="container mx-auto py-3">
-      {activeModal === MODAL_TYPES.REGISTRATION && (
+      {modalState.activeModal === MODAL_TYPES.REGISTRATION && (
         <Transition
-          show={activeModal === MODAL_TYPES.REGISTRATION}
+          show={true}
           enter="transition duration-100 ease-out"
           enterFrom="transform scale-95 opacity-0"
           enterTo="transform scale-100 opacity-100"
@@ -30,9 +27,9 @@ const Auth = (props) => {
         </Transition>
       )}
 
-      {activeModal === MODAL_TYPES.LOGIN && (
+      {modalState.activeModal === MODAL_TYPES.LOGIN && (
         <Transition
-          show={activeModal === MODAL_TYPES.LOGIN}
+          show={true}
           enter="transition duration-100 ease-out"
           enterFrom="transform scale-95 opacity-0"
           enterTo="transform scale-100 opacity-100"
@@ -45,9 +42,9 @@ const Auth = (props) => {
         </Transition>
       )}
 
-      {activeModal === MODAL_TYPES.FORGOT_PASSWORD && (
+      {modalState.activeModal === MODAL_TYPES.FORGOT_PASSWORD && (
         <Transition
-          show={activeModal === MODAL_TYPES.FORGOT_PASSWORD}
+          show={true}
           enter="transition duration-100 ease-out"
           enterFrom="transform scale-95 opacity-0"
           enterTo="transform scale-100 opacity-100"
@@ -60,9 +57,9 @@ const Auth = (props) => {
         </Transition>
       )}
 
-      {activeModal === MODAL_TYPES.NEW_PASSWORD && (
+      {modalState.activeModal === MODAL_TYPES.NEW_PASSWORD && (
         <Transition
-          show={activeModal === MODAL_TYPES.NEW_PASSWORD}
+          show={true}
           enter="transition duration-100 ease-out"
           enterFrom="transform scale-95 opacity-0"
           enterTo="transform scale-100 opacity-100"
@@ -78,19 +75,4 @@ const Auth = (props) => {
   );
 };
 
-Auth.propTypes = {
-  activeModal: string,
-  setModal: func,
-  setUser: func,
-  user: shape({}),
-};
-
-const mapStateToProps = createStructuredSelector({
-  activeModal: getModal(),
-  user: getUser(),
-});
-
-export default connect(mapStateToProps, {
-  setModal,
-  setUser,
-})(Auth);
+export default Auth;
