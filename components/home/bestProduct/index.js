@@ -14,8 +14,8 @@ const BestProduct = () => {
 
   const fetchBestProducts = () => {
     setIsFetching(true);
-
-    httpGet(URLS.NEXT.PRODUCT.BEST, {
+    const bestProductsUrl = `${URLS.NEXT.PRODUCT.BEST}?limit=5`;
+    httpGet(bestProductsUrl, {
       traceName: "get_best_products",
     }).then(
       (res) => {

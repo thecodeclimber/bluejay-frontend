@@ -7,9 +7,6 @@ import {
   getSearchHistoryLocalStorage,
   setSearchHistoryLocalStorage,
 } from "../../../../../utils/helper";
-import { func, array } from "prop-types";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
 import { Menu, Transition } from "@headlessui/react";
 import classnames from "classnames";
 import {
@@ -20,8 +17,6 @@ import {
   MdChevronRight as ChevronRight,
 } from "react-icons/md";
 import { VscClose as CloseIcon } from "react-icons/vsc";
-import { setCategories } from "../../../../../redux/category/actions";
-import { getCategories } from "../../../../../redux/category/selectors";
 
 const SearchType = {
   category: "category",
@@ -44,7 +39,6 @@ const Search = (props) => {
   const [search, setSearch] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
-
   const data = {};
 
   data.searchProducts = [
@@ -92,7 +86,7 @@ const Search = (props) => {
     let searchUrl = URLS.NEXT.PRODUCT.SEARCH;
     searchUrl += `/${JSON.stringify(searchParams)}`;
     setIsSearching(true);
-    httpGet(searchUrl, { traceName: "search products" }).then(
+    httpGet(searchUrl, { traceName: "search_products" }).then(
       (res) => {
         if (res.errors && Object.keys(res.errors).length > 0) {
           alert(res.errors[Object.keys(res.errors)[0]]);
@@ -403,14 +397,14 @@ const Categories = (props) => {
   const [isFetchingCategoryProducts, setIsFetchingCategoryProducts] = useState(
     false
   );
-  const { isFetching, categories } = props;
+  const { isFetchingCategories, categories } = props;
 
   const getCategoryProducts = (id) => {
     if (!id || id === capturedCategoryId) return;
     setCapturedCategoryId(id);
     setIsFetchingCategoryProducts(true);
-    const categoryProductsUrl = `${URLS.NEXT.CATEGORY.PRODUCTS}?id=${id}`;
-    httpGet(categoryProductsUrl, { traceName: "get category products" }).then(
+    const categoryProductsUrl = `${URLS.NEXT.CATEGORY.PRODUCTS}?id=${id}&limit=6`;
+    httpGet(categoryProductsUrl, { traceName: "get_category_products" }).then(
       (res) => {
         if (res.errors && Object.keys(res.errors).length > 0) {
           alert(res.errors[Object.keys(res.errors)[0]]);
@@ -499,12 +493,12 @@ const Categories = (props) => {
               static
             >
               <span className="w-5 h-5 -mt-2 ml-56 rounded-sm bg-white absolute -z-1 left-0 top-0 transform rotate-45" />
-              {isFetching && (
+              {isFetchingCategories && (
                 <div className="bg-opacity-03 bg-dark flex py-32 w-full min-w-300 justify-center">
                   Loading....
                 </div>
               )}
-              {!isFetching && (
+              {!isFetchingCategories && (
                 <div className="flex">
                   <div className="bg-opacity-03 bg-dark  min-w-300">
                     {parentCategories &&
@@ -581,9 +575,7 @@ const Categories = (props) => {
                       categoryProducts &&
                       categoryProducts.length > 0 &&
                       categoryProducts.map((row, index) => {
-                        const { id, name, images } = row || {};
-                        const image =
-                          (images && images.length > 0 && images[0]) || "";
+                        const { id, name, primary_image } = row || {};
                         return (
                           <Menu.Item
                             as="div"
@@ -613,9 +605,9 @@ const Categories = (props) => {
                                   )}
                                 >
                                   <div>
-                                    {image?.url_standard && (
+                                    {primary_image?.url_standard && (
                                       <img
-                                        src={image?.url_standard}
+                                        src={primary_image?.url_standard}
                                         width="120px"
                                         height="120px"
                                         className="object-contain"
@@ -651,29 +643,28 @@ const Categories = (props) => {
 };
 
 const MiddleNavbar = (props) => {
-  const { setCategories } = props;
-  const [isFetching, setIsFetching] = useState(false);
+  const [isFetchingCategories, setIsFetchingCategories] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
   const fetchCategories = () => {
-    setIsFetching(true);
+    setIsFetchingCategories(true);
     httpGet(URLS.NEXT.CATEGORY.CATEGORIES, {
-      traceName: "get all categories",
+      traceName: "get_all_categories",
     }).then(
       (res) => {
         if (res.errors && Object.keys(res.errors).length > 0) {
           alert(res.errors[Object.keys(res.errors)[0]]);
-          setIsFetching(false);
         } else {
-          setIsFetching(false);
           setCategories(res.data || []);
         }
+        setIsFetchingCategories(false);
       },
       (err) => {
-        setIsFetching(false);
+        setIsFetchingCategories(false);
       }
     );
   };
@@ -681,22 +672,19 @@ const MiddleNavbar = (props) => {
     <div className="flex items-center py-1 bg-dark">
       <div className="container flex items-center mx-auto">
         <Logo />
-        <Categories {...props} isFetching={isFetching} />
-        <Search {...props} isFetching={isFetching} />
+        <Categories
+          {...props}
+          isFetchingCategories={isFetchingCategories}
+          categories={categories}
+        />
+        <Search
+          {...props}
+          isFetchingCategories={isFetchingCategories}
+          categories={categories}
+        />
       </div>
     </div>
   );
 };
 
-MiddleNavbar.propTypes = {
-  setCategories: func,
-  categories: array,
-};
-
-const mapStateToProps = createStructuredSelector({
-  categories: getCategories(),
-});
-
-export default connect(mapStateToProps, {
-  setCategories,
-})(MiddleNavbar);
+export default MiddleNavbar;
