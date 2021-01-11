@@ -1,8 +1,5 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useContext, useEffect } from "react";
 import Image from "next/image";
-import { shape, func } from "prop-types";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
 import { Menu, Transition } from "@headlessui/react";
 import { httpGet } from "../../../../../utils/https";
 import {
@@ -16,13 +13,12 @@ import {
   BsCardList as ListIcon,
   BsArrowRight as ArrorForwardIcon,
 } from "react-icons/bs";
-import { getUser } from "../../../../../redux/user/selectors";
-import { setUser, setModal } from "../../../../../redux/user/actions";
-import {
-  USER_STRUCTURE,
-  MODAL_TYPES,
-} from "../../../../../redux/user/constants";
 import { removeUserLocalStorage } from "../../../../../utils/helper";
+import { setUser } from "../../../../../hooks/user/actions";
+import { USER_STRUCTURE } from "../../../../../hooks/user/constants";
+import { setModal } from "../../../../../hooks/modal/actions";
+import { MODAL_TYPES } from "../../../../../hooks/modal/constants";
+import { Context } from "../../../../../hooks/store";
 import URLS from "../../../../../utils/urls";
 
 const LeftMenuTitles = {
@@ -48,19 +44,20 @@ const OrderStatus = {
   Canceled: "Canceled",
 };
 
-const TopNavbar = (props) => {
+const TopNavbar = () => {
   const [activeMenu, setActiveMenu] = useState(null);
-  const { user, setUser, setModal } = props;
   const [wishlists, setWishlists] = useState([]);
   const [isFetchingWishlists, setIsFetchingWishlists] = useState(false);
+  const { userState, dispatchUser, dispatchModal } = useContext(Context);
+
   const setActiveMenuName = (name = null) => {
     setActiveMenu(name);
   };
 
   useEffect(() => {
-    if (user.id) {
+    if (userState.user?.id) {
       setIsFetchingWishlists(true);
-      const wishlistUrl = `${URLS.NEXT.WISHLIST.WISHLISTS}/customer?id=${user.id}`;
+      const wishlistUrl = `${URLS.NEXT.WISHLIST.WISHLISTS}/customer?id=${userState.user?.id}`;
       httpGet(wishlistUrl, {
         traceName: "get_customer_wishlists",
       }).then(
@@ -77,11 +74,11 @@ const TopNavbar = (props) => {
         }
       );
     }
-  }, [user.id]);
+  }, [userState.user?.id]);
 
   const handleSignOut = () => {
     removeUserLocalStorage();
-    setUser(USER_STRUCTURE);
+    dispatchUser(setUser(USER_STRUCTURE));
     setActiveMenuName();
   };
 
@@ -103,7 +100,7 @@ const TopNavbar = (props) => {
       title: RightMenuTitles.Favorites,
       icon: FavoriteIcon,
       subMenuList: wishlists,
-      show: Boolean(user?.id),
+      show: Boolean(userState.user?.id),
     },
     {
       title: RightMenuTitles.Orders,
@@ -138,7 +135,7 @@ const TopNavbar = (props) => {
           price: "697.00",
         },
       ],
-      show: Boolean(user?.id),
+      show: Boolean(userState.user?.id),
     },
     {
       title: RightMenuTitles.Cart,
@@ -150,21 +147,21 @@ const TopNavbar = (props) => {
           subTitle: "Keep Shopping",
         },
       ],
-      show: Boolean(user?.id),
+      show: Boolean(userState.user?.id),
     },
     {
       title: RightMenuTitles.SignUp,
       icon: "",
       subMenuList: [],
-      show: !Boolean(user?.id),
-      onClick: () => setModal(MODAL_TYPES.REGISTRATION),
+      show: !Boolean(userState.user?.id),
+      onClick: () => dispatchModal(setModal(MODAL_TYPES.REGISTRATION)),
     },
     {
       title: RightMenuTitles.Login,
       icon: "",
       subMenuList: [],
-      show: !Boolean(user?.id),
-      onClick: () => setModal(MODAL_TYPES.LOGIN),
+      show: !Boolean(userState.user?.id),
+      onClick: () => dispatchModal(setModal(MODAL_TYPES.LOGIN)),
     },
     {
       title: RightMenuTitles.Account,
@@ -188,7 +185,7 @@ const TopNavbar = (props) => {
           onClick: handleSignOut,
         },
       ],
-      show: Boolean(user?.id),
+      show: Boolean(userState.user?.id),
     },
     {
       title: RightMenuTitles.ContactUs,
@@ -256,7 +253,9 @@ const TopNavbar = (props) => {
                     >
                       {menu.icon && <menu.icon className={classes.icon} />}
                       {menu.title === RightMenuTitles.Account ? (
-                        <span className="capitalize">{user?.firstName}</span>
+                        <span className="capitalize">
+                          {userState.user?.firstName}
+                        </span>
                       ) : (
                         menu.title
                       )}
@@ -541,14 +540,4 @@ const DropDownOld = ({ children, icon, ...props }) => (
   </div>
 );
 
-TopNavbar.propTypes = {
-  user: shape({}),
-  setUser: func,
-  setModal: func,
-};
-
-const mapStateToProps = createStructuredSelector({
-  user: getUser(),
-});
-
-export default connect(mapStateToProps, { setModal, setUser })(TopNavbar);
+export default TopNavbar;
