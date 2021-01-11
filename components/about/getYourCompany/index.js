@@ -1,12 +1,10 @@
-import React from "react";
-import { func } from "prop-types";
-import { connect } from "react-redux";
-import { setModal } from "../../../redux/user/actions";
-import { MODAL_TYPES } from "../../../redux/user/constants";
+import React, { useContext } from "react";
+import { setModal } from "../../../hooks/modal/actions";
+import { MODAL_TYPES } from "../../../hooks/modal/constants";
+import { Context } from "../../../hooks/store";
 
-const GetYourCompany = (props) => {
-  const { setModal } = props;
-
+const GetYourCompany = () => {
+  const { dispatchModal } = useContext(Context);
   return (
     <div className="container mx-auto px-8 bg-account bg-cover bg-no-repeat py-8 rounded mb-16">
       <div className="border rounded border-opacity-10 border-white">
@@ -17,7 +15,7 @@ const GetYourCompany = (props) => {
         <div className="flex justify-center mb-12">
           <button
             className="py-3 px-16 rounded bg-primary text-white text-base focus:outline-none"
-            onClick={() => setModal(MODAL_TYPES.REGISTRATION)}
+            onClick={() => dispatchModal(setModal(MODAL_TYPES.REGISTRATION))}
           >
             Get an Account
           </button>
@@ -27,10 +25,4 @@ const GetYourCompany = (props) => {
   );
 };
 
-GetYourCompany.propTypes = {
-  setModal: func,
-};
-
-export default connect(null, {
-  setModal,
-})(GetYourCompany);
+export default GetYourCompany;
