@@ -6,6 +6,7 @@ import CustomerPurchase from "./customerPurchase";
 import Specification from "./specification";
 import BreadCrum from "./breadCrum";
 import URLS from "../../../utils/urls";
+import Loader from "../../elements/loader";
 
 const ProductDetail = (props) => {
   const { query } = props;
@@ -44,6 +45,7 @@ const ProductDetail = (props) => {
 
   return (
     <>
+      {isFetchingProductDetail && <Loader />}
       <BreadCrum productDetail={productDetail} />
       <hr className="opacity-10 bg-dark mb-8" />
       <Specification

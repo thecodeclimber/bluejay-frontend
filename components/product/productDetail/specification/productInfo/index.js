@@ -12,7 +12,7 @@ const ProductInfo = (props) => {
       <div className="font-light text-base text-dark tracking-tight leading-relaxed pb-6 pr-3">
         <div dangerouslySetInnerHTML={{ __html: productDetail?.description }} />
       </div>
-      {productDetail?.options && productDetail.options > 0 && (
+      {productDetail?.options && productDetail.options.length > 0 && (
         <hr className="text-dark opacity-10 pb-6" />
       )}
     </div>

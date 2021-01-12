@@ -16,7 +16,7 @@ export default async (req, res) => {
     return;
   }
 
-  const productUrl = `${URLS.BIG_COMMERCE.PRODUCT.PRODUCTS}/${id}?include=images,videos,options`;
+  const productUrl = `${URLS.BIG_COMMERCE.PRODUCT.PRODUCTS}/${id}?include=images,videos,options,custom_fields`;
   const product = await httpGet(productUrl, { isBigCommerce: true });
   if (product.status === 401) {
     res.status(401);

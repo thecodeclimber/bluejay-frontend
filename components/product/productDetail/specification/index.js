@@ -46,7 +46,7 @@ const Specification = (props) => {
             </div>
           </div>
           <hr className="text-dark opacity-10 py-3" />
-          <TechnicalSpecs />
+          <TechnicalSpecs productDetail={productDetail} />
         </div>
       </div>
     </div>
