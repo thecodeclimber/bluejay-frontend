@@ -25,8 +25,9 @@ const URLS = {
     },
     PRODUCT: {
       PRODUCTS: `${BIG_COMMERCE_BASE_URL}/catalog/products`,
-    },
-    REVIEW: {
+      IMAGES: `${BIG_COMMERCE_BASE_URL}/catalog/products/{PRODUCT_ID}/images`,
+      VIDEOS: `${BIG_COMMERCE_BASE_URL}/catalog/products/{PRODUCT_ID}/videos`,
+      OPTIONS: `${BIG_COMMERCE_BASE_URL}/catalog/products/{PRODUCT_ID}/options`,
       REVIEWS: `${BIG_COMMERCE_BASE_URL}/catalog/products/{PRODUCT_ID}/reviews`,
     },
     BRAND: {
@@ -51,12 +52,12 @@ const URLS = {
       PRODUCTS: `${NEXT_BASE_URL}/categories/products`,
     },
     PRODUCT: {
-      PRODUDCT: `${NEXT_BASE_URL}/products/get`,
       PRODUCTS: `${NEXT_BASE_URL}/products`,
       SEARCH: `${NEXT_BASE_URL}/products/search`,
       BEST: `${NEXT_BASE_URL}/products/best`,
       FEATURED: `${NEXT_BASE_URL}/products/featured`,
       TOP_DEALS: `${NEXT_BASE_URL}/products/top-deals`,
+      PURCHASED: `${NEXT_BASE_URL}/products/purchased`,
     },
     WISHLIST: {
       WISHLISTS: `${NEXT_BASE_URL}/wishlists`,
@@ -64,12 +65,11 @@ const URLS = {
       ADD: `${NEXT_BASE_URL}/wishlists/customer/add`,
     },
     BRAND: {
-      BRAND: `${NEXT_BASE_URL}/products/get`,
       BRANDS: `${NEXT_BASE_URL}/brands`,
       SEARCH: `${NEXT_BASE_URL}/brands/search`,
     },
     REVIEW: {
-      REVIEW: `${NEXT_BASE_URL}/products/reviews/get`,
+      REVIEWS: `${NEXT_BASE_URL}/products/reviews`,
     },
   },
 };
