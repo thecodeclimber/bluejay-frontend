@@ -35,6 +35,8 @@ const URLS = {
     },
     WISHLIST: {
       WISHLISTS: `${BIG_COMMERCE_BASE_URL}/wishlists`,
+      DELETE_ITEM: `${BIG_COMMERCE_BASE_URL}/wishlists/{WISHLIST_ID}/items/{ITEM_ID}`,
+      ADD_ITEM: `${BIG_COMMERCE_BASE_URL}/wishlists/{WISHLIST_ID}/items`,
     },
   },
 
@@ -63,6 +65,7 @@ const URLS = {
       WISHLISTS: `${NEXT_BASE_URL}/wishlists`,
       CUSTOMER: `${NEXT_BASE_URL}/wishlists/customer`,
       ADD: `${NEXT_BASE_URL}/wishlists/customer/add`,
+      DELETE: `${NEXT_BASE_URL}/wishlists/customer/delete`,
     },
     BRAND: {
       BRANDS: `${NEXT_BASE_URL}/brands`,
