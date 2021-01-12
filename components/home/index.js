@@ -11,7 +11,9 @@ import TopDeals from "./topDeals";
 const Home = () => {
   return (
     <div>
-      <Banner />
+      <div className="pt-3">
+        <Banner />
+      </div>
       <PopularCategories />
       <hr className="opacity-10 bg-dark mt-8 mb-12" />
       <BestProduct />

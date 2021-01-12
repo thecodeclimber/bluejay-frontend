@@ -23,6 +23,7 @@ const LeftMenuTitles = {
   AboutUs: "About Us",
   RequestaQuote: "Request a Quote",
   SiteMap: "Site Map",
+  ContactUs: "Contact Us",
 };
 
 const RightMenuTitles = {
@@ -32,7 +33,6 @@ const RightMenuTitles = {
   Cart: "Cart",
   SignUp: "Sign up",
   Login: "Login",
-  ContactUs: "Contact Us",
 };
 
 const OrderStatus = {
@@ -66,9 +66,44 @@ const TopNavbar = () => {
     {
       title: LeftMenuTitles.SiteMap,
     },
+    {
+      title: LeftMenuTitles.ContactUs,
+      detail: {
+        title: "Contact Information",
+        subTitle: "Consultations and ordering by phones:",
+        phone: "(773) 281-3100",
+        fax: "(773) 281-3131",
+        email: "Info@BlueJayFasteners.com",
+        address: "1770 W. Berteau Avenue \n Unit 402 \n Chicago, IL 60613",
+      },
+    },
   ];
 
   data.menuRight = [
+    {
+      title: RightMenuTitles.Account,
+      icon: UserIcon,
+      subMenuList: [
+        {
+          name: "My Account",
+          isExpanded: true,
+        },
+        {
+          name: "Basket (2 item)",
+          isExpanded: true,
+        },
+        {
+          name: "My Wish List (0)",
+          isExpanded: true,
+        },
+        {
+          name: "Sign Out",
+          isExpanded: false,
+          onClick: handleSignOut,
+        },
+      ],
+      show: Boolean(userState.user?.id),
+    },
     {
       title: RightMenuTitles.Favorites,
       icon: FavoriteIcon,
@@ -132,18 +167,6 @@ const TopNavbar = () => {
       show: Boolean(userState.user?.id),
     },
     {
-      title: RightMenuTitles.Cart,
-      icon: Cart,
-      subMenuList: [
-        {
-          img: "/img/Cart.svg",
-          title: "Your Basket is empty",
-          subTitle: "Keep Shopping",
-        },
-      ],
-      show: Boolean(userState.user?.id),
-    },
-    {
       title: RightMenuTitles.SignUp,
       icon: "",
       subMenuList: [],
@@ -158,42 +181,16 @@ const TopNavbar = () => {
       onClick: () => dispatchModal(setModal(MODAL_TYPES.LOGIN)),
     },
     {
-      title: RightMenuTitles.Account,
-      icon: UserIcon,
+      title: RightMenuTitles.Cart,
+      icon: Cart,
       subMenuList: [
         {
-          name: "My Account",
-          isExpanded: true,
-        },
-        {
-          name: "Basket (2 item)",
-          isExpanded: true,
-        },
-        {
-          name: "My Wish List (0)",
-          isExpanded: true,
-        },
-        {
-          name: "Sign Out",
-          isExpanded: false,
-          onClick: handleSignOut,
+          img: "/img/Cart.svg",
+          title: "Your Basket is empty",
+          subTitle: "Keep Shopping",
         },
       ],
       show: Boolean(userState.user?.id),
-    },
-    {
-      title: RightMenuTitles.ContactUs,
-      icon: "",
-      subMenuList: [],
-      detail: {
-        title: "Contact Information",
-        subTitle: "Consultations and ordering by phones:",
-        phone: "(773) 281-3100",
-        fax: "(773) 281-3131",
-        email: "Info@BlueJayFasteners.com",
-        address: "1770 W. Berteau Avenue \n Unit 402 \n Chicago, IL 60613",
-      },
-      show: true,
     },
   ];
 
@@ -210,27 +207,46 @@ const TopNavbar = () => {
     <div className="flex items-center bg-primary">
       <div className="container flex justify-between mx-auto">
         <div className="relative flex items-center">
-          {data.menuLeft.map((menu, index) => (
-            <Menu
-              as="div"
-              key={index}
-              className="relative"
-              onMouseLeave={() => setActiveMenuName()}
-            >
-              <Menu.Button
-                className={classes.button}
-                onMouseOver={() => setActiveMenuName(menu.title)}
+          {data.menuLeft.map((menu, index) => {
+            const { detail } = menu || {};
+            const isDetail = detail && Object.keys(detail).length > 0;
+            return (
+              <Menu
+                as="div"
+                key={index}
+                className="relative"
+                onMouseLeave={() => setActiveMenuName()}
               >
-                {menu.title}
-              </Menu.Button>
-            </Menu>
-          ))}
+                <Menu.Button
+                  className={classes.dropdown}
+                  onMouseOver={() => setActiveMenuName(menu.title)}
+                >
+                  {menu.title}
+                  {isDetail && <ArrowIcon className={classes.arrow} />}
+                </Menu.Button>
+                {activeMenu === menu.title && (
+                  <Transition
+                    show={activeMenu == menu.title}
+                    enter="transition duration-100 ease-out"
+                    enterFrom="transform scale-95 opacity-0"
+                    enterTo="transform scale-100 opacity-100"
+                    leave="transition duration-75 ease-out"
+                    leaveFrom="transform scale-100 opacity-100"
+                    leaveTo="transform scale-95 opacity-0"
+                    className="absolute z-40 right-0"
+                  >
+                    {menu.title === LeftMenuTitles.ContactUs &&
+                      ContactUsDetail(menu.detail)}
+                  </Transition>
+                )}
+              </Menu>
+            );
+          })}
         </div>
         <div className="relative flex items-center">
           {data.menuRight.map((menu, index) => {
-            const { subMenuList, detail, show, onClick } = menu || {};
+            const { subMenuList, show, onClick } = menu || {};
             const isSubMenuList = subMenuList && subMenuList.length > 0;
-            const isDetail = detail && Object.keys(detail).length > 0;
             return (
               <Menu
                 as="div"
@@ -253,14 +269,12 @@ const TopNavbar = () => {
                       ) : (
                         menu.title
                       )}
-                      {(isSubMenuList || isDetail) && (
-                        <ArrowIcon className={classes.arrow} />
-                      )}
+                      {isSubMenuList && <ArrowIcon className={classes.arrow} />}
                     </Menu.Button>
                   )}
-                  {activeMenu == menu.title && (isSubMenuList || isDetail) && (
+                  {activeMenu === menu.title && isSubMenuList && (
                     <Transition
-                      show={activeMenu == menu.title}
+                      show={activeMenu === menu.title}
                       enter="transition duration-100 ease-out"
                       enterFrom="transform scale-95 opacity-0"
                       enterTo="transform scale-100 opacity-100"
@@ -277,8 +291,6 @@ const TopNavbar = () => {
                         OrdersMenuItems(subMenuList)}
                       {menu.title === RightMenuTitles.Cart &&
                         CartMenuItems(subMenuList)}
-                      {menu.title === RightMenuTitles.ContactUs &&
-                        ContactUsDetail(detail)}
                     </Transition>
                   )}
                 </Fragment>
