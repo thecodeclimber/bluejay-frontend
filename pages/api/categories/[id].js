@@ -5,9 +5,20 @@ import { verifyGetMethod } from "../../../utils/helper";
 
 export default async (req, res) => {
   if (!verifyGetMethod(req, res)) return;
-  const productsUrl = `${URLS.BIG_COMMERCE.PRODUCT.PRODUCTS}?include=images`;
-  const products = await httpGet(productsUrl, { isBigCommerce: true });
-  if (products.status === 401) {
+  const { id } = req.query || {};
+  if (!id) {
+    res.status(400);
+    res.json({
+      errors: {
+        error: "Required category id",
+      },
+    });
+    return;
+  }
+
+  const categoriesUrl = URLS.BIG_COMMERCE.CATEGORY.CATEGORIES + "/" + id;
+  const categories = await httpGet(categoriesUrl, { isBigCommerce: true });
+  if (categories.status === 401) {
     res.status(401);
     res.json({
       errors: {
@@ -16,5 +27,5 @@ export default async (req, res) => {
     });
     return;
   }
-  return res.json(products);
+  return res.json(categories);
 };

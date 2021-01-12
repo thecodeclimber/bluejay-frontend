@@ -1,7 +1,7 @@
 const PREFIX = "hooks/user";
 
 /**
- * Redux Constants
+ * Hooks Constants
  */
 export const SET_USER = `${PREFIX}/SET_USER`;
 

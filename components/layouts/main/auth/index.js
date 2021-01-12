@@ -11,7 +11,7 @@ const Auth = () => {
   const { modalState } = useContext(Context);
 
   return (
-    <div className="container mx-auto py-3">
+    <div className="container mx-auto">
       {modalState.activeModal === MODAL_TYPES.REGISTRATION && (
         <Transition
           show={true}

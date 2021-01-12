@@ -1,15 +1,17 @@
 import React from "react";
 import Link from "next/link";
-import { FaHeart as HeartIcon } from "react-icons/fa/index";
-import { BsFillBookmarkFill as BookmarkIcon } from "react-icons/bs/index";
+import { shape } from "prop-types";
+import { FaHeart as HeartIcon } from "react-icons/fa";
+import { BsFillBookmarkFill as BookmarkIcon } from "react-icons/bs";
 
-const BoltSpecification = () => {
+const ProductSpecification = (props) => {
+  const { productDetail } = props;
   return (
     <div className="container mx-auto  font-ubuntu ">
       <div className="flex items-center justify-between">
-        <Link href="/moreDetails">
+        <Link href="/product/more-details">
           <div className="text-dark text-3xl tracking-tight pb-6 font-medium">
-            Hex Nut Cap Screw
+            {productDetail?.name}
           </div>
         </Link>
         <div className="flex justify-between items-center">
@@ -22,4 +24,12 @@ const BoltSpecification = () => {
   );
 };
 
-export default BoltSpecification;
+ProductSpecification.defaultProps = {
+  productDetail: {},
+};
+
+ProductSpecification.propTypes = {
+  productDetail: shape({}),
+};
+
+export default ProductSpecification;
