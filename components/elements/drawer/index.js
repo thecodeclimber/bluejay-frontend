@@ -1,10 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { func, bool, element } from "prop-types";
 import classnames from "classnames";
 import { Transition } from "@headlessui/react";
 
 const Drawer = (props) => {
   const { isOpen, children, closeDrawer } = props;
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleCloseDrawer, false);
+    return () => {
+      document.removeEventListener("keydown", handleCloseDrawer, false);
+    };
+  }, []);
+
+  const handleCloseDrawer = (e) => {
+    if (e.key === "Escape") {
+      closeDrawer();
+    }
+  };
+
   return (
     <div className="relative z-50">
       <Transition
