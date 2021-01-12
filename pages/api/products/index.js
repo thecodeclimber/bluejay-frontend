@@ -5,7 +5,7 @@ import { verifyGetMethod } from "../../../utils/helper";
 
 export default async (req, res) => {
   if (!verifyGetMethod(req, res)) return;
-  const productsUrl = URLS.BIG_COMMERCE.PRODUCT.PRODUCTS;
+  const productsUrl = `${URLS.BIG_COMMERCE.PRODUCT.PRODUCTS}?include=images`;
   const products = await httpGet(productsUrl, { isBigCommerce: true });
   if (products.status === 401) {
     res.status(401);
@@ -16,22 +16,5 @@ export default async (req, res) => {
     });
     return;
   }
-
-  const imagesUrl = URLS.BIG_COMMERCE.PRODUCT.IMAGES;
-  const productsWithImages = [];
-  if (products && products.data && products.data.length > 0) {
-    await products.data.map(async (data, index) => {
-      const productimagesUrl = imagesUrl.replace("{PRODUCT_ID}", data.id);
-      const productImages = await httpGet(productimagesUrl, {
-        isBigCommerce: true,
-      });
-      const updatedProduct = {
-        ...products.data[index],
-        product_images: productImages,
-      };
-      productsWithImages.push(updatedProduct);
-    });
-  }
-
-  return res.json(productsWithImages);
+  return res.json(products);
 };
