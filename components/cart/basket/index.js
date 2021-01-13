@@ -1,16 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import CartItems from "./cartItems";
 import SaveForLater from "./saveForLater";
 import Shipping from "./shipping";
 import Total from "./total";
-import CustomerPurchase from "./customerPurchase";
+import CustomerPurchase from "../../product/productDetail/customerPurchase";
+import { Context } from "../../../hooks/store";
 
 const Basket = () => {
+  const { cartState } = useContext(Context);
   return (
     <div className="font-ubuntu">
       <div className="container mx-auto text-3xl tracking-tight text-dark">
         <span className="font-light">Basket: </span>
-        <span className="font-medium">4 positions</span>
+        <span className="font-medium">{cartState.cart.length} positions</span>
       </div>
       <hr className="mt-5 mb-8 opacity-10 bg-dark" />
       <div className="flex container mx-auto">

@@ -54,23 +54,20 @@ export const validateNumberAndCharacter = (text) => {
  *
  * @param {Object} data
  *
- * @return {Object}
- * @return {Null}
+ * @return {Boolean}
  */
 export const setUserLocalStorage = (data) => {
-  if (!data) return null;
+  if (!data) return false;
   localStorage.setItem("user", JSON.stringify(data));
+  return true;
 };
 
 /**
  * Remove user from local storage
  *
- * @param {Object} data
- *
- * @return {Object}
- * @return {Null}
+ * @return {Boolean}
  */
-export const removeUserLocalStorage = (data) => {
+export const removeUserLocalStorage = () => {
   localStorage.removeItem("user");
   return true;
 };
@@ -102,7 +99,7 @@ export const getSearchHistoryLocalStorage = () => {
  * @return {Object}
  * @return {Null}
  */
-export const getUserData = (userState) => {
+export const getUserData = (userState = {}) => {
   const authToken = JSON.parse(localStorage.getItem("user"));
   if (authToken && authToken.token) {
     const token = authToken.token.split(".");
@@ -246,5 +243,112 @@ export const verifyDeleteMethod = (req, res) => {
     resError(res);
     return false;
   }
+  return true;
+};
+
+/**
+ * Formatting cart products
+ *
+ * @param {Array} cartProducts
+ * @param {Object} product
+ *
+ * @returns {Array}
+ */
+export const formattingCartProducts = (cartProducts = [], product = {}) => {
+  if (Object.keys(product).length > 0) {
+    const index = cartProducts.findIndex((data) => data.id === product.id);
+    if (index !== -1) {
+      cartProducts[index] = {
+        ...cartProducts[index],
+        quantity: cartProducts[index].quantity + 1,
+      };
+      return cartProducts;
+    }
+  }
+  return [...cartProducts, product];
+};
+
+/**
+ * Formatting product options
+ *
+ * @param {Array} productOptions
+ *
+ * @returns {Array}
+ */
+export const formattingProductOptions = (productOptions) => {
+  const optionSelections = [];
+  if (productOptions && productOptions.length > 0) {
+    productOptions.forEach((data) => {
+      let optionSelectionsStructure = {
+        option_id: data.id,
+        option_value: "",
+      };
+      if (data.option_values && data.option_values.length > 0) {
+        const selectedOption =
+          data.option_values.find(({ is_default }) => is_default) ||
+          data.option_values[0];
+        optionSelectionsStructure = {
+          ...optionSelectionsStructure,
+          option_value: selectedOption.id,
+        };
+      }
+      optionSelections.push(optionSelectionsStructure);
+    });
+  }
+  return optionSelections;
+};
+
+/**
+ * Formatting cart params
+ *
+ * @param {Array} cartProducts
+ * @param {Object} product
+ *
+ * @returns {Array}
+ */
+export const getFormattedCartParams = (cartProducts = [], product = {}) => {
+  const getProduct = cartProducts.find((data) => data.id === product.id);
+  const optionSelections = formattingProductOptions(getProduct.options);
+  const userData = getUserData();
+  let params = {
+    quantity: getProduct.quantity,
+    product_id: getProduct.id,
+  };
+  if (optionSelections && optionSelections.length > 0) {
+    params = { ...params, option_selections: optionSelections };
+  }
+  if (userData?.id) {
+    params = { ...params, customer_id: userData?.id };
+  }
+  // if (cartId) {
+  //   customer_id = { ...params, cart_id: cartId };
+  // }
+  return params;
+};
+
+/**
+ * Set cart in local storage
+ *
+ * @param {Object} data
+ *
+ * @return {Boolean}
+ */
+export const setCartLocalStorage = (cartId, time) => {
+  if (!cartId) return false;
+  const data = {
+    cartId,
+    cartExpiryAt: time,
+  };
+  localStorage.setItem("cart", JSON.stringify(data));
+  return true;
+};
+
+/**
+ * Remove cart from local storage
+ *
+ * @return {Boolean}
+ */
+export const removeCartLocalStorage = () => {
+  localStorage.removeItem("cart");
   return true;
 };

@@ -36,6 +36,10 @@ const URLS = {
     WISHLIST: {
       WISHLISTS: `${BIG_COMMERCE_BASE_URL}/wishlists`,
     },
+    CART: {
+      CART: `${BIG_COMMERCE_BASE_URL}/carts`,
+      ITEM: `${BIG_COMMERCE_BASE_URL}/carts/{cartId}/items`,
+    },
   },
 
   //Next
@@ -65,6 +69,9 @@ const URLS = {
     },
     REVIEW: {
       REVIEWS: `${NEXT_BASE_URL}/products/reviews`,
+    },
+    CART: {
+      ADD: `${NEXT_BASE_URL}/cart/add`,
     },
   },
 };

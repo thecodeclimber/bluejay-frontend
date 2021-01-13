@@ -1,18 +1,29 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext } from "react";
 import { array, bool, func, number } from "prop-types";
 import classnames from "classnames";
-import { FiHeart as HeartIcon } from "react-icons/fi/index";
 import Slider from "react-slick";
-import { IoIosArrowForward as SlideRightArrow } from "react-icons/io/index";
-import { IoIosArrowBack as SlideLeftArrow } from "react-icons/io/index";
-import { RiSubtractFill as SubtractIcon } from "react-icons/ri/index";
-import { FiPlus as PlusIcon } from "react-icons/fi";
+import {
+  IoIosArrowForward as SlideRightArrow,
+  IoIosArrowBack as SlideLeftArrow,
+} from "react-icons/io";
+import { RiSubtractFill as SubtractIcon } from "react-icons/ri";
+import { FiPlus as PlusIcon, FiHeart as HeartIcon } from "react-icons/fi";
+import { setCart } from "../../../hooks/cart/actions";
+import { Context } from "../../../hooks/store";
+import {
+  formattingCartProducts,
+  getFormattedCartParams,
+} from "../../../utils/helper";
+import { httpPost } from "../../../utils/https";
+import URLS from "../../../utils/urls";
 
 const ProductSlider = (props) => {
   const { dots, products, isLoading, handleProducts, displayProducts } =
     props || {};
   const slider = useRef(null);
+  const [loadingProductId, setLoadingProductId] = useState("");
   const [activeSlide, setActiveSlide] = useState(0);
+  const { cartState, dispatchCart } = useContext(Context);
   const settings = {
     dots: false,
     infinite: true,
@@ -49,6 +60,30 @@ const ProductSlider = (props) => {
     const index = productsData.findIndex((product) => product.id === id);
     productsData[index].quantity = productsData[index].quantity + 1;
     handleProducts(productsData);
+  };
+
+  const addToCart = (product) => {
+    if (loadingProductId) return;
+    const cartData = formattingCartProducts(cartState.cart, product);
+    const params = getFormattedCartParams(cartData, product);
+
+    setLoadingProductId(product.id);
+    httpPost(URLS.NEXT.CART.ADD, params, {
+      traceName: "add_to_cart",
+    }).then(
+      (res) => {
+        if (res.errors && Object.keys(res.errors).length > 0) {
+          alert(res.errors[Object.keys(res.errors)[0]]);
+        } else {
+          //Todo
+          dispatchCart(setCart(cartData));
+        }
+        setLoadingProductId("");
+      },
+      (err) => {
+        setLoadingProductId("");
+      }
+    );
   };
 
   return (
@@ -133,14 +168,25 @@ const ProductSlider = (props) => {
                                   <PlusIcon className="text-dark" />
                                 </div>
                               </div>
-                              <div className="flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4">
+                              <div
+                                onClick={() => addToCart(product)}
+                                className={classnames(
+                                  "flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4",
+                                  {
+                                    "opacity-70 cursor-not-allowed":
+                                      loadingProductId === product.id,
+                                  }
+                                )}
+                              >
                                 <img
                                   className="mr-4"
                                   src="/img/add-to-cart.svg"
                                   alt="cart"
                                 />
                                 <span className="font-medium font-base tracking-tight">
-                                  Add to Cart
+                                  {loadingProductId === product.id
+                                    ? "Loading..."
+                                    : "Add to Cart"}
                                 </span>
                               </div>
                             </div>

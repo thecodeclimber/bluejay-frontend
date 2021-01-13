@@ -1,47 +1,61 @@
-import React from "react";
-import { FiPlus as PlusIcon } from "react-icons/fi/index";
-import { RiSubtractFill as SubtractIcon } from "react-icons/ri/index";
+import React, { useContext } from "react";
+import Link from "next/link";
+import { FiPlus as PlusIcon } from "react-icons/fi";
+import { RiSubtractFill as SubtractIcon } from "react-icons/ri";
 import { VscBookmark as BookmarkIcon } from "react-icons/vsc";
 import { FaRegHeart as FavouriteIcon } from "react-icons/fa";
 import { AiOutlineDelete as DeleteIcon } from "react-icons/ai";
-
-const basketList = [
-  {
-    id: 1,
-    name: "Carriage Bolts 1/4-20 UNC Steel Zinc",
-    price: 5.64,
-    img: "/img/basket-1.png",
-    itemsSelected: 1,
-  },
-  {
-    id: 2,
-    name: "Carriage Bolts 1/4-20 UNC Steel Zinc",
-    price: 5.64,
-    img: "/img/basket-1.png",
-    itemsSelected: 1,
-  },
-  {
-    id: 3,
-    name: "Carriage Bolts 1/4-20 UNC Steel Zinc",
-    price: 5.64,
-    img: "/img/basket-1.png",
-    itemsSelected: 1,
-  },
-  {
-    id: 4,
-    name: "Carriage Bolts 1/4-20 UNC Steel Zinc",
-    price: 5.64,
-    img: "/img/basket-1.png",
-    itemsSelected: 1,
-  },
-];
+import { Context } from "../../../../hooks/store";
+import { setCart } from "../../../../hooks/cart/actions";
 
 const CartItems = () => {
+  const { cartState, dispatchCart } = useContext(Context);
+
+  const decreaseQuantity = (id) => {
+    const cartData = [...cartState.cart];
+    const index = cartData.findIndex((product) => product.id === id);
+    cartData[index].quantity =
+      cartData[index].quantity > 1 ? cartData[index].quantity - 1 : 1;
+    dispatchCart(setCart(cartData));
+  };
+
+  const increaseQuantity = (id) => {
+    const cartData = [...cartState.cart];
+    const index = cartData.findIndex((product) => product.id === id);
+    cartData[index].quantity = cartData[index].quantity + 1;
+    dispatchCart(setCart(cartData));
+  };
+
+  const deleteCartItem = (id) => {
+    const cartData = [...cartState.cart];
+    const filteredCartItems = cartData.filter((product) => product.id !== id);
+    dispatchCart(setCart(filteredCartItems));
+  };
+
   return (
     <div className="container mx-auto font-ubuntu">
-      {basketList.length > 0 &&
-        basketList.map((data, index) => {
-          const { name, price, img, itemsSelected } = data || {};
+      {cartState.cart.length === 0 && (
+        <div className="flex justify-center">
+          <div className="text-base flex items-center px-8 py-3 focus:outline-none cursor-pointer">
+            <div className="flex-none">
+              <img
+                src="/img/Cart.svg"
+                width="27px"
+                className="object-contain"
+              />
+            </div>
+            <div className="ml-8 mr-32 flex-none">
+              <div className="font-medium">Your Basket is empty</div>
+              <div className="text-primary">
+                <Link href="/">Keep Shopping</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {cartState.cart.length > 0 &&
+        cartState.cart.map((data, index) => {
+          const { id, name, price, primary_image, quantity } = data || {};
           return (
             <div
               key={index}
@@ -51,7 +65,11 @@ const CartItems = () => {
                 <div className="flex justify-between items-center border-b border-dark border-opacity-10 w-full">
                   <div className="flex p-3 items-center">
                     <div className="mr-5">
-                      <img src={img} alt={`img-${index}`} />
+                      <img
+                        src={primary_image?.url_standard}
+                        alt={`img-${index}`}
+                        width="70px"
+                      />
                     </div>
                     <div className="text-base tracking-tight">
                       <div className="font-normal text-dark leading-5 mb-2">
@@ -62,14 +80,20 @@ const CartItems = () => {
                   </div>
                   <div className="pr-5">
                     <div className="flex justify-between items-center border rounded border-dark border-opacity-10">
-                      <div className="flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center p-4 px-4">
+                      <div
+                        onClick={() => decreaseQuantity(id)}
+                        className="flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center p-4 px-4"
+                      >
                         <SubtractIcon className="text-black" />
                       </div>
                       <div className="text-base text-dark min-w-60 text-center px-6">
-                        {itemsSelected < 10 && 0}
-                        {itemsSelected}
+                        {quantity < 10 && 0}
+                        {quantity}
                       </div>
-                      <div className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4 px-4">
+                      <div
+                        onClick={() => increaseQuantity(id)}
+                        className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4 px-4"
+                      >
                         <PlusIcon className="text-dark" />
                       </div>
                     </div>
@@ -98,12 +122,15 @@ const CartItems = () => {
                       total for this item:
                     </span>{" "}
                     <span className="font-medium text-primary text-sm text-lg">
-                      $59.00
+                      ${quantity * price}
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="flex items-center px-5 opacity-50  cursor-pointer text-dark hover:opacity-100 hover:bg-primary hover:text-white">
+              <div
+                onClick={() => deleteCartItem(id)}
+                className="flex items-center px-5 opacity-50  cursor-pointer text-dark hover:opacity-100 hover:bg-primary hover:text-white"
+              >
                 <DeleteIcon className="text-xl" />
               </div>
             </div>

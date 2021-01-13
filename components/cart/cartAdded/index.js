@@ -1,11 +1,26 @@
-import React from "react";
+import React, { useContext } from "react";
 import { VscChromeClose as CloseIcon } from "react-icons/vsc";
 import { GoCheck as CheckedIcon } from "react-icons/go";
 import AddedToCart from "./addedToCart";
 import AdditionalProducts from "./additionalProducts";
+import { Context } from "../../../hooks/store";
 
 const CartAdded = (props) => {
   const { closeCartDrawer } = props;
+  const { cartState } = useContext(Context);
+
+  const getTotalPrice = () => {
+    let totalPrice = 0;
+    if (cartState.cart.length > 0) {
+      cartState.cart.forEach((data) => {
+        totalPrice = totalPrice + data.quantity * data.price;
+      });
+    }
+    return totalPrice;
+  };
+
+  const totalPrice = getTotalPrice();
+  const cartLength = cartState.cart.length || 0;
 
   return (
     <div className="font-ubuntu tracking-tight max-w-550">
@@ -22,9 +37,11 @@ const CartAdded = (props) => {
         <div className="text-base text-black flex items-center justify-between w-full">
           <div>
             <div className="font-medium leading-5 mb-1">Added to cart</div>
-            <div className="font-light">1 item</div>
+            <div className="font-light">
+              {cartLength} {cartLength > 1 ? "items" : "item"}
+            </div>
           </div>
-          <div className="font-medium">$86.31</div>
+          <div className="font-medium">${totalPrice}</div>
         </div>
       </div>
       <hr className="mt-3 opacity-05 text-dark mx-5 pb-2" />

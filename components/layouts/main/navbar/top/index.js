@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useContext } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Menu, Transition } from "@headlessui/react";
 import {
   MdAccountCircle as UserIcon,
@@ -47,7 +48,9 @@ const OrderStatus = {
 const TopNavbar = () => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [isCartDrawer, setIsCartDrawer] = useState(false);
-  const { userState, dispatchUser, dispatchModal } = useContext(Context);
+  const { userState, cartState, dispatchUser, dispatchModal } = useContext(
+    Context
+  );
   const setActiveMenuName = (name = null) => {
     setActiveMenu(name);
   };
@@ -92,8 +95,9 @@ const TopNavbar = () => {
           isExpanded: true,
         },
         {
-          name: "Basket (2 item)",
+          name: `Basket (${cartState.cart.length} item)`,
           isExpanded: true,
+          link: "/cart",
         },
         {
           name: "My Wish List (0)",
@@ -404,15 +408,16 @@ const AccountMenuItems = (subMenuList) => (
   >
     <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
     {subMenuList.map((subMenu, index) => {
-      const { name, isExpanded, onClick } = subMenu || {};
+      const { name, isExpanded, onClick, link } = subMenu || {};
       return (
         <Fragment key={index}>
-          <Menu.Item
-            onClick={onClick}
-            as="div"
-            className="text-base flex items-center justify-between px-6 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
-          >
-            {name} {isExpanded && <ChevronRight className="text-lg ml-10" />}
+          <Menu.Item onClick={onClick} as="div">
+            <Link href={link || ""}>
+              <a className="text-base flex items-center justify-between px-6 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none">
+                {name}
+                {isExpanded && <ChevronRight className="text-lg ml-10" />}
+              </a>
+            </Link>
           </Menu.Item>
           {index !== subMenuList.length - 1 && (
             <hr className="opacity-05 mx-6" />
