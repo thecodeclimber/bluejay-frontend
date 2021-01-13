@@ -35,8 +35,7 @@ const URLS = {
     },
     WISHLIST: {
       WISHLISTS: `${BIG_COMMERCE_BASE_URL}/wishlists`,
-      DELETE_ITEM: `${BIG_COMMERCE_BASE_URL}/wishlists/{WISHLIST_ID}/items/{ITEM_ID}`,
-      ADD_ITEM: `${BIG_COMMERCE_BASE_URL}/wishlists/{WISHLIST_ID}/items`,
+      ITEM: `${BIG_COMMERCE_BASE_URL}/wishlists/{WISHLIST_ID}/items`,
     },
   },
 

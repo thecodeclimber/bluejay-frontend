@@ -102,7 +102,7 @@ export const getSearchHistoryLocalStorage = () => {
  * @return {Object}
  * @return {Null}
  */
-export const getUserData = (userState) => {
+export const getUserData = (userState = {}) => {
   const authToken = JSON.parse(localStorage.getItem("user"));
   if (authToken && authToken.token) {
     const token = authToken.token.split(".");
