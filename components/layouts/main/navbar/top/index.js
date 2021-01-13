@@ -18,6 +18,8 @@ import { USER_STRUCTURE } from "../../../../../hooks/user/constants";
 import { setModal } from "../../../../../hooks/modal/actions";
 import { MODAL_TYPES } from "../../../../../hooks/modal/constants";
 import { Context } from "../../../../../hooks/store";
+import Drawer from "../../../../elements/drawer";
+import CartAdded from "../../../../cart/cartAdded";
 
 const LeftMenuTitles = {
   AboutUs: "About Us",
@@ -44,6 +46,7 @@ const OrderStatus = {
 
 const TopNavbar = () => {
   const [activeMenu, setActiveMenu] = useState(null);
+  const [isCartDrawer, setIsCartDrawer] = useState(false);
   const { userState, dispatchUser, dispatchModal } = useContext(Context);
   const setActiveMenuName = (name = null) => {
     setActiveMenu(name);
@@ -191,6 +194,7 @@ const TopNavbar = () => {
         },
       ],
       show: Boolean(userState.user?.id),
+      onClick: () => openCartDrawer(),
     },
   ];
 
@@ -203,8 +207,19 @@ const TopNavbar = () => {
   classes.items =
     "absolute right-0 w-56 origin-top-right bg-white divide-y divide-gray-100 rounded-b-md outline-none";
 
+  const openCartDrawer = () => {
+    setIsCartDrawer(true);
+  };
+
+  const closeCartDrawer = () => {
+    setIsCartDrawer(false);
+  };
+
   return (
     <div className="flex items-center bg-primary">
+      <Drawer isOpen={isCartDrawer} closeDrawer={closeCartDrawer}>
+        <CartAdded closeCartDrawer={closeCartDrawer} />
+      </Drawer>
       <div className="container flex justify-between mx-auto">
         <div className="relative flex items-center">
           {data.menuLeft.map((menu, index) => {
