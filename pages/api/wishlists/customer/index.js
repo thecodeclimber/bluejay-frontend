@@ -19,9 +19,7 @@ export default async (req, res) => {
 
   const productIds = [];
 
-  const customerWishlistUrl = `${
-    URLS.BIG_COMMERCE.WISHLIST.WISHLISTS
-  }?customer_id=${token?.customer_id || []}`;
+  const customerWishlistUrl = `${URLS.BIG_COMMERCE.WISHLIST.WISHLISTS}?customer_id=${token?.customer_id}`;
   const wishlists = await httpGet(customerWishlistUrl, {
     isBigCommerce: true,
   });

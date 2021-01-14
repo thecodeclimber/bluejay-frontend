@@ -16,15 +16,41 @@ export default async (req, res) => {
     });
     return;
   }
-
   const customerId = token?.customer_id;
+  const customerWishlistUrl = `${URLS.BIG_COMMERCE.WISHLIST.WISHLISTS}?customer_id=${customerId}`;
+  const customerWishlists = await httpGet(customerWishlistUrl, {
+    isBigCommerce: true,
+  });
+  if (customerWishlists.status === 401) {
+    res.status(401);
+    res.json({
+      errors: {
+        error: MESSAGES.UNAUTHORIZED,
+      },
+    });
+    return;
+  }
 
-  if (customerId) {
-    const customerWishlistUrl = `${URLS.BIG_COMMERCE.WISHLIST.WISHLISTS}?customer_id=${customerId}`;
-    const wishlists = await httpGet(customerWishlistUrl, {
+  let params = {
+    customer_id: customerId,
+    items: [
+      {
+        product_id: data?.product_id,
+        variant_id: data?.variant_id,
+      },
+    ],
+  };
+  if (customerWishlists?.data.length > 0) {
+    const wishlist = customerWishlists.data[0];
+    const wishlistItemUrl = URLS.BIG_COMMERCE.WISHLIST.ITEM.replace(
+      "{WISHLIST_ID}",
+      wishlist.id
+    );
+    const wishlistItem = await httpPost(wishlistItemUrl, params, {
       isBigCommerce: true,
     });
-    if (wishlists.status === 401) {
+
+    if (wishlistItem.status === 401) {
       res.status(401);
       res.json({
         errors: {
@@ -33,80 +59,29 @@ export default async (req, res) => {
       });
       return;
     }
-
-    if (wishlists.data.length > 0) {
-      await Promise.all(
-        wishlists.data.map(async (wishlist) => {
-          if (wishlist.customer_id === customerId) {
-            const params = {
-              customer_id: customerId,
-              items: [
-                {
-                  product_id: data?.product_id,
-                  variant_id: data?.variant_id,
-                },
-              ],
-            };
-            const updateWishlistUrl = URLS.BIG_COMMERCE.WISHLIST.ITEM.replace(
-              "{WISHLIST_ID}",
-              wishlist?.id
-            );
-            const wishlistUpdate = await httpPost(updateWishlistUrl, params, {
-              isBigCommerce: true,
-            });
-
-            if (wishlistUpdate.status === 401) {
-              res.status(401);
-              res.json({
-                errors: {
-                  error: MESSAGES.UNAUTHORIZED,
-                },
-              });
-              return;
-            }
-            if (wishlistUpdate.status === 422) {
-              res.status(422);
-              res.json(wishlistUpdate);
-              return;
-            }
-            return res.json(wishlistUpdate);
-          }
-        })
-      );
-    } else {
-      const params = {
-        name: "wishlist",
-        customer_id: customerId,
-        items: [
-          {
-            product_id: data?.product_id,
-            variant_id: data?.variant_id,
-          },
-        ],
-        is_public: true,
-      };
-      const wishlistResponse = await httpPost(
-        URLS.BIG_COMMERCE.WISHLIST.WISHLISTS,
-        params,
-        {
-          isBigCommerce: true,
-        }
-      );
-      if (wishlistResponse.status === 401) {
-        res.status(401);
-        res.json({
-          errors: {
-            error: MESSAGES.UNAUTHORIZED,
-          },
-        });
-        return;
+    return res.json(wishlistItem);
+  } else {
+    params = {
+      ...params,
+      name: "wishlist",
+      is_public: false,
+    };
+    const wishlistResponse = await httpPost(
+      URLS.BIG_COMMERCE.WISHLIST.WISHLISTS,
+      params,
+      {
+        isBigCommerce: true,
       }
-      if (wishlistResponse.status === 422) {
-        res.status(422);
-        res.json(wishlistResponse);
-        return;
-      }
-      return res.json(wishlistResponse);
+    );
+    if (wishlistResponse.status === 401) {
+      res.status(401);
+      res.json({
+        errors: {
+          error: MESSAGES.UNAUTHORIZED,
+        },
+      });
+      return;
     }
+    return res.json(wishlistResponse);
   }
 };

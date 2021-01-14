@@ -1,18 +1,27 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext, useEffect } from "react";
 import { array, bool, func, number } from "prop-types";
 import classnames from "classnames";
 import { FiHeart as HeartIcon } from "react-icons/fi/index";
 import Slider from "react-slick";
+import { httpPost, httpDelete, httpGet } from "../../../utils/https";
 import { IoIosArrowForward as SlideRightArrow } from "react-icons/io/index";
 import { IoIosArrowBack as SlideLeftArrow } from "react-icons/io/index";
 import { RiSubtractFill as SubtractIcon } from "react-icons/ri/index";
 import { FiPlus as PlusIcon } from "react-icons/fi";
+import { Context } from "../../../hooks/store";
+import { setModal } from "../../../hooks/modal/actions";
+import { setUserWishlists } from "../../../hooks/user/actions";
+import { MODAL_TYPES } from "../../../hooks/modal/constants";
+import URLS from "../../../utils/urls";
 
 const ProductSlider = (props) => {
   const { dots, products, isLoading, handleProducts, displayProducts } =
     props || {};
+  const { userState, dispatchModal, dispatchUser } = useContext(Context);
   const slider = useRef(null);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [wishlistLoading, wishlistIconLoading] = useState("");
+  const [heartIconColor, setHeartIconColor] = useState(userState?.wishlists);
   const settings = {
     dots: false,
     infinite: true,
@@ -36,6 +45,71 @@ const ProductSlider = (props) => {
     setActiveSlide(index);
   };
 
+  useEffect(() => {
+    setHeartIconColor(userState?.wishlists);
+  }, [userState]);
+
+  useEffect(() => {
+    if (userState.user?.id) {
+      const wishlistUrl = `${URLS.NEXT.WISHLIST.CUSTOMER}?id=${userState.user?.id}`;
+      httpGet(wishlistUrl, {
+        traceName: "get_customer_wishlists",
+      }).then((res) => {
+        if (res.errors && Object.keys(res.errors).length > 0) {
+          alert(res.errors[Object.keys(res.errors)[0]]);
+        } else {
+          let wishlistsIds = [];
+          res.data.map((item) => {
+            wishlistsIds.push(item.id);
+          });
+          setHeartIconColor(wishlistsIds);
+        }
+      });
+    }
+  }, []);
+
+  const handleWishlistsItem = (productID) => {
+    wishlistIconLoading(productID);
+    if (userState?.wishlists.includes(productID)) {
+      const deleteUrl = `${URLS.NEXT.WISHLIST.DELETE}?id=${productID}`;
+      httpDelete(deleteUrl, {
+        traceName: "delete wishlist",
+      }).then((res) => {
+        if (res.errors && Object.keys(res.errors).length > 0) {
+          alert(res.errors[Object.keys(res.errors)[0]]);
+        } else {
+          let deletedItem;
+          userState?.wishlists.map((item, index) => {
+            if (item === productID) {
+              deletedItem = index;
+            }
+          });
+          wishlistIconLoading("");
+          userState?.wishlists.splice(deletedItem, 1);
+          dispatchUser(setUserWishlists(userState?.wishlists));
+        }
+      });
+    } else {
+      const params = {
+        product_id: productID,
+      };
+      httpPost(URLS.NEXT.WISHLIST.ADD, params, {
+        traceName: "add wishlist",
+      }).then((res) => {
+        if (res.errors && Object.keys(res.errors).length > 0) {
+          alert(res.errors[Object.keys(res.errors)[0]]);
+        } else {
+          const productsIds = [];
+          res.data.items.map((item) => {
+            productsIds.push(item.product_id);
+          });
+          wishlistIconLoading("");
+          dispatchUser(setUserWishlists(productsIds));
+        }
+      });
+    }
+  };
+
   const decreaseQuantity = (id) => {
     const productsData = [...products];
     const index = productsData.findIndex((product) => product.id === id);
@@ -50,6 +124,8 @@ const ProductSlider = (props) => {
     productsData[index].quantity = productsData[index].quantity + 1;
     handleProducts(productsData);
   };
+
+  console.log("wishloading", wishlistLoading);
 
   return (
     <div className="container mx-auto pb-6 tracking-tight">
@@ -100,7 +176,42 @@ const ProductSlider = (props) => {
                                 <div className="bg-green text-xs flex items-center font-normal text-white rounded-2xl h-full px-3 h-5">
                                   New
                                 </div>
-                                <HeartIcon className="text-grey opacity-70 text-xl cursor-pointer" />
+                                <div
+                                  className={classnames({
+                                    "opacity-50 cursor-not-allowed":
+                                      wishlistLoading === product.id,
+                                  })}
+                                >
+                                  {userState.user?.id ? (
+                                    <HeartIcon
+                                      className={classnames(
+                                        "text-xl cursor-pointer",
+                                        {
+                                          "text-grey opacity-70": !heartIconColor.includes(
+                                            product.id
+                                          ),
+                                        },
+                                        {
+                                          "fill-current text-primary opacity-100": heartIconColor.includes(
+                                            product.id
+                                          ),
+                                        }
+                                      )}
+                                      onClick={() =>
+                                        handleWishlistsItem(product.id)
+                                      }
+                                    />
+                                  ) : (
+                                    <HeartIcon
+                                      className="text-grey opacity-70 text-xl cursor-pointer"
+                                      onClick={() =>
+                                        dispatchModal(
+                                          setModal(MODAL_TYPES.LOGIN)
+                                        )
+                                      }
+                                    />
+                                  )}
+                                </div>
                               </div>
                               <img
                                 className="m-auto mb-5"

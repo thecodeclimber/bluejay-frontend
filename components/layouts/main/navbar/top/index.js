@@ -74,7 +74,7 @@ const TopNavbar = () => {
         }
       );
     }
-  }, [userState.user?.id, userState?.wishlists]);
+  }, [userState]);
 
   const handleSignOut = () => {
     removeUserLocalStorage();
