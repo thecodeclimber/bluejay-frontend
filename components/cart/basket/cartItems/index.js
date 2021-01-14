@@ -1,5 +1,7 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Link from "next/link";
+import classnames from "classnames";
+import getSymbolFromCurrency from "currency-symbol-map";
 import { FiPlus as PlusIcon } from "react-icons/fi";
 import { RiSubtractFill as SubtractIcon } from "react-icons/ri";
 import { VscBookmark as BookmarkIcon } from "react-icons/vsc";
@@ -7,34 +9,76 @@ import { FaRegHeart as FavouriteIcon } from "react-icons/fa";
 import { AiOutlineDelete as DeleteIcon } from "react-icons/ai";
 import { Context } from "../../../../hooks/store";
 import { setCart } from "../../../../hooks/cart/actions";
+import { httpDelete } from "../../../../utils/https";
+import {
+  formattingCartData,
+  setCartLocalStorage,
+  removeCartLocalStorage,
+} from "../../../../utils/helper";
+import URLS from "../../../../utils/urls";
 
 const CartItems = () => {
   const { cartState, dispatchCart } = useContext(Context);
+  const [deletingItemId, setDeletingItemId] = useState("");
+  const cartLength =
+    (cartState.cart?.cart_items && cartState.cart.cart_items.length) || 0;
+  const currencySymbol =
+    (cartState.cart?.currency?.code &&
+      getSymbolFromCurrency(cartState.cart.currency.code)) ||
+    "$";
 
   const decreaseQuantity = (id) => {
-    const cartData = [...cartState.cart];
-    const index = cartData.findIndex((product) => product.id === id);
-    cartData[index].quantity =
-      cartData[index].quantity > 1 ? cartData[index].quantity - 1 : 1;
+    const cartItems = [...cartState.cart.cart_items];
+    const index = cartItems.findIndex((data) => data.product_id === id);
+    cartItems[index].quantity =
+      cartItems[index].quantity > 1 ? cartItems[index].quantity - 1 : 1;
+    const cartData = {
+      ...cartState.cart,
+      cart_items: cartItems,
+    };
     dispatchCart(setCart(cartData));
   };
 
   const increaseQuantity = (id) => {
-    const cartData = [...cartState.cart];
-    const index = cartData.findIndex((product) => product.id === id);
-    cartData[index].quantity = cartData[index].quantity + 1;
+    const cartItems = [...cartState.cart.cart_items];
+    const index = cartItems.findIndex((data) => data.product_id === id);
+    cartItems[index].quantity = cartItems[index].quantity + 1;
+    const cartData = {
+      ...cartState.cart,
+      cart_items: cartItems,
+    };
     dispatchCart(setCart(cartData));
   };
 
   const deleteCartItem = (id) => {
-    const cartData = [...cartState.cart];
-    const filteredCartItems = cartData.filter((product) => product.id !== id);
-    dispatchCart(setCart(filteredCartItems));
+    const cartDeleteItemUrl = `${URLS.NEXT.CART.DELETE}?cartId=${cartState.cart.id}&itemId=${id}`;
+    setDeletingItemId(id);
+    httpDelete(cartDeleteItemUrl, {
+      traceName: "delete_cart_item",
+    }).then(
+      (res) => {
+        const { errors, data } = res || {};
+        if (errors && Object.keys(errors).length > 0) {
+          alert(errors[Object.keys(errors)[0]]);
+        } else {
+          setCartLocalStorage(data?.id, data?.updated_time);
+          const cartData = formattingCartData(data);
+          dispatchCart(setCart(cartData));
+        }
+        if (!res) {
+          removeCartLocalStorage();
+        }
+        setDeletingItemId("");
+      },
+      (err) => {
+        setDeletingItemId("");
+      }
+    );
   };
 
   return (
     <div className="container mx-auto font-ubuntu">
-      {cartState.cart.length === 0 && (
+      {cartLength === 0 && (
         <div className="flex justify-center">
           <div className="text-base flex items-center px-8 py-3 focus:outline-none cursor-pointer">
             <div className="flex-none">
@@ -47,15 +91,25 @@ const CartItems = () => {
             <div className="ml-8 mr-32 flex-none">
               <div className="font-medium">Your Basket is empty</div>
               <div className="text-primary">
-                <Link href="/">Keep Shopping</Link>
+                <Link href="/">
+                  <a>Keep Shopping</a>
+                </Link>
               </div>
             </div>
           </div>
         </div>
       )}
-      {cartState.cart.length > 0 &&
-        cartState.cart.map((data, index) => {
-          const { id, name, price, primary_image, quantity } = data || {};
+      {cartLength > 0 &&
+        cartState.cart.cart_items.map((data, index) => {
+          const {
+            id,
+            name,
+            sale_price,
+            image_url,
+            quantity,
+            product_id,
+            extended_sale_price,
+          } = data || {};
           return (
             <div
               key={index}
@@ -65,23 +119,22 @@ const CartItems = () => {
                 <div className="flex justify-between items-center border-b border-dark border-opacity-10 w-full">
                   <div className="flex p-3 items-center">
                     <div className="mr-5">
-                      <img
-                        src={primary_image?.url_standard}
-                        alt={`img-${index}`}
-                        width="70px"
-                      />
+                      <img src={image_url} alt={`img-${index}`} width="70px" />
                     </div>
                     <div className="text-base tracking-tight">
                       <div className="font-normal text-dark leading-5 mb-2">
                         {name}
                       </div>
-                      <div className="font-medium text-primary">${price}</div>
+                      <div className="font-medium text-primary">
+                        {currencySymbol}
+                        {sale_price}
+                      </div>
                     </div>
                   </div>
                   <div className="pr-5">
                     <div className="flex justify-between items-center border rounded border-dark border-opacity-10">
                       <div
-                        onClick={() => decreaseQuantity(id)}
+                        onClick={() => decreaseQuantity(product_id)}
                         className="flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center p-4 px-4"
                       >
                         <SubtractIcon className="text-black" />
@@ -91,7 +144,7 @@ const CartItems = () => {
                         {quantity}
                       </div>
                       <div
-                        onClick={() => increaseQuantity(id)}
+                        onClick={() => increaseQuantity(product_id)}
                         className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4 px-4"
                       >
                         <PlusIcon className="text-dark" />
@@ -122,14 +175,22 @@ const CartItems = () => {
                       total for this item:
                     </span>{" "}
                     <span className="font-medium text-primary text-sm text-lg">
-                      ${quantity * price}
+                      {currencySymbol}
+                      {extended_sale_price}
                     </span>
                   </div>
                 </div>
               </div>
               <div
-                onClick={() => deleteCartItem(id)}
-                className="flex items-center px-5 opacity-50  cursor-pointer text-dark hover:opacity-100 hover:bg-primary hover:text-white"
+                onClick={() => deletingItemId !== id && deleteCartItem(id)}
+                className={classnames(
+                  "flex items-center px-5 opacity-50 cursor-pointer text-dark hover:text-white",
+                  {
+                    "hover:opacity-100 hover:bg-primary": deletingItemId !== id,
+                    "hover:opacity-50 hover:bg-primary cursor-not-allowed":
+                      deletingItemId === id,
+                  }
+                )}
               >
                 <DeleteIcon className="text-xl" />
               </div>

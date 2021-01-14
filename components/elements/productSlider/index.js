@@ -11,10 +11,13 @@ import { FiPlus as PlusIcon, FiHeart as HeartIcon } from "react-icons/fi";
 import { setCart } from "../../../hooks/cart/actions";
 import { Context } from "../../../hooks/store";
 import {
-  formattingCartProducts,
+  formattingCartData,
   getFormattedCartParams,
+  setCartLocalStorage,
 } from "../../../utils/helper";
 import { httpPost } from "../../../utils/https";
+import Drawer from "../../elements/drawer";
+import CartAdded from "../../cart/cartAdded";
 import URLS from "../../../utils/urls";
 
 const ProductSlider = (props) => {
@@ -23,7 +26,8 @@ const ProductSlider = (props) => {
   const slider = useRef(null);
   const [loadingProductId, setLoadingProductId] = useState("");
   const [activeSlide, setActiveSlide] = useState(0);
-  const { cartState, dispatchCart } = useContext(Context);
+  const [isCartDrawer, setIsCartDrawer] = useState(false);
+  const { dispatchCart } = useContext(Context);
   const settings = {
     dots: false,
     infinite: true,
@@ -63,20 +67,21 @@ const ProductSlider = (props) => {
   };
 
   const addToCart = (product) => {
-    if (loadingProductId) return;
-    const cartData = formattingCartProducts(cartState.cart, product);
-    const params = getFormattedCartParams(cartData, product);
+    const params = getFormattedCartParams(product);
 
     setLoadingProductId(product.id);
     httpPost(URLS.NEXT.CART.ADD, params, {
       traceName: "add_to_cart",
     }).then(
       (res) => {
-        if (res.errors && Object.keys(res.errors).length > 0) {
-          alert(res.errors[Object.keys(res.errors)[0]]);
+        const { errors, data } = res || {};
+        if (errors && Object.keys(errors).length > 0) {
+          alert(errors[Object.keys(errors)[0]]);
         } else {
-          //Todo
+          setCartLocalStorage(data?.id, data?.updated_time);
+          const cartData = formattingCartData(data);
           dispatchCart(setCart(cartData));
+          openCartDrawer();
         }
         setLoadingProductId("");
       },
@@ -86,8 +91,19 @@ const ProductSlider = (props) => {
     );
   };
 
+  const openCartDrawer = () => {
+    setIsCartDrawer(true);
+  };
+
+  const closeCartDrawer = () => {
+    setIsCartDrawer(false);
+  };
+
   return (
     <div className="container mx-auto pb-6 tracking-tight">
+      <Drawer isOpen={isCartDrawer} closeDrawer={closeCartDrawer}>
+        <CartAdded closeCartDrawer={closeCartDrawer} isNewItem={true} />
+      </Drawer>
       <div className="relative">
         {isLoading && (
           <div className="text-center w-full mt-10">Loading...</div>
@@ -169,7 +185,10 @@ const ProductSlider = (props) => {
                                 </div>
                               </div>
                               <div
-                                onClick={() => addToCart(product)}
+                                onClick={() =>
+                                  loadingProductId !== product.id &&
+                                  addToCart(product)
+                                }
                                 className={classnames(
                                   "flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4",
                                   {

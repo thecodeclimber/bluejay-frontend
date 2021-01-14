@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import jwt from "jsonwebtoken";
 import { MESSAGES } from "./constants";
 
+const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
 
 export const useStateCallback = (initialState) => {
@@ -247,25 +248,23 @@ export const verifyDeleteMethod = (req, res) => {
 };
 
 /**
- * Formatting cart products
+ * Formatting cart data
  *
- * @param {Array} cartProducts
- * @param {Object} product
+ * @param {Object} cartData
  *
- * @returns {Array}
+ * @returns {Object}
  */
-export const formattingCartProducts = (cartProducts = [], product = {}) => {
-  if (Object.keys(product).length > 0) {
-    const index = cartProducts.findIndex((data) => data.id === product.id);
-    if (index !== -1) {
-      cartProducts[index] = {
-        ...cartProducts[index],
-        quantity: cartProducts[index].quantity + 1,
-      };
-      return cartProducts;
-    }
-  }
-  return [...cartProducts, product];
+export const formattingCartData = (cartData = {}) => {
+  if (Object.keys(cartData).length === 0) return {};
+  const cart_items = [
+    ...cartData.line_items.physical_items,
+    ...cartData.line_items.digital_items,
+  ];
+  const data = {
+    ...cartData,
+    cart_items,
+  };
+  return data;
 };
 
 /**
@@ -275,7 +274,7 @@ export const formattingCartProducts = (cartProducts = [], product = {}) => {
  *
  * @returns {Array}
  */
-export const formattingProductOptions = (productOptions) => {
+export const formattingProductOptions = (productOptions = []) => {
   const optionSelections = [];
   if (productOptions && productOptions.length > 0) {
     productOptions.forEach((data) => {
@@ -301,18 +300,16 @@ export const formattingProductOptions = (productOptions) => {
 /**
  * Formatting cart params
  *
- * @param {Array} cartProducts
  * @param {Object} product
  *
- * @returns {Array}
+ * @returns {Object}
  */
-export const getFormattedCartParams = (cartProducts = [], product = {}) => {
-  const getProduct = cartProducts.find((data) => data.id === product.id);
-  const optionSelections = formattingProductOptions(getProduct.options);
+export const getFormattedCartParams = (product = {}) => {
+  const optionSelections = formattingProductOptions(product.options);
   const userData = getUserData();
   let params = {
-    quantity: getProduct.quantity,
-    product_id: getProduct.id,
+    quantity: product.quantity,
+    product_id: product.id,
   };
   if (optionSelections && optionSelections.length > 0) {
     params = { ...params, option_selections: optionSelections };
@@ -320,24 +317,27 @@ export const getFormattedCartParams = (cartProducts = [], product = {}) => {
   if (userData?.id) {
     params = { ...params, customer_id: userData?.id };
   }
-  // if (cartId) {
-  //   customer_id = { ...params, cart_id: cartId };
-  // }
+  const cartData = getCartData();
+  if (cartData?.cartId) {
+    params = { ...params, cart_id: cartData.cartId };
+  }
   return params;
 };
 
 /**
  * Set cart in local storage
  *
- * @param {Object} data
+ * @param {String} cartId
+ * @param {String} time
  *
  * @return {Boolean}
  */
 export const setCartLocalStorage = (cartId, time) => {
-  if (!cartId) return false;
+  if (!cartId || !time) return false;
+  const expiryDate = moment(new Date(time)).add(29, "day").format();
   const data = {
     cartId,
-    cartExpiryAt: time,
+    cartExpiryAt: expiryDate,
   };
   localStorage.setItem("cart", JSON.stringify(data));
   return true;
@@ -351,4 +351,22 @@ export const setCartLocalStorage = (cartId, time) => {
 export const removeCartLocalStorage = () => {
   localStorage.removeItem("cart");
   return true;
+};
+
+/**
+ * Get cart data
+ *
+ * @returns {Object}
+ * @returns {Null}
+ */
+export const getCartData = () => {
+  const cartData = JSON.parse(localStorage.getItem("cart"));
+  if (!cartData || !cartData.cartId || !cartData.cartExpiryAt) return null;
+  const expiryDate = moment(cartData.cartExpiryAt);
+  const todayDate = moment();
+  if (todayDate > expiryDate) {
+    removeCartLocalStorage();
+    return null;
+  }
+  return cartData;
 };

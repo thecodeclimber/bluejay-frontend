@@ -2,7 +2,7 @@
  * Set Initial State
  */
 const initialCartState = {
-  cart: [],
+  cart: {},
 };
 
 export default initialCartState;

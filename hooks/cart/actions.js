@@ -6,8 +6,8 @@ import { SET_CART } from "./constants";
 /**
  * Set cart
  *
- * @param {Array} data
+ * @param {Object} data
  */
-export const setCart = (data = []) => {
+export const setCart = (data = {}) => {
   return { type: SET_CART, data };
 };

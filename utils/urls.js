@@ -38,7 +38,7 @@ const URLS = {
     },
     CART: {
       CART: `${BIG_COMMERCE_BASE_URL}/carts`,
-      ITEM: `${BIG_COMMERCE_BASE_URL}/carts/{cartId}/items`,
+      ITEM: `${BIG_COMMERCE_BASE_URL}/carts/{CART_ID}/items`,
     },
   },
 
@@ -72,6 +72,7 @@ const URLS = {
     },
     CART: {
       ADD: `${NEXT_BASE_URL}/cart/add`,
+      DELETE: `${NEXT_BASE_URL}/cart/delete`,
     },
   },
 };

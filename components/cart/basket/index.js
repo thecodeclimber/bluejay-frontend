@@ -8,11 +8,13 @@ import { Context } from "../../../hooks/store";
 
 const Basket = () => {
   const { cartState } = useContext(Context);
+  const cartLength =
+    (cartState.cart?.cart_items && cartState.cart.cart_items.length) || 0;
   return (
     <div className="font-ubuntu">
       <div className="container mx-auto text-3xl tracking-tight text-dark">
         <span className="font-light">Basket: </span>
-        <span className="font-medium">{cartState.cart.length} positions</span>
+        <span className="font-medium">{cartLength} positions</span>
       </div>
       <hr className="mt-5 mb-8 opacity-10 bg-dark" />
       <div className="flex container mx-auto">
