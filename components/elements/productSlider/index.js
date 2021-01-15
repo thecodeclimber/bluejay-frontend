@@ -20,8 +20,11 @@ const ProductSlider = (props) => {
   const { userState, dispatchModal, dispatchUser } = useContext(Context);
   const slider = useRef(null);
   const [activeSlide, setActiveSlide] = useState(0);
-  const [wishlistLoading, wishlistIconLoading] = useState("");
-  const [heartIconColor, setHeartIconColor] = useState(userState?.wishlists);
+  const [wishlistLoadingId, setWishlistLoadingId] = useState("");
+  const [selectedWishlists, setSelectedWishlists] = useState(
+    userState?.wishlists
+  );
+  const [customerPresent, setCustomerPresent] = useState(false);
   const settings = {
     dots: false,
     infinite: true,
@@ -46,8 +49,12 @@ const ProductSlider = (props) => {
   };
 
   useEffect(() => {
-    setHeartIconColor(userState?.wishlists);
+    setSelectedWishlists(userState?.wishlists);
   }, [userState]);
+
+  useEffect(() => {
+    setCustomerPresent(true);
+  }, []);
 
   useEffect(() => {
     if (userState.user?.id) {
@@ -62,36 +69,17 @@ const ProductSlider = (props) => {
           res.data.map((item) => {
             wishlistsIds.push(item.id);
           });
-          setHeartIconColor(wishlistsIds);
+          setSelectedWishlists(wishlistsIds);
         }
       });
     }
-  }, []);
+  }, [customerPresent]);
 
-  const handleWishlistsItem = (productID) => {
-    wishlistIconLoading(productID);
-    if (userState?.wishlists.includes(productID)) {
-      const deleteUrl = `${URLS.NEXT.WISHLIST.DELETE}?id=${productID}`;
-      httpDelete(deleteUrl, {
-        traceName: "delete wishlist",
-      }).then((res) => {
-        if (res.errors && Object.keys(res.errors).length > 0) {
-          alert(res.errors[Object.keys(res.errors)[0]]);
-        } else {
-          let deletedItem;
-          userState?.wishlists.map((item, index) => {
-            if (item === productID) {
-              deletedItem = index;
-            }
-          });
-          wishlistIconLoading("");
-          userState?.wishlists.splice(deletedItem, 1);
-          dispatchUser(setUserWishlists(userState?.wishlists));
-        }
-      });
-    } else {
+  const handleWishlistsItem = (productId) => {
+    setWishlistLoadingId(productId);
+    if (!userState?.wishlists.includes(productId)) {
       const params = {
-        product_id: productID,
+        product_id: productId,
       };
       httpPost(URLS.NEXT.WISHLIST.ADD, params, {
         traceName: "add wishlist",
@@ -103,8 +91,27 @@ const ProductSlider = (props) => {
           res.data.items.map((item) => {
             productsIds.push(item.product_id);
           });
-          wishlistIconLoading("");
+          setWishlistLoadingId("");
           dispatchUser(setUserWishlists(productsIds));
+        }
+      });
+    } else {
+      const deleteUrl = `${URLS.NEXT.WISHLIST.DELETE}?product_id=${productId}`;
+      httpDelete(deleteUrl, {
+        traceName: "delete wishlist",
+      }).then((res) => {
+        if (res.errors && Object.keys(res.errors).length > 0) {
+          alert(res.errors[Object.keys(res.errors)[0]]);
+        } else {
+          let deletedItem;
+          userState?.wishlists.map((item, index) => {
+            if (item === productId) {
+              deletedItem = index;
+            }
+          });
+          setWishlistLoadingId("");
+          userState?.wishlists.splice(deletedItem, 1);
+          dispatchUser(setUserWishlists(userState?.wishlists));
         }
       });
     }
@@ -124,8 +131,6 @@ const ProductSlider = (props) => {
     productsData[index].quantity = productsData[index].quantity + 1;
     handleProducts(productsData);
   };
-
-  console.log("wishloading", wishlistLoading);
 
   return (
     <div className="container mx-auto pb-6 tracking-tight">
@@ -178,23 +183,20 @@ const ProductSlider = (props) => {
                                 </div>
                                 <div
                                   className={classnames({
-                                    "opacity-50 cursor-not-allowed":
-                                      wishlistLoading === product.id,
+                                    "opacity-50 cursor-not-allowed pointer-events-none":
+                                      wishlistLoadingId === product.id,
                                   })}
                                 >
                                   {userState.user?.id ? (
                                     <HeartIcon
                                       className={classnames(
-                                        "text-xl cursor-pointer",
+                                        "text-xl cursor-pointer text-grey opacity-70",
                                         {
-                                          "text-grey opacity-70": !heartIconColor.includes(
+                                          "fill-current text-primary opacity-100": selectedWishlists.includes(
                                             product.id
                                           ),
-                                        },
-                                        {
-                                          "fill-current text-primary opacity-100": heartIconColor.includes(
-                                            product.id
-                                          ),
+                                          "fill-current text-primary opacity-70":
+                                            wishlistLoadingId === product.id,
                                         }
                                       )}
                                       onClick={() =>

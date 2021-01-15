@@ -5,7 +5,6 @@ import URLS from "../../../../utils/urls";
 
 export default async (req, res) => {
   if (!verifyGetMethod(req, res)) return;
-
   const token = verifyToken(req);
   if (!token) {
     res.status(404);
@@ -16,9 +15,7 @@ export default async (req, res) => {
     });
     return;
   }
-
   const productIds = [];
-
   const customerWishlistUrl = `${URLS.BIG_COMMERCE.WISHLIST.WISHLISTS}?customer_id=${token?.customer_id}`;
   const wishlists = await httpGet(customerWishlistUrl, {
     isBigCommerce: true,
@@ -32,7 +29,7 @@ export default async (req, res) => {
     });
     return;
   }
-  if (wishlists?.data.length > 0) {
+  if (wishlists?.data && wishlists.data.length > 0) {
     wishlists.data.forEach((wishlist) => {
       wishlist.items.forEach((item) => {
         if (!productIds.includes(item.product_id)) {

@@ -49,6 +49,7 @@ const TopNavbar = () => {
   const [wishlists, setWishlists] = useState([]);
   const [isFetchingWishlists, setIsFetchingWishlists] = useState(false);
   const { userState, dispatchUser, dispatchModal } = useContext(Context);
+  const [wishlistCount, setWishlistCount] = useState(0);
 
   const setActiveMenuName = (name = null) => {
     setActiveMenu(name);
@@ -66,15 +67,16 @@ const TopNavbar = () => {
             alert(res.errors[Object.keys(res.errors)[0]]);
           } else {
             setWishlists(res.data || []);
+            setIsFetchingWishlists(false);
+            setWishlistCount(res.data.length);
           }
-          setIsFetchingWishlists(false);
         },
         (err) => {
           setIsFetchingWishlists(false);
         }
       );
     }
-  }, [userState]);
+  }, [userState.user?.id, userState]);
 
   const handleSignOut = () => {
     removeUserLocalStorage();
@@ -120,7 +122,7 @@ const TopNavbar = () => {
           isExpanded: true,
         },
         {
-          name: "My Wish List (0)",
+          name: `My Wish List (${wishlistCount})`,
           isExpanded: true,
         },
         {
