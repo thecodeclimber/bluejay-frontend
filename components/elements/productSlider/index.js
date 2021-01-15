@@ -1,5 +1,6 @@
 import React, { useRef, useState, useContext } from "react";
 import { array, bool, func, number } from "prop-types";
+import Link from "next/link";
 import classnames from "classnames";
 import Slider from "react-slick";
 import {
@@ -68,7 +69,6 @@ const ProductSlider = (props) => {
 
   const addToCart = (product) => {
     const params = getFormattedCartParams(product);
-
     setLoadingProductId(product.id);
     httpPost(URLS.NEXT.CART.ADD, params, {
       traceName: "add_to_cart",
@@ -159,12 +159,19 @@ const ProductSlider = (props) => {
                                 alt={`img-${index}`}
                               />
                               <div className=" font-medium text-center text-dark text-xl mb-3 whitespace-pre-line tracking-tight leading-7">
-                                {product.name}
+                                <Link
+                                  href="/product/[id]"
+                                  as={`/product/${product.id}`}
+                                >
+                                  <a> {product.name}</a>
+                                </Link>
                               </div>
                             </div>
                             <div>
                               <div className="text-primary  text-center font-normal text-lg mb-4 tracking-tight">
-                                ${product.price}
+                                $
+                                {(product?.price && product.price.toFixed(2)) ||
+                                  0}
                               </div>
                               <div className="flex justify-between items-center mb-4 border rounded border-dark border-opacity-10">
                                 <div

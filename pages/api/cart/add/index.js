@@ -1,7 +1,13 @@
-import { httpGet, httpPost, httpPut } from "../../../../utils/https";
+import {
+  httpGet,
+  httpPost,
+  httpPut,
+  httpDelete,
+} from "../../../../utils/https";
 import {
   verifyPostMethod,
   formattingProductOptions,
+  formattingCartData,
 } from "../../../../utils/helper";
 import URLS from "../../../../utils/urls";
 
@@ -29,6 +35,43 @@ export default async (req, res) => {
     line_items: [itemParams],
   };
   if (data?.cart_id) {
+    const cartListUrl = `${URLS.BIG_COMMERCE.CART.CART}/${data.cart_id}`;
+    const cartData = await httpGet(cartListUrl, { isBigCommerce: true });
+    if (cartData?.data) {
+      const formattedCart = formattingCartData(cartData.data);
+      if (formattedCart?.cart_items && formattedCart.cart_items.length > 0) {
+        const getItem = formattedCart.cart_items.find(
+          ({ product_id }) => product_id === data.product_id
+        );
+        if (getItem && getItem?.id) {
+          const cartItemDeleteUrl = `${URLS.BIG_COMMERCE.CART.ITEM.replace(
+            "{CART_ID}",
+            data.cart_id
+          )}/${getItem.id}`;
+          const cartDeleted = await httpDelete(cartItemDeleteUrl, {
+            isBigCommerce: true,
+          });
+          itemParams = {
+            ...itemParams,
+            quantity: getItem.quantity + itemParams.quantity,
+          };
+          params = {
+            line_items: [itemParams],
+          };
+          if (data?.customer_id) {
+            params = { ...params, customer_id: data.customer_id };
+          }
+          if (!cartDeleted) {
+            const cartUrl = URLS.BIG_COMMERCE.CART.CART;
+            const cart = await httpPost(cartUrl, params, {
+              isBigCommerce: true,
+            });
+            return res.json(cart);
+          }
+        }
+      }
+    }
+
     const cartItemUrl = URLS.BIG_COMMERCE.CART.ITEM.replace(
       "{CART_ID}",
       data.cart_id

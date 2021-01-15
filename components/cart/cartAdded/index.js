@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import Link from "next/link";
 import getSymbolFromCurrency from "currency-symbol-map";
 import { bool, func } from "prop-types";
@@ -19,10 +19,6 @@ const CartAdded = (props) => {
     (cartState.cart?.currency?.code &&
       getSymbolFromCurrency(cartState.cart.currency.code)) ||
     "$";
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const goToCart = () => {
     router.push("/cart");
@@ -73,7 +69,9 @@ const CartAdded = (props) => {
               </div>
               <div className="font-medium">
                 {currencySymbol}
-                {cartState.cart?.cart_amount}
+                {(cartState.cart?.cart_amount &&
+                  cartState.cart?.cart_amount.toFixed(2)) ||
+                  0}
               </div>
             </div>
           </div>
@@ -89,7 +87,9 @@ const CartAdded = (props) => {
           <div className="text-base font-light opacity-75">Subtotal</div>
           <div className="text-base font-medium opacity-90">
             {currencySymbol}
-            {cartState.cart?.cart_amount || 0}
+            {(cartState.cart?.cart_amount &&
+              cartState.cart?.cart_amount.toFixed(2)) ||
+              0}
           </div>
         </div>
         <div className="flex justify-between text-dark mb-5">
@@ -100,7 +100,9 @@ const CartAdded = (props) => {
           <div className="text-xl font-light">Total</div>
           <div className="text-xl font-medium">
             {currencySymbol}
-            {cartState.cart?.cart_amount || 0}
+            {(cartState.cart?.cart_amount &&
+              cartState.cart?.cart_amount.toFixed(2)) ||
+              0}
           </div>
         </div>
       </div>

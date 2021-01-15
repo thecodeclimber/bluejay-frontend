@@ -71,8 +71,10 @@ const URLS = {
       REVIEWS: `${NEXT_BASE_URL}/products/reviews`,
     },
     CART: {
+      CART: `${NEXT_BASE_URL}/cart`,
       ADD: `${NEXT_BASE_URL}/cart/add`,
       DELETE: `${NEXT_BASE_URL}/cart/delete`,
+      UPDATE: `${NEXT_BASE_URL}/cart/update`,
     },
   },
 };

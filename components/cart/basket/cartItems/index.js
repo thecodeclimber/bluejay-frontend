@@ -9,13 +9,15 @@ import { FaRegHeart as FavouriteIcon } from "react-icons/fa";
 import { AiOutlineDelete as DeleteIcon } from "react-icons/ai";
 import { Context } from "../../../../hooks/store";
 import { setCart } from "../../../../hooks/cart/actions";
-import { httpDelete } from "../../../../utils/https";
+import { httpDelete, httpPut } from "../../../../utils/https";
 import {
   formattingCartData,
   setCartLocalStorage,
   removeCartLocalStorage,
 } from "../../../../utils/helper";
 import URLS from "../../../../utils/urls";
+
+let timer = "";
 
 const CartItems = () => {
   const { cartState, dispatchCart } = useContext(Context);
@@ -27,27 +29,55 @@ const CartItems = () => {
       getSymbolFromCurrency(cartState.cart.currency.code)) ||
     "$";
 
-  const decreaseQuantity = (id) => {
+  const decreaseQuantity = (id, product_id) => {
     const cartItems = [...cartState.cart.cart_items];
-    const index = cartItems.findIndex((data) => data.product_id === id);
+    const index = cartItems.findIndex((data) => data.product_id === product_id);
+    const decreasedQuantity = cartItems[index].quantity - 1;
     cartItems[index].quantity =
-      cartItems[index].quantity > 1 ? cartItems[index].quantity - 1 : 1;
+      cartItems[index].quantity > 1 ? decreasedQuantity : 1;
     const cartData = {
       ...cartState.cart,
       cart_items: cartItems,
     };
     dispatchCart(setCart(cartData));
+    if (decreasedQuantity > 0) {
+      handleCartQuantity(id, cartItems[index].quantity, product_id);
+    }
   };
 
-  const increaseQuantity = (id) => {
+  const increaseQuantity = (id, product_id) => {
     const cartItems = [...cartState.cart.cart_items];
-    const index = cartItems.findIndex((data) => data.product_id === id);
+    const index = cartItems.findIndex((data) => data.product_id === product_id);
     cartItems[index].quantity = cartItems[index].quantity + 1;
     const cartData = {
       ...cartState.cart,
       cart_items: cartItems,
     };
     dispatchCart(setCart(cartData));
+    handleCartQuantity(id, cartItems[index].quantity, product_id);
+  };
+
+  const handleCartQuantity = (itemId, quantity, product_id) => {
+    const cartUrl = `${URLS.NEXT.CART.UPDATE}?cartId=${cartState.cart.id}&itemId=${itemId}`;
+    const params = {
+      quantity,
+      product_id,
+    };
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      httpPut(cartUrl, params, {
+        traceName: "update_cart_quantity",
+      }).then((res) => {
+        const { errors, data } = res || {};
+        if (errors && Object.keys(errors).length > 0) {
+          alert(errors[Object.keys(errors)[0]]);
+        } else {
+          setCartLocalStorage(data?.id, data?.updated_time);
+          const formattedCart = formattingCartData(data);
+          dispatchCart(setCart(formattedCart));
+        }
+      });
+    }, 400);
   };
 
   const deleteCartItem = (id) => {
@@ -127,14 +157,14 @@ const CartItems = () => {
                       </div>
                       <div className="font-medium text-primary">
                         {currencySymbol}
-                        {sale_price}
+                        {(sale_price && sale_price.toFixed(2)) || 0}
                       </div>
                     </div>
                   </div>
                   <div className="pr-5">
                     <div className="flex justify-between items-center border rounded border-dark border-opacity-10">
                       <div
-                        onClick={() => decreaseQuantity(product_id)}
+                        onClick={() => decreaseQuantity(id, product_id)}
                         className="flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center p-4 px-4"
                       >
                         <SubtractIcon className="text-black" />
@@ -144,7 +174,7 @@ const CartItems = () => {
                         {quantity}
                       </div>
                       <div
-                        onClick={() => increaseQuantity(product_id)}
+                        onClick={() => increaseQuantity(id, product_id)}
                         className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4 px-4"
                       >
                         <PlusIcon className="text-dark" />
@@ -176,7 +206,9 @@ const CartItems = () => {
                     </span>{" "}
                     <span className="font-medium text-primary text-sm text-lg">
                       {currencySymbol}
-                      {extended_sale_price}
+                      {(extended_sale_price &&
+                        extended_sale_price.toFixed(2)) ||
+                        0}
                     </span>
                   </div>
                 </div>
@@ -184,10 +216,11 @@ const CartItems = () => {
               <div
                 onClick={() => deletingItemId !== id && deleteCartItem(id)}
                 className={classnames(
-                  "flex items-center px-5 opacity-50 cursor-pointer text-dark hover:text-white",
+                  "flex items-center px-5 opacity-50 cursor-pointer hover:text-white",
                   {
-                    "hover:opacity-100 hover:bg-primary": deletingItemId !== id,
-                    "hover:opacity-50 hover:bg-primary cursor-not-allowed":
+                    "hover:opacity-100 text-dark hover:bg-primary":
+                      deletingItemId !== id,
+                    "opacity-50 bg-primary text-white hover:opacity-50 hover:bg-primary cursor-not-allowed":
                       deletingItemId === id,
                   }
                 )}
