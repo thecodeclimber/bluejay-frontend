@@ -12,7 +12,7 @@ const Basket = () => {
     (cartState.cart?.cart_items && cartState.cart.cart_items.length) || 0;
   return (
     <div className="font-ubuntu">
-      <div className="container mx-auto text-3xl tracking-tight text-dark">
+      <div className="container mx-auto text-3xl tracking-tight text-dark pt-8">
         <span className="font-light">Basket: </span>
         <span className="font-medium">{cartLength} positions</span>
       </div>

@@ -78,7 +78,7 @@ const CartAdded = (props) => {
           <hr className="mt-3 opacity-05 text-dark mx-5 pb-2" />
         </>
       )}
-      <AddedToCart />
+      <AddedToCart closeCartDrawer={closeCartDrawer} />
       {cartLength !== 0 && <hr className="mt-11 opacity-10 text-dark mx-5" />}
       <AdditionalProducts />
       <hr className="mt-1 mb-5 opacity-05 text-dark mx-5" />

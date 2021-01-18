@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { getUserData } from "../../../utils/helper";
 import { setUser } from "../../../hooks/user/actions";
 import { setModal } from "../../../hooks/modal/actions";
-import { setCart } from "../../../hooks/cart/actions";
+import { setCart, setSaveForLaterCart } from "../../../hooks/cart/actions";
 import { MODAL_TYPES } from "../../../hooks/modal/constants";
 import { Context } from "../../../hooks/store";
 import {
@@ -41,18 +41,36 @@ const MainLayout = (props) => {
 
   const fetchCartData = () => {
     const cartData = getCartData();
-    if (!cartData || !cartData?.cartId) return;
-    const cartUrl = `${URLS.NEXT.CART.CART}/${cartData.cartId}`;
+    const saveForCartData = getCartData(true);
+    if (!cartData && !saveForCartData) return;
+    let cartUrl = URLS.NEXT.CART.CART;
+    if (cartData?.cartId) {
+      cartUrl += `?cartId=${cartData?.cartId}`;
+    }
+    if (saveForCartData?.cartId) {
+      cartUrl += `${cartData?.cartId ? "&" : "?"}saveForLaterCartId=${
+        saveForCartData?.cartId
+      }`;
+    }
     httpGet(cartUrl, {
       traceName: "get_cart",
     }).then((res) => {
-      const { errors, data } = res || {};
+      const { errors, cart, saveForLaterCart } = res || {};
       if (errors && Object.keys(errors).length > 0) {
         alert(errors[Object.keys(errors)[0]]);
       } else {
-        setCartLocalStorage(data?.id, data?.updated_time);
-        const formattedCart = formattingCartData(data);
+        setCartLocalStorage(cart?.data?.id, cart?.data?.updated_time);
+        const formattedCart = formattingCartData(cart?.data);
         dispatchCart(setCart(formattedCart));
+        setCartLocalStorage(
+          saveForLaterCart?.data?.id,
+          saveForLaterCart?.data?.updated_time,
+          true
+        );
+        const formattedSaveForCartData = formattingCartData(
+          saveForLaterCart?.data
+        );
+        dispatchCart(setSaveForLaterCart(formattedSaveForCartData));
       }
     });
   };

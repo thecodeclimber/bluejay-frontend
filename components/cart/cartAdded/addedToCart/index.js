@@ -1,6 +1,8 @@
 import React, { useContext, useState } from "react";
+import Link from "next/link";
 import classnames from "classnames";
 import getSymbolFromCurrency from "currency-symbol-map";
+import { func } from "prop-types";
 import { RiSubtractFill as SubtractIcon } from "react-icons/ri";
 import { FiPlus as PlusIcon } from "react-icons/fi";
 import { AiOutlineDelete as DeleteIcon } from "react-icons/ai";
@@ -15,7 +17,8 @@ import URLS from "../../../../utils/urls";
 
 let timer = "";
 
-const AddedToCart = () => {
+const AddedToCart = (props) => {
+  const { closeCartDrawer } = props;
   const { cartState, dispatchCart } = useContext(Context);
   const [deletingItemId, setDeletingItemId] = useState("");
   const cartLength =
@@ -126,7 +129,14 @@ const AddedToCart = () => {
                 <div className="flex justify-between items-center w-full">
                   <div>
                     <div className="text-base mb-3 font-normal leading-5">
-                      {name}
+                      <Link href="/product/[id]" as={`/product/${product_id}`}>
+                        <a
+                          onClick={closeCartDrawer}
+                          className="text-dark hover:text-primary"
+                        >
+                          {name}
+                        </a>
+                      </Link>
                     </div>
                     <div className="flex items-center">
                       <div
@@ -179,6 +189,14 @@ const AddedToCart = () => {
         })}
     </div>
   );
+};
+
+AddedToCart.defaultProps = {
+  closeCartDrawer: () => {},
+};
+
+AddedToCart.propTypes = {
+  closeCartDrawer: func,
 };
 
 export default AddedToCart;

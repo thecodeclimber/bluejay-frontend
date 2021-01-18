@@ -158,12 +158,14 @@ const ProductSlider = (props) => {
                                 src={product.primary_image?.url_thumbnail}
                                 alt={`img-${index}`}
                               />
-                              <div className=" font-medium text-center text-dark text-xl mb-3 whitespace-pre-line tracking-tight leading-7">
+                              <div className="font-medium text-center text-xl mb-3 whitespace-pre-line tracking-tight leading-7">
                                 <Link
                                   href="/product/[id]"
                                   as={`/product/${product.id}`}
                                 >
-                                  <a> {product.name}</a>
+                                  <a className="text-dark hover:text-primary">
+                                    {product.name}
+                                  </a>
                                 </Link>
                               </div>
                             </div>

@@ -314,7 +314,7 @@ const TopNavbar = () => {
                       {menu.title === RightMenuTitles.Orders &&
                         OrdersMenuItems(subMenuList)}
                       {menu.title === RightMenuTitles.Cart &&
-                        CartMenuItems(detail)}
+                        CartMenuItems(detail, setActiveMenuName)}
                     </Transition>
                   )}
                 </Fragment>
@@ -500,7 +500,7 @@ const OrdersMenuItems = (subMenuList) => (
   </Menu.Items>
 );
 
-const CartMenuItems = (detail) => {
+const CartMenuItems = (detail, setActiveMenuName) => {
   const { cartState } = useContext(Context);
   const cartLength =
     (cartState.cart?.cart_items && cartState.cart.cart_items.length) || 0;
@@ -534,7 +534,7 @@ const CartMenuItems = (detail) => {
           </div>
           <div className="text-primary">
             <Link href={cartLength === 0 ? "/" : "/cart"}>
-              <a className="cursor-pointer">
+              <a className="cursor-pointer" onClick={setActiveMenuName}>
                 {cartLength === 0 ? detail.subTitle : "Go to Cart"}
               </a>
             </Link>

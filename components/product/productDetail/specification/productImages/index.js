@@ -22,10 +22,10 @@ const ProductImages = (props) => {
   };
 
   useEffect(() => {
-    if (productImagesLength > 0 && Object.keys(selectedImage).length === 0) {
+    if (productImagesLength > 0) {
       setSelectedImage(productDetail.images[0]);
     }
-  });
+  }, []);
 
   const moveRight = () => {
     slider.current.slickNext();
@@ -41,7 +41,7 @@ const ProductImages = (props) => {
   };
 
   return (
-    <div className="max-w-350 py-8">
+    <div className="max-w-350 min-w-350 py-8">
       <div className="relative group cursor-pointer">
         <div
           className="absolute h-full w-full z-10 flex items-center justify-center top-0 opacity-0 hover:opacity-100"

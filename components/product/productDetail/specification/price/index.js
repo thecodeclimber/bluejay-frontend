@@ -65,7 +65,7 @@ const Price = (props) => {
       <div
         onClick={() => !isLoading && addToCart()}
         className={classnames(
-          "flex items-center justify-center cursor-pointer text-white bg-primary rounded py-3",
+          "flex items-center justify-center cursor-pointer text-white bg-primary rounded py-3 mb-10",
           {
             "opacity-70 cursor-not-allowed": isLoading,
           }

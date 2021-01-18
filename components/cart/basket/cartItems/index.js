@@ -8,12 +8,13 @@ import { VscBookmark as BookmarkIcon } from "react-icons/vsc";
 import { FaRegHeart as FavouriteIcon } from "react-icons/fa";
 import { AiOutlineDelete as DeleteIcon } from "react-icons/ai";
 import { Context } from "../../../../hooks/store";
-import { setCart } from "../../../../hooks/cart/actions";
-import { httpDelete, httpPut } from "../../../../utils/https";
+import { setCart, setSaveForLaterCart } from "../../../../hooks/cart/actions";
+import { httpDelete, httpPut, httpPost } from "../../../../utils/https";
 import {
   formattingCartData,
   setCartLocalStorage,
   removeCartLocalStorage,
+  getFormattedCartParams,
 } from "../../../../utils/helper";
 import URLS from "../../../../utils/urls";
 
@@ -22,6 +23,7 @@ let timer = "";
 const CartItems = () => {
   const { cartState, dispatchCart } = useContext(Context);
   const [deletingItemId, setDeletingItemId] = useState("");
+  const [loadingItemId, setLoadingItemId] = useState("");
   const cartLength =
     (cartState.cart?.cart_items && cartState.cart.cart_items.length) || 0;
   const currencySymbol =
@@ -106,6 +108,33 @@ const CartItems = () => {
     );
   };
 
+  const saveForLater = (cartData) => {
+    const product = {
+      id: cartData.product_id,
+      quantity: cartData.quantity,
+    };
+    const params = getFormattedCartParams(product, true);
+    setLoadingItemId(cartData.product_id);
+    httpPost(URLS.NEXT.CART.ADD, params, {
+      traceName: "add_to_save_for_later_cart",
+    }).then(
+      (res) => {
+        const { errors, data } = res || {};
+        if (errors && Object.keys(errors).length > 0) {
+          alert(errors[Object.keys(errors)[0]]);
+        } else {
+          setCartLocalStorage(data?.id, data?.updated_time, true);
+          const cartData = formattingCartData(data);
+          dispatchCart(setSaveForLaterCart(cartData));
+        }
+        setLoadingItemId("");
+      },
+      (err) => {
+        setLoadingItemId("");
+      }
+    );
+  };
+
   return (
     <div className="container mx-auto font-ubuntu">
       {cartLength === 0 && (
@@ -152,8 +181,13 @@ const CartItems = () => {
                       <img src={image_url} alt={`img-${index}`} width="70px" />
                     </div>
                     <div className="text-base tracking-tight">
-                      <div className="font-normal text-dark leading-5 mb-2">
-                        {name}
+                      <div className="font-normal leading-5 mb-2">
+                        <Link
+                          href="/product/[id]"
+                          as={`/product/${product_id}`}
+                        >
+                          <a className="text-dark hover:text-primary">{name}</a>
+                        </Link>
                       </div>
                       <div className="font-medium text-primary">
                         {currencySymbol}
@@ -183,8 +217,20 @@ const CartItems = () => {
                   </div>
                 </div>
                 <div className="flex justify-between items-center pr-5">
-                  <div className="flex text-primary font-medium p-5 tracking-tight">
-                    <div className="flex items-center">
+                  <div className="flex font-medium p-5 tracking-tight">
+                    <div
+                      onClick={() =>
+                        loadingItemId !== product_id && saveForLater(data)
+                      }
+                      className={classnames(
+                        "flex items-center cursor-pointer",
+                        {
+                          "text-primary": loadingItemId !== product_id,
+                          "cursor-not-allowed text-dark opacity-25":
+                            loadingItemId === product_id,
+                        }
+                      )}
+                    >
                       <span className="mr-4">
                         <BookmarkIcon className="text-lg" />
                       </span>
@@ -193,7 +239,7 @@ const CartItems = () => {
                     <div className="py-1">
                       <div className="border-r border-dark border-opacity-10 ml-5 h-full" />
                     </div>
-                    <div className="flex items-center ml-5">
+                    <div className="flex items-center ml-5 text-primary">
                       <span className="mr-4">
                         <FavouriteIcon />
                       </span>
@@ -203,7 +249,7 @@ const CartItems = () => {
                   <div className="tracking-tight">
                     <span className="text-dark text-sm font-light">
                       total for this item:
-                    </span>{" "}
+                    </span>
                     <span className="font-medium text-primary text-sm text-lg">
                       {currencySymbol}
                       {(extended_sale_price &&

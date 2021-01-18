@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useContext } from "react";
+import { Context } from "../../../../hooks/store";
+import getSymbolFromCurrency from "currency-symbol-map";
 
 const Total = () => {
+  const { cartState } = useContext(Context);
+  const currencySymbol =
+    (cartState.cart?.currency?.code &&
+      getSymbolFromCurrency(cartState.cart.currency.code)) ||
+    "$";
   return (
     <div className="border border-dark border-opacity-10 rounded py-5 px-6 tracking-tight font-ubuntu">
       <div className="text-xl mb-0 flex justify-between text-dark">
         <div className="font-light">Total</div>
-        <div className="font-medium">$108.00</div>
+        <div className="font-medium">
+          {currencySymbol}
+          {cartState.cart?.cart_amount || 0}
+        </div>
       </div>
       <hr className="my-5 opacity-05 text-dark" />
       <div className="flex justify-between text-dark text-base mb-3">

@@ -3,6 +3,7 @@
  */
 const initialCartState = {
   cart: {},
+  saveForLaterCart: {},
 };
 
 export default initialCartState;

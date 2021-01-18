@@ -107,7 +107,7 @@ export const getUserData = (userState = {}) => {
     if (token.length > 1) {
       const decodedData = JSON.parse(atob(token[1]));
       if (!decodedData.exp || Date.now() > decodedData.exp * 1000) {
-        localStorage.removeItem("user");
+        removeUserLocalStorage();
         return null;
       }
 
@@ -301,10 +301,14 @@ export const formattingProductOptions = (productOptions = []) => {
  * Formatting cart params
  *
  * @param {Object} product
+ * @param {Boolean} isSaveForLater
  *
  * @returns {Object}
  */
-export const getFormattedCartParams = (product = {}) => {
+export const getFormattedCartParams = (
+  product = {},
+  isSaveForLater = false
+) => {
   const optionSelections = formattingProductOptions(product.options);
   const userData = getUserData();
   let params = {
@@ -317,7 +321,7 @@ export const getFormattedCartParams = (product = {}) => {
   if (userData?.id) {
     params = { ...params, customer_id: userData?.id };
   }
-  const cartData = getCartData();
+  const cartData = getCartData(isSaveForLater);
   if (cartData?.cartId) {
     params = { ...params, cart_id: cartData.cartId };
   }
@@ -329,43 +333,53 @@ export const getFormattedCartParams = (product = {}) => {
  *
  * @param {String} cartId
  * @param {String} time
+ * @param {Boolean} isSaveForLater
  *
  * @return {Boolean}
  */
-export const setCartLocalStorage = (cartId, time) => {
+export const setCartLocalStorage = (cartId, time, isSaveForLater = false) => {
   if (!cartId || !time) return false;
   const expiryDate = moment(new Date(time)).add(29, "day").format();
   const data = {
     cartId,
     cartExpiryAt: expiryDate,
   };
-  localStorage.setItem("cart", JSON.stringify(data));
+  localStorage.setItem(
+    isSaveForLater ? "saveForLaterCart" : "cart",
+    JSON.stringify(data)
+  );
   return true;
 };
 
 /**
  * Remove cart from local storage
  *
+ * @param {Boolean} isSaveForLater
+ *
  * @return {Boolean}
  */
-export const removeCartLocalStorage = () => {
-  localStorage.removeItem("cart");
+export const removeCartLocalStorage = (isSaveForLater = false) => {
+  localStorage.removeItem(isSaveForLater ? "saveForLaterCart" : "cart");
   return true;
 };
 
 /**
  * Get cart data
  *
+ * @param {Boolean} isSaveForLater
+ *
  * @returns {Object}
  * @returns {Null}
  */
-export const getCartData = () => {
-  const cartData = JSON.parse(localStorage.getItem("cart"));
+export const getCartData = (isSaveForLater = false) => {
+  const cartData = JSON.parse(
+    localStorage.getItem(isSaveForLater ? "saveForLaterCart" : "cart")
+  );
   if (!cartData || !cartData.cartId || !cartData.cartExpiryAt) return null;
   const expiryDate = moment(cartData.cartExpiryAt);
   const todayDate = moment();
   if (todayDate > expiryDate) {
-    removeCartLocalStorage();
+    removeCartLocalStorage(isSaveForLater);
     return null;
   }
   return cartData;
