@@ -38,7 +38,6 @@ export default async (req, res) => {
       });
     });
   }
-
   const productsUrl = `${URLS.BIG_COMMERCE.PRODUCT.PRODUCTS}?id:in=${productIds}&include=primary_image`;
   const products = await httpGet(productsUrl, { isBigCommerce: true });
   if (products.status === 401) {
@@ -50,6 +49,17 @@ export default async (req, res) => {
     });
     return;
   }
-
-  return res.json(products);
+  const productsData = [];
+  if (products?.data && products.data.length > 0) {
+    const productsList = products.data.map((data) => {
+      return {
+        id: data.id,
+        name: data.name,
+        price: data.price,
+        image: data.primary_image.url_thumbnail,
+      };
+    });
+    productsData.push(...productsList);
+  }
+  return res.json(productsData);
 };

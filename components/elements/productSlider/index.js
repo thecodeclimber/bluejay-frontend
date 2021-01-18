@@ -1,30 +1,19 @@
-import React, { useRef, useState, useContext, useEffect } from "react";
+import React, { useRef, useState, useContext } from "react";
 import { array, bool, func, number } from "prop-types";
 import classnames from "classnames";
-import { FiHeart as HeartIcon } from "react-icons/fi/index";
+import WishlistIcon from "../wishlistIcon/index";
 import Slider from "react-slick";
-import { httpPost, httpDelete, httpGet } from "../../../utils/https";
 import { IoIosArrowForward as SlideRightArrow } from "react-icons/io/index";
 import { IoIosArrowBack as SlideLeftArrow } from "react-icons/io/index";
 import { RiSubtractFill as SubtractIcon } from "react-icons/ri/index";
 import { FiPlus as PlusIcon } from "react-icons/fi";
-import { Context } from "../../../hooks/store";
-import { setModal } from "../../../hooks/modal/actions";
-import { setUserWishlists } from "../../../hooks/user/actions";
-import { MODAL_TYPES } from "../../../hooks/modal/constants";
-import URLS from "../../../utils/urls";
 
 const ProductSlider = (props) => {
   const { dots, products, isLoading, handleProducts, displayProducts } =
     props || {};
-  const { userState, dispatchModal, dispatchUser } = useContext(Context);
   const slider = useRef(null);
   const [activeSlide, setActiveSlide] = useState(0);
-  const [wishlistLoadingId, setWishlistLoadingId] = useState("");
-  const [selectedWishlists, setSelectedWishlists] = useState(
-    userState?.wishlists
-  );
-  const [customerPresent, setCustomerPresent] = useState(false);
+
   const settings = {
     dots: false,
     infinite: true,
@@ -46,75 +35,6 @@ const ProductSlider = (props) => {
   const handleSlideGoTo = (index) => {
     slider.current.slickGoTo(index);
     setActiveSlide(index);
-  };
-
-  useEffect(() => {
-    setSelectedWishlists(userState?.wishlists);
-  }, [userState]);
-
-  useEffect(() => {
-    setCustomerPresent(true);
-  }, []);
-
-  useEffect(() => {
-    if (userState.user?.id) {
-      const wishlistUrl = `${URLS.NEXT.WISHLIST.CUSTOMER}?id=${userState.user?.id}`;
-      httpGet(wishlistUrl, {
-        traceName: "get_customer_wishlists",
-      }).then((res) => {
-        if (res.errors && Object.keys(res.errors).length > 0) {
-          alert(res.errors[Object.keys(res.errors)[0]]);
-        } else {
-          let wishlistsIds = [];
-          res.data.map((item) => {
-            wishlistsIds.push(item.id);
-          });
-          setSelectedWishlists(wishlistsIds);
-        }
-      });
-    }
-  }, [customerPresent]);
-
-  const handleWishlistsItem = (productId) => {
-    setWishlistLoadingId(productId);
-    if (!userState?.wishlists.includes(productId)) {
-      const params = {
-        product_id: productId,
-      };
-      httpPost(URLS.NEXT.WISHLIST.ADD, params, {
-        traceName: "add wishlist",
-      }).then((res) => {
-        if (res.errors && Object.keys(res.errors).length > 0) {
-          alert(res.errors[Object.keys(res.errors)[0]]);
-        } else {
-          const productsIds = [];
-          res.data.items.map((item) => {
-            productsIds.push(item.product_id);
-          });
-          setWishlistLoadingId("");
-          dispatchUser(setUserWishlists(productsIds));
-        }
-      });
-    } else {
-      const deleteUrl = `${URLS.NEXT.WISHLIST.DELETE}?product_id=${productId}`;
-      httpDelete(deleteUrl, {
-        traceName: "delete wishlist",
-      }).then((res) => {
-        if (res.errors && Object.keys(res.errors).length > 0) {
-          alert(res.errors[Object.keys(res.errors)[0]]);
-        } else {
-          let deletedItem;
-          userState?.wishlists.map((item, index) => {
-            if (item === productId) {
-              deletedItem = index;
-            }
-          });
-          setWishlistLoadingId("");
-          userState?.wishlists.splice(deletedItem, 1);
-          dispatchUser(setUserWishlists(userState?.wishlists));
-        }
-      });
-    }
   };
 
   const decreaseQuantity = (id) => {
@@ -181,38 +101,8 @@ const ProductSlider = (props) => {
                                 <div className="bg-green text-xs flex items-center font-normal text-white rounded-2xl h-full px-3 h-5">
                                   New
                                 </div>
-                                <div
-                                  className={classnames({
-                                    "opacity-50 cursor-not-allowed pointer-events-none":
-                                      wishlistLoadingId === product.id,
-                                  })}
-                                >
-                                  {userState.user?.id ? (
-                                    <HeartIcon
-                                      className={classnames(
-                                        "text-xl cursor-pointer text-grey opacity-70",
-                                        {
-                                          "fill-current text-primary opacity-100": selectedWishlists.includes(
-                                            product.id
-                                          ),
-                                          "fill-current text-primary opacity-70":
-                                            wishlistLoadingId === product.id,
-                                        }
-                                      )}
-                                      onClick={() =>
-                                        handleWishlistsItem(product.id)
-                                      }
-                                    />
-                                  ) : (
-                                    <HeartIcon
-                                      className="text-grey opacity-70 text-xl cursor-pointer"
-                                      onClick={() =>
-                                        dispatchModal(
-                                          setModal(MODAL_TYPES.LOGIN)
-                                        )
-                                      }
-                                    />
-                                  )}
+                                <div>
+                                  <WishlistIcon product={product} />
                                 </div>
                               </div>
                               <img

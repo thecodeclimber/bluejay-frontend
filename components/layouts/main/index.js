@@ -5,10 +5,13 @@ import { setUser } from "../../../hooks/user/actions";
 import { setModal } from "../../../hooks/modal/actions";
 import { MODAL_TYPES } from "../../../hooks/modal/constants";
 import { Context } from "../../../hooks/store";
+import { httpGet } from "../../../utils/https";
+import { setUserWishlists } from "../../../hooks/user/actions";
 import Base from "../base";
 import Navbar from "./navbar";
 import Footer from "./footer";
 import Auth from "./auth";
+import URLS from "../../../utils/urls";
 
 const MainLayout = (props) => {
   const router = useRouter();
@@ -24,7 +27,24 @@ const MainLayout = (props) => {
     }
     const userData = getUserData(userState);
     if (userData) dispatchUser(setUser(userData));
-  }, [router]);
+  }, []);
+
+  useEffect(() => {
+    if (userState.user?.id) fetchUserWishlists();
+  }, [userState.user?.id]);
+
+  const fetchUserWishlists = () => {
+    const wishlistUrl = `${URLS.NEXT.WISHLIST.CUSTOMER}?id=${userState.user.id}`;
+    httpGet(wishlistUrl, {
+      traceName: "get_customer_wishlists",
+    }).then((res) => {
+      if (res.errors && Object.keys(res.errors).length > 0) {
+        alert(res.errors[Object.keys(res.errors)[0]]);
+      } else {
+        dispatchUser(setUserWishlists(res || []));
+      }
+    });
+  };
 
   return (
     <Base>

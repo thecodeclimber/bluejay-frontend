@@ -1,7 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import { shape } from "prop-types";
-import { FaHeart as HeartIcon } from "react-icons/fa";
+import WishlistIcon from "../../../../elements/wishlistIcon";
+
 import { BsFillBookmarkFill as BookmarkIcon } from "react-icons/bs";
 
 const ProductSpecification = (props) => {
@@ -16,7 +17,7 @@ const ProductSpecification = (props) => {
         </Link>
         <div className="flex justify-between items-center">
           <BookmarkIcon className="text-xl text-primary mr-10" />
-          <HeartIcon className="text-lg text-primary" />
+          <WishlistIcon product={productDetail} />
         </div>
       </div>
       <hr className="text-dark opacity-10 " />
