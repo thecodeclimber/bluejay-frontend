@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useContext } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Menu, Transition } from "@headlessui/react";
 import {
   MdAccountCircle as UserIcon,
@@ -18,6 +19,8 @@ import { USER_STRUCTURE } from "../../../../../hooks/user/constants";
 import { setModal } from "../../../../../hooks/modal/actions";
 import { MODAL_TYPES } from "../../../../../hooks/modal/constants";
 import { Context } from "../../../../../hooks/store";
+import Drawer from "../../../../elements/drawer";
+import CartAdded from "../../../../cart/cartAdded";
 
 const LeftMenuTitles = {
   AboutUs: "About Us",
@@ -44,7 +47,12 @@ const OrderStatus = {
 
 const TopNavbar = () => {
   const [activeMenu, setActiveMenu] = useState(null);
-  const { userState, dispatchUser, dispatchModal } = useContext(Context);
+  const [isCartDrawer, setIsCartDrawer] = useState(false);
+  const { userState, cartState, dispatchUser, dispatchModal } = useContext(
+    Context
+  );
+  const cartLength =
+    (cartState.cart?.cart_items && cartState.cart.cart_items.length) || 0;
 
   const setActiveMenuName = (name = null) => {
     setActiveMenu(name);
@@ -60,6 +68,7 @@ const TopNavbar = () => {
   data.menuLeft = [
     {
       title: LeftMenuTitles.AboutUs,
+      link: "/about",
     },
     {
       title: LeftMenuTitles.RequestaQuote,
@@ -77,6 +86,7 @@ const TopNavbar = () => {
         email: "Info@BlueJayFasteners.com",
         address: "1770 W. Berteau Avenue \n Unit 402 \n Chicago, IL 60613",
       },
+      link: "/contact",
     },
   ];
 
@@ -90,8 +100,9 @@ const TopNavbar = () => {
           isExpanded: true,
         },
         {
-          name: "Basket (2 item)",
+          name: `Basket (${cartLength} item)`,
           isExpanded: true,
+          link: "/cart",
         },
         {
           name: `My Wish List (${userState.wishlists?.length})`,
@@ -167,15 +178,15 @@ const TopNavbar = () => {
     {
       title: RightMenuTitles.Cart,
       icon: Cart,
-      subMenuList: [
-        {
-          img: "/img/Cart.svg",
-          title: "Your Basket is empty",
-          subTitle: "Keep Shopping",
-        },
-      ],
-      show: Boolean(userState.user?.id),
+      subMenuList: [],
+      detail: {
+        img: "/img/Cart.svg",
+        title: "Your Basket is empty",
+        subTitle: "Keep Shopping",
+      },
+      show: true,
       fromApi: false,
+      onClick: () => openCartDrawer(),
     },
   ];
 
@@ -188,12 +199,23 @@ const TopNavbar = () => {
   classes.items =
     "absolute right-0 w-56 origin-top-right bg-white divide-y divide-gray-100 rounded-b-md outline-none";
 
+  const openCartDrawer = () => {
+    setIsCartDrawer(true);
+  };
+
+  const closeCartDrawer = () => {
+    setIsCartDrawer(false);
+  };
+
   return (
     <div className="flex items-center bg-primary">
+      <Drawer isOpen={isCartDrawer} closeDrawer={closeCartDrawer}>
+        <CartAdded closeCartDrawer={closeCartDrawer} />
+      </Drawer>
       <div className="container flex justify-between mx-auto">
         <div className="relative flex items-center">
           {data.menuLeft.map((menu, index) => {
-            const { detail } = menu || {};
+            const { detail, link } = menu || {};
             const isDetail = detail && Object.keys(detail).length > 0;
             return (
               <Menu
@@ -202,12 +224,20 @@ const TopNavbar = () => {
                 className="relative"
                 onMouseLeave={() => setActiveMenuName()}
               >
-                <Menu.Button
-                  className={classes.dropdown}
-                  onMouseOver={() => setActiveMenuName(menu.title)}
-                >
-                  {menu.title}
-                  {isDetail && <ArrowIcon className={classes.arrow} />}
+                <Menu.Button onMouseOver={() => setActiveMenuName(menu.title)}>
+                  {link ? (
+                    <Link href={link}>
+                      <a className={classes.dropdown}>
+                        {menu.title}
+                        {isDetail && <ArrowIcon className={classes.arrow} />}
+                      </a>
+                    </Link>
+                  ) : (
+                    <div className={classes.dropdown}>
+                      {menu.title}
+                      {isDetail && <ArrowIcon className={classes.arrow} />}
+                    </div>
+                  )}
                 </Menu.Button>
                 {activeMenu === menu.title && (
                   <Transition
@@ -230,8 +260,10 @@ const TopNavbar = () => {
         </div>
         <div className="relative flex items-center">
           {data.menuRight.map((menu, index) => {
-            const { subMenuList, show, fromApi, onClick } = menu || {};
+            const { subMenuList, show, fromApi, detail, onClick } = menu || {};
+
             const isSubMenuList = subMenuList && subMenuList.length > 0;
+            const isDetail = detail && Object.keys(detail).length > 0;
             return (
               <Menu
                 as="div"
@@ -254,32 +286,33 @@ const TopNavbar = () => {
                       ) : (
                         menu.title
                       )}
-                      {(isSubMenuList || fromApi) && (
+                      {(isSubMenuList || isDetail || fromApi) && (
                         <ArrowIcon className={classes.arrow} />
                       )}
                     </Menu.Button>
                   )}
-                  {activeMenu === menu.title && (isSubMenuList || fromApi) && (
-                    <Transition
-                      show={activeMenu === menu.title}
-                      enter="transition duration-100 ease-out"
-                      enterFrom="transform scale-95 opacity-0"
-                      enterTo="transform scale-100 opacity-100"
-                      leave="transition duration-75 ease-out"
-                      leaveFrom="transform scale-100 opacity-100"
-                      leaveTo="transform scale-95 opacity-0"
-                      className="absolute z-40 right-0"
-                    >
-                      {menu.title === RightMenuTitles.Favorites &&
-                        FavoritesMenuItems(subMenuList)}
-                      {menu.title === RightMenuTitles.Account &&
-                        AccountMenuItems(subMenuList)}
-                      {menu.title === RightMenuTitles.Orders &&
-                        OrdersMenuItems(subMenuList)}
-                      {menu.title === RightMenuTitles.Cart &&
-                        CartMenuItems(subMenuList)}
-                    </Transition>
-                  )}
+                  {activeMenu === menu.title &&
+                    (isSubMenuList || isDetail || fromApi) && (
+                      <Transition
+                        show={activeMenu === menu.title}
+                        enter="transition duration-100 ease-out"
+                        enterFrom="transform scale-95 opacity-0"
+                        enterTo="transform scale-100 opacity-100"
+                        leave="transition duration-75 ease-out"
+                        leaveFrom="transform scale-100 opacity-100"
+                        leaveTo="transform scale-95 opacity-0"
+                        className="absolute z-40 right-0"
+                      >
+                        {menu.title === RightMenuTitles.Favorites &&
+                          FavoritesMenuItems(subMenuList)}
+                        {menu.title === RightMenuTitles.Account &&
+                          AccountMenuItems(subMenuList)}
+                        {menu.title === RightMenuTitles.Orders &&
+                          OrdersMenuItems(subMenuList)}
+                        {menu.title === RightMenuTitles.Cart &&
+                          CartMenuItems(detail, setActiveMenuName)}
+                      </Transition>
+                    )}
                 </Fragment>
               </Menu>
             );
@@ -380,31 +413,44 @@ const FavoritesMenuItems = (subMenuList) => {
   );
 };
 
-const AccountMenuItems = (subMenuList) => (
-  <Menu.Items
-    className="font-ubuntu bg-white outline-none py-2 mt-3 -right-8 text-dark rounded relative min-w-200 shadow-grey-8"
-    static
-  >
-    <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
-    {subMenuList.map((subMenu, index) => {
-      const { name, isExpanded, onClick } = subMenu || {};
-      return (
-        <Fragment key={index}>
-          <Menu.Item
-            onClick={onClick}
-            as="div"
-            className="text-base flex items-center justify-between px-6 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
-          >
-            {name} {isExpanded && <ChevronRight className="text-lg ml-10" />}
-          </Menu.Item>
-          {index !== subMenuList.length - 1 && (
-            <hr className="opacity-05 mx-6" />
-          )}
-        </Fragment>
-      );
-    })}
-  </Menu.Items>
-);
+const AccountMenuItems = (subMenuList) => {
+  return (
+    <Menu.Items
+      className="font-ubuntu bg-white outline-none py-2 mt-3 -right-8 text-dark rounded relative min-w-200 shadow-grey-8"
+      static
+    >
+      <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
+      {subMenuList.map((subMenu, index) => {
+        const { name, isExpanded, onClick, link } = subMenu || {};
+        return (
+          <Fragment key={index}>
+            <Menu.Item as="div">
+              {link ? (
+                <Link href={link}>
+                  <a className="text-base flex items-center justify-between px-6 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none">
+                    {name}
+                    {isExpanded && <ChevronRight className="text-lg ml-10" />}
+                  </a>
+                </Link>
+              ) : (
+                <div
+                  onClick={onClick}
+                  className="text-base flex items-center justify-between px-6 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
+                >
+                  {name}
+                  {isExpanded && <ChevronRight className="text-lg ml-10" />}
+                </div>
+              )}
+            </Menu.Item>
+            {index !== subMenuList.length - 1 && (
+              <hr className="opacity-05 mx-6" />
+            )}
+          </Fragment>
+        );
+      })}
+    </Menu.Items>
+  );
+};
 
 const OrdersMenuItems = (subMenuList) => (
   <Menu.Items
@@ -461,38 +507,50 @@ const OrdersMenuItems = (subMenuList) => (
   </Menu.Items>
 );
 
-const CartMenuItems = (subMenuList) => (
-  <Menu.Items
-    className="font-ubuntu bg-white outline-none py-2 mt-3 -right-8 text-dark rounded relative min-w-300 shadow-grey-8"
-    static
-  >
-    <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
-    {subMenuList.map((subMenu, index) => {
-      const { img, title, subTitle } = subMenu || {};
-      return (
-        <Fragment key={index}>
-          <Menu.Item
-            as="div"
-            className="text-base flex items-center px-8 py-3 focus:outline-none cursor-pointer"
-          >
-            <div className="flex-none">
-              <Image
-                src={img}
-                width="27"
-                height="29"
-                className="object-contain"
-              />
-            </div>
-            <div className="ml-8 mr-32 flex-none">
-              <div className="font-medium">{title}</div>
-              <div className="text-primary">{subTitle}</div>
-            </div>
-          </Menu.Item>
-        </Fragment>
-      );
-    })}
-  </Menu.Items>
-);
+const CartMenuItems = (detail, setActiveMenuName) => {
+  const { cartState } = useContext(Context);
+  const cartLength =
+    (cartState.cart?.cart_items && cartState.cart.cart_items.length) || 0;
+  return (
+    <Menu.Items
+      className="font-ubuntu bg-white outline-none py-2 mt-3 -right-8 text-dark rounded relative min-w-300 shadow-grey-8"
+      static
+    >
+      <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
+      <Menu.Item
+        as="div"
+        className="text-base flex items-center px-8 py-3 focus:outline-none"
+      >
+        <div className="flex-none">
+          <Image
+            src={detail.img}
+            width="27"
+            height="29"
+            className="object-contain"
+          />
+        </div>
+        <div className="ml-8 mr-32 flex-none">
+          <div className="font-medium">
+            {cartLength === 0 ? (
+              detail.title
+            ) : (
+              <div>
+                {cartLength} {cartLength > 1 ? "items" : "item"} added to cart
+              </div>
+            )}
+          </div>
+          <div className="text-primary">
+            <Link href={cartLength === 0 ? "/" : "/cart"}>
+              <a className="cursor-pointer" onClick={setActiveMenuName}>
+                {cartLength === 0 ? detail.subTitle : "Go to Cart"}
+              </a>
+            </Link>
+          </div>
+        </div>
+      </Menu.Item>
+    </Menu.Items>
+  );
+};
 
 const MenuItemOld = ({ children, dropdown, icon, ...props }) => (
   <div

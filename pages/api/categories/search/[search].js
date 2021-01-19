@@ -10,20 +10,10 @@ export default async (req, res) => {
   if (search) {
     searchParams = JSON.parse(search);
   }
-
   let categoriesUrl = URLS.BIG_COMMERCE.CATEGORY.CATEGORIES;
   if (searchParams?.name) {
     categoriesUrl += `?name=${searchParams.name}`;
   }
   const categories = await httpGet(categoriesUrl, { isBigCommerce: true });
-  if (categories.status === 401) {
-    res.status(401);
-    res.json({
-      errors: {
-        error: MESSAGES.UNAUTHORIZED,
-      },
-    });
-    return;
-  }
   return res.json(categories);
 };

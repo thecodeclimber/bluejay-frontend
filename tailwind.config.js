@@ -26,6 +26,8 @@ module.exports = {
       200: "200px",
       300: "300px",
       310: "315px",
+      350: "350px",
+      450: "427px",
       500: "538px",
     },
     maxWidth: {
@@ -37,6 +39,7 @@ module.exports = {
       310: "315px",
       350: "350px",
       400: "472px",
+      550: "584px",
       650: "640px",
       700: "692px",
     },
@@ -89,7 +92,7 @@ module.exports = {
       20: "0.20",
       25: "0.25",
       50: "0.50",
-      70: "0.7",
+      70: "0.70",
       75: "0.75",
       90: "0.90",
       95: "0.95",
@@ -129,6 +132,9 @@ module.exports = {
         "-1": "-1",
         500: 500,
       },
+      lineHeight: {
+        2: "0.875rem",
+      },
       inset: {
         "-5": "-5rem",
         "-8": "-8px",
@@ -149,6 +155,7 @@ module.exports = {
   },
   variants: {
     opacity: ["responsive", "hover", "focus", "group-hover"],
+    display: ["responsive", "hover", "focus", "group-hover"],
   },
   plugins: [],
 };

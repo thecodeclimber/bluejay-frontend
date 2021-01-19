@@ -470,7 +470,7 @@ const Categories = (props) => {
     >
       <Menu.Button
         onMouseOver={() => setActiveCategory(true)}
-        className="px-4 py-2 focus:outline-none flex items-center bg-white border-2 border-white rounded-md hover:block cursor-pointer hover:block border-opacity-10 text-dark hover:bg-primary hover:text-white ml-6"
+        className="px-4 py-2 focus:outline-none flex items-center bg-white border-2 border-white rounded-md  cursor-pointer border-opacity-10 text-dark hover:bg-primary hover:text-white ml-6"
       >
         <CategoryIcon className="mr-3" />
         Categories

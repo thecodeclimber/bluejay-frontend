@@ -21,9 +21,7 @@ const BestProduct = () => {
       (res) => {
         if (res.errors && Object.keys(res.errors).length > 0) {
           alert(res.errors[Object.keys(res.errors)[0]]);
-          setIsFetching(false);
         } else {
-          setIsFetching(false);
           setTotalBestProducts(res.meta?.pagination?.total || 0);
           if (res.data && res.data.length > 0) {
             const data = res.data.map((product) => {
@@ -33,6 +31,7 @@ const BestProduct = () => {
             setBestProducts(data);
           }
         }
+        setIsFetching(false);
       },
       (err) => {
         setIsFetching(false);
