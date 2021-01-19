@@ -14,17 +14,24 @@ const Total = () => {
         <div className="font-light">Total</div>
         <div className="font-medium">
           {currencySymbol}
-          {cartState.cart?.cart_amount || 0}
+          {(cartState.cart?.cart_amount &&
+            cartState.cart?.cart_amount.toFixed(2)) ||
+            0}
         </div>
       </div>
       <hr className="my-5 opacity-05 text-dark" />
       <div className="flex justify-between text-dark text-base mb-3">
         <div className="font-light opacity-75">Subtotal</div>
-        <div className="font-medium opacity-90">$33.00</div>
+        <div className="font-medium opacity-90">
+          {currencySymbol}
+          {(cartState.cart?.cart_amount &&
+            cartState.cart?.cart_amount.toFixed(2)) ||
+            0}
+        </div>
       </div>
       <div className="flex justify-between text-dark text-base">
         <div className="font-light opacity-75">Shipping</div>
-        <div className="font-medium opacity-90">$6.24</div>
+        <div className="font-medium opacity-90">$0.00</div>
       </div>
       <hr className="my-5 opacity-05 text-dark" />
       <button className="font-ubuntu text-base font-medium w-full bg-primary text-white rounded py-3 focus:outline-none">

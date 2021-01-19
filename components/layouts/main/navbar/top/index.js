@@ -68,6 +68,7 @@ const TopNavbar = () => {
   data.menuLeft = [
     {
       title: LeftMenuTitles.AboutUs,
+      link: "/about",
     },
     {
       title: LeftMenuTitles.RequestaQuote,
@@ -85,6 +86,7 @@ const TopNavbar = () => {
         email: "Info@BlueJayFasteners.com",
         address: "1770 W. Berteau Avenue \n Unit 402 \n Chicago, IL 60613",
       },
+      link: "/contact",
     },
   ];
 
@@ -229,7 +231,7 @@ const TopNavbar = () => {
       <div className="container flex justify-between mx-auto">
         <div className="relative flex items-center">
           {data.menuLeft.map((menu, index) => {
-            const { detail } = menu || {};
+            const { detail, link } = menu || {};
             const isDetail = detail && Object.keys(detail).length > 0;
             return (
               <Menu
@@ -238,12 +240,20 @@ const TopNavbar = () => {
                 className="relative"
                 onMouseLeave={() => setActiveMenuName()}
               >
-                <Menu.Button
-                  className={classes.dropdown}
-                  onMouseOver={() => setActiveMenuName(menu.title)}
-                >
-                  {menu.title}
-                  {isDetail && <ArrowIcon className={classes.arrow} />}
+                <Menu.Button onMouseOver={() => setActiveMenuName(menu.title)}>
+                  {link ? (
+                    <Link href={link}>
+                      <a className={classes.dropdown}>
+                        {menu.title}
+                        {isDetail && <ArrowIcon className={classes.arrow} />}
+                      </a>
+                    </Link>
+                  ) : (
+                    <div className={classes.dropdown}>
+                      {menu.title}
+                      {isDetail && <ArrowIcon className={classes.arrow} />}
+                    </div>
+                  )}
                 </Menu.Button>
                 {activeMenu === menu.title && (
                   <Transition

@@ -62,6 +62,7 @@ const URLS = {
       FEATURED: `${NEXT_BASE_URL}/products/featured`,
       TOP_DEALS: `${NEXT_BASE_URL}/products/top-deals`,
       PURCHASED: `${NEXT_BASE_URL}/products/purchased`,
+      ADDITIONAL: `${NEXT_BASE_URL}/products/additional`,
     },
     BRAND: {
       BRANDS: `${NEXT_BASE_URL}/brands`,

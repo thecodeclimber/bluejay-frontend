@@ -26,12 +26,12 @@ const Price = (props) => {
       traceName: "add_to_cart",
     }).then(
       (res) => {
-        const { errors, data } = res || {};
+        const { errors, cart } = res || {};
         if (errors && Object.keys(errors).length > 0) {
           alert(errors[Object.keys(errors)[0]]);
         } else {
-          setCartLocalStorage(data?.id, data?.updated_time);
-          const cartData = formattingCartData(data);
+          setCartLocalStorage(cart?.data?.id, cart?.data?.updated_time);
+          const cartData = formattingCartData(cart?.data);
           dispatchCart(setCart(cartData));
           openCartDrawer();
         }

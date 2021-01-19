@@ -12,6 +12,7 @@ import { httpPut, httpDelete } from "../../../../utils/https";
 import {
   setCartLocalStorage,
   formattingCartData,
+  removeCartLocalStorage,
 } from "../../../../utils/helper";
 import URLS from "../../../../utils/urls";
 

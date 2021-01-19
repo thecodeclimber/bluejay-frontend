@@ -109,24 +109,37 @@ const saveForLater = () => {
     }, 400);
   };
 
-  const addToCart = (data) => {
+  const addToCart = (cartData) => {
     const product = {
-      id: data.product_id,
-      quantity: data.quantity,
+      id: cartData.product_id,
+      quantity: cartData.quantity,
+      tempCartId: cartState.saveForLaterCart.id,
+      tempItemId: cartData.id,
     };
     const params = getFormattedCartParams(product);
-    setLoadingProductId(data.product_id);
+    setLoadingProductId(cartData.product_id);
     httpPost(URLS.NEXT.CART.ADD, params, {
       traceName: "add_to_cart",
     }).then(
       (res) => {
-        const { errors, data } = res || {};
+        const { errors, cart, tempCart } = res || {};
         if (errors && Object.keys(errors).length > 0) {
           alert(errors[Object.keys(errors)[0]]);
         } else {
-          setCartLocalStorage(data?.id, data?.updated_time);
-          const cartData = formattingCartData(data);
-          dispatchCart(setCart(cartData));
+          setCartLocalStorage(cart?.data?.id, cart?.data?.updated_time);
+          const formattedCartData = formattingCartData(cart?.data);
+          dispatchCart(setCart(formattedCartData));
+
+          setCartLocalStorage(
+            tempCart?.data?.id,
+            tempCart?.data?.updated_time,
+            true
+          );
+          const formattedTempCartData = formattingCartData(tempCart?.data);
+          dispatchCart(setSaveForLaterCart(formattedTempCartData));
+          if (!tempCart?.data?.id) {
+            removeCartLocalStorage(true);
+          }
         }
         setLoadingProductId("");
       },
@@ -237,7 +250,12 @@ const saveForLater = () => {
                       )}
                     >
                       <span className="mr-4">
-                        <img src="/img/Cart.svg" alt="cart-img" width="16px" />
+                        <img
+                          src="/img/Cart.svg"
+                          alt="cart-img"
+                          width="16px"
+                          className="fill-current text-dark"
+                        />
                       </span>
                       <span className="text-sm">Add to Cart</span>
                     </div>

@@ -325,6 +325,14 @@ export const getFormattedCartParams = (
   if (cartData?.cartId) {
     params = { ...params, cart_id: cartData.cartId };
   }
+  if (product?.tempCartId && product?.tempItemId) {
+    params = {
+      ...params,
+      temp_cart_id: product.tempCartId,
+      temp_item_id: product.tempItemId,
+    };
+  }
+
   return params;
 };
 

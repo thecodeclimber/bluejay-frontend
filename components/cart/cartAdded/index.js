@@ -35,7 +35,7 @@ const CartAdded = (props) => {
       </div>
       {cartLength === 0 && (
         <div className="flex justify-center">
-          <div className="text-base flex items-center px-8 py-3 focus:outline-none cursor-pointer">
+          <div className="text-base flex items-center px-8 pt-6 pb-3 focus:outline-none cursor-pointer">
             <div className="flex-none">
               <img
                 src="/img/Cart.svg"
@@ -54,7 +54,7 @@ const CartAdded = (props) => {
           </div>
         </div>
       )}
-      {isNewItem && (
+      {isNewItem && cartLength > 0 && (
         <>
           <div className="px-5 flex pt-5">
             <div className="mr-5 pt-2">

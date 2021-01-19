@@ -34,6 +34,18 @@ export default async (req, res) => {
   let params = {
     line_items: [itemParams],
   };
+
+  let tempCart = {};
+  if (data?.temp_cart_id && data?.temp_item_id) {
+    const cartItemDeletedUrl = `${URLS.BIG_COMMERCE.CART.ITEM.replace(
+      "{CART_ID}",
+      data.temp_cart_id
+    )}/${data.temp_item_id}`;
+    tempCart = await httpDelete(cartItemDeletedUrl, {
+      isBigCommerce: true,
+    });
+  }
+
   if (data?.cart_id) {
     const cartListUrl = `${URLS.BIG_COMMERCE.CART.CART}/${data.cart_id}`;
     const cartData = await httpGet(cartListUrl, { isBigCommerce: true });
@@ -66,7 +78,7 @@ export default async (req, res) => {
             const cart = await httpPost(cartUrl, params, {
               isBigCommerce: true,
             });
-            return res.json(cart);
+            return res.json({ cart, tempCart });
           }
         }
       }
@@ -86,15 +98,15 @@ export default async (req, res) => {
         { customer_id: data.customer_id },
         { isBigCommerce: true }
       );
-      return res.json(cartCustomer);
+      return res.json({ cart: cartCustomer, tempCart });
     }
-    return res.json(cartItem);
+    return res.json({ cart: cartItem, tempCart });
   } else {
     if (data?.customer_id) {
       params = { ...params, customer_id: data.customer_id };
     }
     const cartUrl = URLS.BIG_COMMERCE.CART.CART;
     const cart = await httpPost(cartUrl, params, { isBigCommerce: true });
-    return res.json(cart);
+    return res.json({ cart, tempCart });
   }
 };

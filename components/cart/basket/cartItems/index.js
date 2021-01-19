@@ -112,6 +112,8 @@ const CartItems = () => {
     const product = {
       id: cartData.product_id,
       quantity: cartData.quantity,
+      tempCartId: cartState.cart.id,
+      tempItemId: cartData.id,
     };
     const params = getFormattedCartParams(product, true);
     setLoadingItemId(cartData.product_id);
@@ -119,13 +121,20 @@ const CartItems = () => {
       traceName: "add_to_save_for_later_cart",
     }).then(
       (res) => {
-        const { errors, data } = res || {};
+        const { errors, cart, tempCart } = res || {};
         if (errors && Object.keys(errors).length > 0) {
           alert(errors[Object.keys(errors)[0]]);
         } else {
-          setCartLocalStorage(data?.id, data?.updated_time, true);
-          const cartData = formattingCartData(data);
-          dispatchCart(setSaveForLaterCart(cartData));
+          setCartLocalStorage(cart?.data?.id, cart?.data?.updated_time, true);
+          const formattedCartData = formattingCartData(cart?.data);
+          dispatchCart(setSaveForLaterCart(formattedCartData));
+
+          setCartLocalStorage(tempCart?.data?.id, tempCart?.data?.updated_time);
+          const formattedTempCartData = formattingCartData(tempCart?.data);
+          dispatchCart(setCart(formattedTempCartData));
+          if (!tempCart?.data?.id) {
+            removeCartLocalStorage();
+          }
         }
         setLoadingItemId("");
       },
