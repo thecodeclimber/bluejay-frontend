@@ -1,18 +1,34 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext } from "react";
 import { array, bool, func, number } from "prop-types";
+import Link from "next/link";
 import classnames from "classnames";
-import { FiHeart as HeartIcon } from "react-icons/fi/index";
 import Slider from "react-slick";
-import { IoIosArrowForward as SlideRightArrow } from "react-icons/io/index";
-import { IoIosArrowBack as SlideLeftArrow } from "react-icons/io/index";
-import { RiSubtractFill as SubtractIcon } from "react-icons/ri/index";
-import { FiPlus as PlusIcon } from "react-icons/fi";
+import {
+  IoIosArrowForward as SlideRightArrow,
+  IoIosArrowBack as SlideLeftArrow,
+} from "react-icons/io";
+import { RiSubtractFill as SubtractIcon } from "react-icons/ri";
+import { FiPlus as PlusIcon, FiHeart as HeartIcon } from "react-icons/fi";
+import { setCart } from "../../../hooks/cart/actions";
+import { Context } from "../../../hooks/store";
+import {
+  formattingCartData,
+  getFormattedCartParams,
+  setCartLocalStorage,
+} from "../../../utils/helper";
+import { httpPost } from "../../../utils/https";
+import Drawer from "../../elements/drawer";
+import CartAdded from "../../cart/cartAdded";
+import URLS from "../../../utils/urls";
 
 const ProductSlider = (props) => {
   const { dots, products, isLoading, handleProducts, displayProducts } =
     props || {};
   const slider = useRef(null);
+  const [loadingProductId, setLoadingProductId] = useState("");
   const [activeSlide, setActiveSlide] = useState(0);
+  const [isCartDrawer, setIsCartDrawer] = useState(false);
+  const { dispatchCart } = useContext(Context);
   const settings = {
     dots: false,
     infinite: true,
@@ -51,8 +67,43 @@ const ProductSlider = (props) => {
     handleProducts(productsData);
   };
 
+  const addToCart = (product) => {
+    const params = getFormattedCartParams(product);
+    setLoadingProductId(product.id);
+    httpPost(URLS.NEXT.CART.ADD, params, {
+      traceName: "add_to_cart",
+    }).then(
+      (res) => {
+        const { errors, cart } = res || {};
+        if (errors && Object.keys(errors).length > 0) {
+          alert(errors[Object.keys(errors)[0]]);
+        } else {
+          setCartLocalStorage(cart?.data?.id, cart?.data?.updated_time);
+          const cartData = formattingCartData(cart?.data);
+          dispatchCart(setCart(cartData));
+          openCartDrawer();
+        }
+        setLoadingProductId("");
+      },
+      (err) => {
+        setLoadingProductId("");
+      }
+    );
+  };
+
+  const openCartDrawer = () => {
+    setIsCartDrawer(true);
+  };
+
+  const closeCartDrawer = () => {
+    setIsCartDrawer(false);
+  };
+
   return (
     <div className="container mx-auto pb-6 tracking-tight">
+      <Drawer isOpen={isCartDrawer} closeDrawer={closeCartDrawer}>
+        <CartAdded closeCartDrawer={closeCartDrawer} isNewItem={true} />
+      </Drawer>
       <div className="relative">
         {isLoading && (
           <div className="text-center w-full mt-10">Loading...</div>
@@ -107,13 +158,22 @@ const ProductSlider = (props) => {
                                 src={product.primary_image?.url_thumbnail}
                                 alt={`img-${index}`}
                               />
-                              <div className=" font-medium text-center text-dark text-xl mb-3 whitespace-pre-line tracking-tight leading-7">
-                                {product.name}
+                              <div className="font-medium text-center text-xl mb-3 whitespace-pre-line tracking-tight leading-7">
+                                <Link
+                                  href="/product/[id]"
+                                  as={`/product/${product.id}`}
+                                >
+                                  <a className="text-dark hover:text-primary">
+                                    {product.name}
+                                  </a>
+                                </Link>
                               </div>
                             </div>
                             <div>
                               <div className="text-primary  text-center font-normal text-lg mb-4 tracking-tight">
-                                ${product.price}
+                                $
+                                {(product?.price && product.price.toFixed(2)) ||
+                                  0}
                               </div>
                               <div className="flex justify-between items-center mb-4 border rounded border-dark border-opacity-10">
                                 <div
@@ -133,14 +193,28 @@ const ProductSlider = (props) => {
                                   <PlusIcon className="text-dark" />
                                 </div>
                               </div>
-                              <div className="flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4">
+                              <div
+                                onClick={() =>
+                                  loadingProductId !== product.id &&
+                                  addToCart(product)
+                                }
+                                className={classnames(
+                                  "flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4",
+                                  {
+                                    "opacity-70 cursor-not-allowed":
+                                      loadingProductId === product.id,
+                                  }
+                                )}
+                              >
                                 <img
                                   className="mr-4"
                                   src="/img/add-to-cart.svg"
                                   alt="cart"
                                 />
                                 <span className="font-medium font-base tracking-tight">
-                                  Add to Cart
+                                  {loadingProductId === product.id
+                                    ? "Loading..."
+                                    : "Add to Cart"}
                                 </span>
                               </div>
                             </div>

@@ -43,7 +43,7 @@ const Drawer = (props) => {
           }
         )}
       >
-        {children}
+        {isOpen && children}
       </div>
     </div>
   );

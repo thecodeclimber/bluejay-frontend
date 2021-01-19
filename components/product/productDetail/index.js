@@ -15,7 +15,7 @@ const ProductDetail = (props) => {
 
   useEffect(() => {
     fetchProductDetail();
-  }, []);
+  }, [query.id]);
 
   const fetchProductDetail = () => {
     setIsFetchingProductDetail(true);
@@ -48,10 +48,12 @@ const ProductDetail = (props) => {
       {isFetchingProductDetail && <Loader />}
       <BreadCrum productDetail={productDetail} />
       <hr className="opacity-10 bg-dark mb-8" />
-      <Specification
-        productDetail={productDetail}
-        setProductDetail={setProductDetail}
-      />
+      {!isFetchingProductDetail && (
+        <Specification
+          productDetail={productDetail}
+          setProductDetail={setProductDetail}
+        />
+      )}
       <KnowYourBolt />
       <GetCompanyAccount />
       <hr className="opacity-10 bg-dark mb-12" />

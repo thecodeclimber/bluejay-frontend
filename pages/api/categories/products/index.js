@@ -21,14 +21,5 @@ export default async (req, res) => {
     productUrl += `&limit=${limit}`;
   }
   const productsResponse = await httpGet(productUrl, { isBigCommerce: true });
-  if (productsResponse.status === 401) {
-    res.status(401);
-    res.json({
-      errors: {
-        error: MESSAGES.UNAUTHORIZED,
-      },
-    });
-    return;
-  }
   return res.json(productsResponse);
 };

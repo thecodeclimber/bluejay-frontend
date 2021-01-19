@@ -3,9 +3,9 @@ import Basket from "./basket";
 
 const Cart = () => {
   return (
-    <div>
+    <>
       <Basket />
-    </div>
+    </>
   );
 };
 

@@ -36,6 +36,10 @@ const URLS = {
     WISHLIST: {
       WISHLISTS: `${BIG_COMMERCE_BASE_URL}/wishlists`,
     },
+    CART: {
+      CART: `${BIG_COMMERCE_BASE_URL}/carts`,
+      ITEM: `${BIG_COMMERCE_BASE_URL}/carts/{CART_ID}/items`,
+    },
   },
 
   //Next
@@ -58,6 +62,7 @@ const URLS = {
       FEATURED: `${NEXT_BASE_URL}/products/featured`,
       TOP_DEALS: `${NEXT_BASE_URL}/products/top-deals`,
       PURCHASED: `${NEXT_BASE_URL}/products/purchased`,
+      ADDITIONAL: `${NEXT_BASE_URL}/products/additional`,
     },
     BRAND: {
       BRANDS: `${NEXT_BASE_URL}/brands`,
@@ -65,6 +70,12 @@ const URLS = {
     },
     REVIEW: {
       REVIEWS: `${NEXT_BASE_URL}/products/reviews`,
+    },
+    CART: {
+      CART: `${NEXT_BASE_URL}/cart`,
+      ADD: `${NEXT_BASE_URL}/cart/add`,
+      DELETE: `${NEXT_BASE_URL}/cart/delete`,
+      UPDATE: `${NEXT_BASE_URL}/cart/update`,
     },
   },
 };
