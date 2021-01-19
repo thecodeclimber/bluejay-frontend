@@ -83,8 +83,8 @@ const PopularCategories = () => {
                 <hr className="my-5 opacity-10 bg-dark" />
                 <div>
                   <Link
-                    href="/categories/[id]"
-                    as={`/categories/${category.id}`}
+                    href="/categories/[slug]"
+                    as={`/categories${category?.custom_url?.url}`}
                   >
                     <a className="font-medium text-primary text-base flex items-center cursor-pointer">
                       <span className="mr-3">Show all</span>

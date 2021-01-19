@@ -2,7 +2,7 @@ import React from "react";
 import classnames from "classnames";
 import { FiHeart as HearIcon, FiPlus as PlusIcon } from "react-icons/fi/index";
 import { RiSubtractFill as SubtractIcon } from "react-icons/ri/index";
-import Pagination from "../../../elements/pagination";
+import Pagination from "../../elements/pagination";
 
 const categoryGrid = () => {
   const data = {};

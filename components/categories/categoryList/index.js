@@ -1,7 +1,7 @@
 import React from "react";
 import { RiSubtractFill as SubtractIcon } from "react-icons/ri";
 import { FiPlus as PlusIcon, FiHeart as HearIcon } from "react-icons/fi";
-import Pagination from "../../../elements/pagination";
+import Pagination from "../../elements/pagination";
 
 const categoryList = () => {
   const data = {};

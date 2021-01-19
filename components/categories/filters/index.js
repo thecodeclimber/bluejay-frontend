@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { string } from "prop-types";
+import { shape } from "prop-types";
 import { VscClose as CloseIcon } from "react-icons/vsc";
 import { MdArrowDropDown as DropDownIcon } from "react-icons/md";
 
 const Filters = (props) => {
   const { selectedCategory } = props;
   const [openDropdown, setOpenDropdown] = useState(false);
-  const toggleDropdown = (open = false) => {
+
+  const toggleDropdown = () => {
     setOpenDropdown(!openDropdown);
   };
+
   const closeDropdown = () => {
     setOpenDropdown(false);
   };
@@ -17,7 +19,7 @@ const Filters = (props) => {
   return (
     <div className="pl-5 flex justify-between">
       <div className="flex items-center text-base border border-dark border-opacity-10 font-medium text-black px-5 py-3 rounded">
-        <span className="mr-5">{selectedCategory}</span>
+        <span className="mr-5">{selectedCategory?.name}</span>
         <span>
           <CloseIcon className="text-2lg text-black cursor-pointer" />
         </span>
@@ -68,7 +70,7 @@ const Filters = (props) => {
 };
 
 Filters.propTypes = {
-  selectedCategory: string,
+  selectedCategory: shape({}),
 };
 
 export default Filters;

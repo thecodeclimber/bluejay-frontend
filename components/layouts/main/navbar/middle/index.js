@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { httpGet } from "../../../../../utils/https";
-import URLS from "../../../../../utils/urls";
 import {
   getSearchHistoryLocalStorage,
   setSearchHistoryLocalStorage,
@@ -17,6 +16,7 @@ import {
   MdChevronRight as ChevronRight,
 } from "react-icons/md";
 import { VscClose as CloseIcon } from "react-icons/vsc";
+import URLS from "../../../../../utils/urls";
 
 const SearchType = {
   category: "category",
@@ -225,10 +225,13 @@ const SearchCategory = (props) => {
         <div className="max-h-350 overflow-y-auto">
           {categories.length > 0 &&
             categories.map((category, index) => {
-              const { name, id } = category || {};
+              const { name, id, custom_url } = category || {};
               return (
                 <Menu.Item as="div" key={index}>
-                  <Link href="/categories/[id]" as={`/categories/${id}`}>
+                  <Link
+                    href="/categories/[slug]"
+                    as={`/categories${custom_url?.url}`}
+                  >
                     <a className="text-base flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none">
                       {name}
                     </a>
@@ -504,7 +507,7 @@ const Categories = (props) => {
                     {parentCategories &&
                       parentCategories.length > 0 &&
                       parentCategories.map((menu, index) => {
-                        const { id, name } = menu || {};
+                        const { id, name, custom_url } = menu || {};
                         return (
                           <Menu.Item
                             as="div"
@@ -512,10 +515,11 @@ const Categories = (props) => {
                             onMouseEnter={() => handleActiveList(id)}
                           >
                             <Link
-                              href="/categories/[id]"
-                              as={`/categories/${id}`}
+                              href="/categories/[slug]"
+                              as={`/categories${custom_url?.url}`}
                             >
                               <a
+                                onClick={() => setActiveCategory(false)}
                                 className={classnames(
                                   "text-base focus:outline-none flex items-center justify-between px-4 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer",
                                   {
@@ -537,15 +541,19 @@ const Categories = (props) => {
                   {subCategories && subCategories.length > 0 && (
                     <div className="bg-opacity-01 bg-dark min-w-300 border-r border-opacity-07 border-dark">
                       {subCategories.map((subMenu, index) => {
-                        const { name, id } = subMenu || {};
+                        const { name, id, custom_url } = subMenu || {};
                         return (
                           <Menu.Item
                             as="div"
                             key={index}
                             onMouseOver={() => handleActiveSubList(id)}
                           >
-                            <Link href={`/categories/${id}`}>
+                            <Link
+                              href="/categories/[slug]"
+                              as={`/categories${custom_url?.url}`}
+                            >
                               <a
+                                onClick={() => setActiveCategory(false)}
                                 className={classnames(
                                   "text-base focus:outline-none flex items-center justify-between px-4 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer",
                                   {
