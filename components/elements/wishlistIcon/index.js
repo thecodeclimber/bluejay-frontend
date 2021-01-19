@@ -12,14 +12,14 @@ import URLS from "../../../utils/urls";
 const WishlistIcon = (props) => {
   const { product } = props || {};
   const { userState, dispatchModal, dispatchUser } = useContext(Context);
-  const [wishlistLoadingId, setWishlistLoadingId] = useState("");
+  const [loadingWishlistId, setLoadingWishlistId] = useState("");
 
   const handleWishlistsItem = (product, isFavorite) => {
     if (!userState.user?.id) {
       dispatchModal(setModal(MODAL_TYPES.LOGIN));
       return;
     }
-    setWishlistLoadingId(product.id);
+    setLoadingWishlistId(product.id);
     if (isFavorite) {
       const deleteUrl = `${URLS.NEXT.WISHLIST.DELETE}?product_id=${product.id}`;
       httpDelete(deleteUrl, {
@@ -35,7 +35,7 @@ const WishlistIcon = (props) => {
             dispatchUser(setUserWishlists(filteredWishlists));
           }
         }
-        setWishlistLoadingId("");
+        setLoadingWishlistId("");
       });
       return;
     }
@@ -56,7 +56,7 @@ const WishlistIcon = (props) => {
         };
         dispatchUser(setUserWishlists([productData, ...userState.wishlists]));
       }
-      setWishlistLoadingId("");
+      setLoadingWishlistId("");
     });
   };
 
@@ -67,7 +67,7 @@ const WishlistIcon = (props) => {
         "fill-current text-primary": isFavorite,
         "text-grey ": !isFavorite,
         "fill-current opacity-50 text-primary cursor-not-allowed":
-          wishlistLoadingId === product.id,
+          loadingWishlistId === product.id,
       })}
       onClick={() => handleWishlistsItem(product, isFavorite)}
     />

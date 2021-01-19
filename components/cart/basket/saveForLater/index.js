@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import Link from "next/link";
 import classnames from "classnames";
 import getSymbolFromCurrency from "currency-symbol-map";
+import { setUserWishlists } from "../../../../hooks/user/actions";
 import { FiPlus as PlusIcon } from "react-icons/fi/index";
 import { RiSubtractFill as SubtractIcon } from "react-icons/ri/index";
 import { FiStar as StarIcon } from "react-icons/fi";
@@ -21,8 +22,10 @@ let timer = "";
 
 const saveForLater = () => {
   const { cartState, dispatchCart } = useContext(Context);
+  const { userState, dispatchModal, dispatchUser } = useContext(Context);
   const [deletingItemId, setDeletingItemId] = useState("");
   const [loadingProductId, setLoadingProductId] = useState("");
+  const [loadingWishlistId, setLoadingWishlistId] = useState("");
   const saveForLaterCartLength =
     (cartState.saveForLaterCart?.cart_items &&
       cartState.saveForLaterCart.cart_items.length) ||
@@ -149,6 +152,62 @@ const saveForLater = () => {
     );
   };
 
+  const handleWishlistsItem = (product, isFavorite) => {
+    if (!userState.user?.id) {
+      dispatchModal(setModal(MODAL_TYPES.LOGIN));
+      return;
+    }
+    setLoadingWishlistId(product.product_id);
+    if (isFavorite) {
+      const deleteUrl = `${URLS.NEXT.WISHLIST.DELETE}?product_id=${product.product_id}`;
+      httpDelete(deleteUrl, {
+        traceName: "delete_wishlist",
+      }).then(
+        (res) => {
+          if (res.errors && Object.keys(res.errors).length > 0) {
+            alert(res.errors[Object.keys(res.errors)[0]]);
+          } else {
+            if (userState.wishlists && userState.wishlists.length > 0) {
+              const filteredWishlists = userState.wishlists.filter(
+                (data) => data.id !== product.product_id
+              );
+              dispatchUser(setUserWishlists(filteredWishlists));
+            }
+          }
+          setLoadingWishlistId("");
+        },
+        (err) => {
+          setLoadingWishlistId("");
+        }
+      );
+      return;
+    }
+    const params = {
+      product_id: product.product_id,
+    };
+    httpPost(URLS.NEXT.WISHLIST.ADD, params, {
+      traceName: "add_wishlist",
+    }).then(
+      (res) => {
+        if (res.errors && Object.keys(res.errors).length > 0) {
+          alert(res.errors[Object.keys(res.errors)[0]]);
+        } else {
+          const productData = {
+            id: product.product_id,
+            name: product.name,
+            price: product.sale_price,
+            image: product?.image_url || "",
+          };
+          dispatchUser(setUserWishlists([productData, ...userState.wishlists]));
+        }
+        setLoadingWishlistId("");
+      },
+      (err) => {
+        setLoadingWishlistId("");
+      }
+    );
+  };
+
   return (
     <div className="container mx-auto font-ubuntu">
       <div className="text-dark tracking-tight text-2xl mb-6">
@@ -187,6 +246,9 @@ const saveForLater = () => {
             product_id,
             extended_sale_price,
           } = data || {};
+          const isFavorite = userState.wishlists.some(
+            (item) => item.id === product_id
+          );
           return (
             <div
               key={index}
@@ -241,10 +303,9 @@ const saveForLater = () => {
                         loadingProductId !== product_id && addToCart(data)
                       }
                       className={classnames(
-                        "flex items-center cursor-pointer",
+                        "flex items-center cursor-pointer text-primary",
                         {
-                          "text-primary": loadingProductId !== product_id,
-                          "cursor-not-allowed text-dark opacity-25":
+                          "cursor-not-allowed opacity-25":
                             loadingProductId === product_id,
                         }
                       )}
@@ -262,9 +323,27 @@ const saveForLater = () => {
                     <div className="py-1">
                       <div className="border-r border-dark border-opacity-10 ml-5 h-full" />
                     </div>
-                    <div className="flex items-center ml-5">
+                    <div
+                      className={classnames(
+                        "flex items-center ml-5 text-primary",
+                        {
+                          "cursor-not-allowed opacity-25":
+                            loadingWishlistId === product_id,
+                          "cursor-pointer": loadingWishlistId !== product_id,
+                        }
+                      )}
+                      onClick={() =>
+                        loadingWishlistId !== product_id &&
+                        handleWishlistsItem(data, isFavorite)
+                      }
+                    >
                       <span className="mr-4">
-                        <StarIcon className="text-base" />
+                        <StarIcon
+                          className={classnames("cursor-pointer text-base", {
+                            "fill-current text-primary": isFavorite,
+                            "text-primary": !isFavorite,
+                          })}
+                        />
                       </span>
                       <span className="text-sm">Add to Favorites</span>
                     </div>
