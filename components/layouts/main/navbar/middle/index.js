@@ -39,6 +39,12 @@ const Search = (props) => {
   const [search, setSearch] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
+  const [typedKeyword, setTypedKeyword] = useState("");
+  const [searchCategory, setSearchCategory] = useState({
+    id: "",
+    name: "All",
+  });
+
   const data = {};
 
   data.searchProducts = [
@@ -59,32 +65,16 @@ const Search = (props) => {
     },
   ];
 
-  data.searchResult = [
-    {
-      name: "Carriage Bolts 1/4-20 UNC Steel Zinc",
-    },
-    {
-      name: "Carriage Bolts 1/4-20 UNC Steel Zinc",
-    },
-    {
-      name: "Carriage Bolts 1/4-20 UNC Steel Zinc",
-    },
-    {
-      name: "Carriage Bolts 1/4-20 UNC Steel Zinc",
-    },
-  ];
-
   const handleActiveSearchType = (type = "") => {
     setActiveSearchType(type);
   };
 
   const handleSearch = (e) => {
     if (!e.target.value) return;
-    const searchParams = {
-      name: e.target.value,
-    };
+    setTypedKeyword(e.target.value);
     let searchUrl = URLS.NEXT.PRODUCT.SEARCH;
-    searchUrl += `/${JSON.stringify(searchParams)}`;
+    searchUrl += `?name=${e.target.value}`;
+    searchUrl += `&category_id=${searchCategory?.id}`;
     setIsSearching(true);
     httpGet(searchUrl, { traceName: "search_products" }).then(
       (res) => {
@@ -93,7 +83,7 @@ const Search = (props) => {
           setIsSearching(false);
         } else {
           setIsSearching(false);
-          setSearchResult(res.data || []);
+          setSearchResult(res || []);
           handleSearchHistory(res);
         }
       },
@@ -130,6 +120,10 @@ const Search = (props) => {
     handleSearch(e);
   };
 
+  const handleSearchedCategory = (category, id) => {
+    setSearchCategory({ id: id, name: category });
+  };
+
   return (
     <div
       className="relative flex flex-grow ml-6 rounded-md"
@@ -137,7 +131,7 @@ const Search = (props) => {
     >
       <Menu as="div" className="relative">
         <Menu.Button
-          onClick={() => handleActiveSearchType(SearchType.category)}
+          onMouseOver={() => handleActiveSearchType(SearchType.category)}
           className={classnames(
             "inline-flex h-full items-center px-4 border-r border-solid bg-light border-alpha-05 sm:text-sm focus:outline-none",
             {
@@ -150,11 +144,14 @@ const Search = (props) => {
             }
           )}
         >
-          All
+          {searchCategory.name}
           <ArrowIcon className="ml-3" />
         </Menu.Button>
         {activeSearchType === SearchType.category && (
-          <SearchCategory {...props} />
+          <SearchCategory
+            {...props}
+            handleSearchedCategory={handleSearchedCategory}
+          />
         )}
       </Menu>
       <input
@@ -196,6 +193,7 @@ const Search = (props) => {
             searchResult={searchResult}
             search={search}
             isSearching={isSearching}
+            typedKeyword={typedKeyword}
             handleSearch={handleSearch}
           />
         </Menu>
@@ -205,7 +203,8 @@ const Search = (props) => {
 };
 
 const SearchCategory = (props) => {
-  const { categories } = props || {};
+  const { categories, handleSearchedCategory } = props || {};
+
   return (
     <Transition
       show={true}
@@ -228,11 +227,14 @@ const SearchCategory = (props) => {
               const { name, id } = category || {};
               return (
                 <Menu.Item as="div" key={index}>
-                  <Link href="/categories/[id]" as={`/categories/${id}`}>
-                    <a className="text-base flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none">
+                  <div
+                    className="w-full"
+                    onClick={() => handleSearchedCategory(name, id)}
+                  >
+                    <a className="text-base w-full flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none">
                       {name}
                     </a>
-                  </Link>
+                  </div>
                 </Menu.Item>
               );
             })}
@@ -305,8 +307,14 @@ const SearchHistory = () => {
 };
 
 const SearchResult = (props) => {
-  const { isSearching, searchResult, search, handleSearch, searchProducts } =
-    props || {};
+  const {
+    isSearching,
+    searchResult,
+    search,
+    handleSearch,
+    searchProducts,
+    typedKeyword,
+  } = props || {};
   return (
     <Transition
       show={true}
@@ -342,15 +350,23 @@ const SearchResult = (props) => {
             >
               {searchResult.length > 0 &&
                 searchResult.map((result, index) => {
-                  const { name } = result || {};
                   return (
                     <Menu.Item
                       as="div"
                       key={index}
                       className="text-base flex items-center justify-between pl-6 pr-4 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
                     >
-                      <div className="text-sm flex items-center font-medium">
-                        {name}
+                      <div
+                        className={classnames(
+                          "text-sm flex items-center font-medium",
+                          {
+                            "text-primary": result.name
+                              .toLowerCase()
+                              .includes(typedKeyword.toLowerCase()),
+                          }
+                        )}
+                      >
+                        {result.name}
                       </div>
                     </Menu.Item>
                   );
