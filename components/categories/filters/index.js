@@ -17,7 +17,7 @@ const Filters = (props) => {
   };
 
   return (
-    <div className="pl-5 flex justify-between">
+    <div className="flex justify-between pt-2">
       <div className="flex items-center text-base border border-dark border-opacity-10 font-medium text-black px-5 py-3 rounded">
         <span className="mr-5">{selectedCategory?.name}</span>
         <span>

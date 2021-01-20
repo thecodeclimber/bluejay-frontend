@@ -1,4 +1,4 @@
-import React, { useRef, useState, useContext } from "react";
+import React, { useRef, useState } from "react";
 import { array, bool, func, number } from "prop-types";
 import Link from "next/link";
 import classnames from "classnames";
@@ -7,28 +7,18 @@ import {
   IoIosArrowForward as SlideRightArrow,
   IoIosArrowBack as SlideLeftArrow,
 } from "react-icons/io";
-import { RiSubtractFill as SubtractIcon } from "react-icons/ri";
-import { FiPlus as PlusIcon, FiHeart as HeartIcon } from "react-icons/fi";
-import { setCart } from "../../../hooks/cart/actions";
-import { Context } from "../../../hooks/store";
-import {
-  formattingCartData,
-  getFormattedCartParams,
-  setCartLocalStorage,
-} from "../../../utils/helper";
-import { httpPost } from "../../../utils/https";
+import { FiHeart as HeartIcon } from "react-icons/fi";
 import Drawer from "../../elements/drawer";
 import CartAdded from "../../cart/cartAdded";
-import URLS from "../../../utils/urls";
+import ProductQuantity from "../productQuantity";
+import AddToCart from "../addToCart";
 
 const ProductSlider = (props) => {
   const { dots, products, isLoading, handleProducts, displayProducts } =
     props || {};
   const slider = useRef(null);
-  const [loadingProductId, setLoadingProductId] = useState("");
   const [activeSlide, setActiveSlide] = useState(0);
   const [isCartDrawer, setIsCartDrawer] = useState(false);
-  const { dispatchCart } = useContext(Context);
   const settings = {
     dots: false,
     infinite: true,
@@ -52,47 +42,8 @@ const ProductSlider = (props) => {
     setActiveSlide(index);
   };
 
-  const decreaseQuantity = (id) => {
-    const productsData = [...products];
-    const index = productsData.findIndex((product) => product.id === id);
-    productsData[index].quantity =
-      productsData[index].quantity > 1 ? productsData[index].quantity - 1 : 1;
-    handleProducts(productsData);
-  };
-
-  const increaseQuantity = (id) => {
-    const productsData = [...products];
-    const index = productsData.findIndex((product) => product.id === id);
-    productsData[index].quantity = productsData[index].quantity + 1;
-    handleProducts(productsData);
-  };
-
-  const addToCart = (product) => {
-    const params = getFormattedCartParams(product);
-    setLoadingProductId(product.id);
-    httpPost(URLS.NEXT.CART.ADD, params, {
-      traceName: "add_to_cart",
-    }).then(
-      (res) => {
-        const { errors, cart } = res || {};
-        if (errors && Object.keys(errors).length > 0) {
-          alert(errors[Object.keys(errors)[0]]);
-        } else {
-          setCartLocalStorage(cart?.data?.id, cart?.data?.updated_time);
-          const cartData = formattingCartData(cart?.data);
-          dispatchCart(setCart(cartData));
-          openCartDrawer();
-        }
-        setLoadingProductId("");
-      },
-      (err) => {
-        setLoadingProductId("");
-      }
-    );
-  };
-
-  const openCartDrawer = () => {
-    setIsCartDrawer(true);
+  const handleCart = ({ isOpenDrawer = false }) => {
+    setIsCartDrawer(isOpenDrawer);
   };
 
   const closeCartDrawer = () => {
@@ -155,7 +106,10 @@ const ProductSlider = (props) => {
                               </div>
                               <img
                                 className="m-auto mb-5"
-                                src={product.primary_image?.url_thumbnail}
+                                src={
+                                  product.primary_image?.url_thumbnail ||
+                                  "/img/no-image.png"
+                                }
                                 alt={`img-${index}`}
                               />
                               <div className="font-medium text-center text-xl mb-3 whitespace-pre-line tracking-tight leading-7">
@@ -175,48 +129,17 @@ const ProductSlider = (props) => {
                                 {(product?.price && product.price.toFixed(2)) ||
                                   0}
                               </div>
-                              <div className="flex justify-between items-center mb-4 border rounded border-dark border-opacity-10">
-                                <div
-                                  onClick={() => decreaseQuantity(product.id)}
-                                  className="flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center p-4 px-4"
-                                >
-                                  <SubtractIcon className="text-dark" />
-                                </div>
-                                <div>
-                                  {product.quantity < 10 && 0}
-                                  {product.quantity}
-                                </div>
-                                <div
-                                  onClick={() => increaseQuantity(product.id)}
-                                  className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4 px-4"
-                                >
-                                  <PlusIcon className="text-dark" />
-                                </div>
-                              </div>
-                              <div
-                                onClick={() =>
-                                  loadingProductId !== product.id &&
-                                  addToCart(product)
-                                }
-                                className={classnames(
-                                  "flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4",
-                                  {
-                                    "opacity-70 cursor-not-allowed":
-                                      loadingProductId === product.id,
-                                  }
-                                )}
-                              >
-                                <img
-                                  className="mr-4"
-                                  src="/img/add-to-cart.svg"
-                                  alt="cart"
+                              <div className="mb-4">
+                                <ProductQuantity
+                                  products={products}
+                                  product={product}
+                                  handleProducts={handleProducts}
                                 />
-                                <span className="font-medium font-base tracking-tight">
-                                  {loadingProductId === product.id
-                                    ? "Loading..."
-                                    : "Add to Cart"}
-                                </span>
                               </div>
+                              <AddToCart
+                                product={product}
+                                handleData={handleCart}
+                              />
                             </div>
                           </div>
                         </div>

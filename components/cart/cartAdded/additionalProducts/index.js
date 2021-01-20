@@ -77,7 +77,7 @@ const AdditionalProducts = () => {
               >
                 <img
                   src={
-                    data.primary_image?.url_tiny || "img/img-placeholder.png"
+                    data.primary_image?.url_tiny || "/img/img-placeholder.png"
                   }
                   alt={`img-${index}`}
                   width="40px"

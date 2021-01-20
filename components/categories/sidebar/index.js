@@ -10,7 +10,7 @@ const SideBar = (props) => {
   const { handleSelectedCategory, query } = props;
   return (
     <div className="font-ubuntu pb-10">
-      <div className="border-r border-opacity-10 border-dark w-full min-w-310 max-w-310">
+      <div className="w-full min-w-310 max-w-310">
         <ProductCategory
           handleSelectedCategory={handleSelectedCategory}
           query={query}

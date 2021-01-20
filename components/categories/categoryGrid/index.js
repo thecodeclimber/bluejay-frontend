@@ -1,93 +1,22 @@
 import React from "react";
 import classnames from "classnames";
-import { FiHeart as HearIcon, FiPlus as PlusIcon } from "react-icons/fi/index";
-import { RiSubtractFill as SubtractIcon } from "react-icons/ri/index";
-import Pagination from "../../elements/pagination";
+import { array, bool, func } from "prop-types";
+import { FiHeart as HearIcon } from "react-icons/fi/index";
+import ProductQuantity from "../../elements/productQuantity";
+import AddToCart from "../../elements/addToCart";
 
-const categoryGrid = () => {
-  const data = {};
-  data.productItems = [
-    {
-      id: 1,
-      totalPrice: "",
-      count: 1,
-      img: "/img/boltImg4.png",
-      title: "Carriage Bolts 1/4-20 UNC Steel Zinc",
-      price: "$5.64",
-    },
-    {
-      id: 2,
-      totalPrice: "",
-      count: 1,
-      img: "/img/boltImg3.png",
-      title: "High-Profile Socket Head Screws",
-      price: "$5.64",
-    },
-    {
-      id: 3,
-      totalPrice: "",
-      count: 1,
-      img: "/img/boltImg1.png",
-      title: "Conical Plastic Anchors",
-      price: "$5.64",
-    },
-    {
-      id: 4,
-      totalPrice: "",
-      count: 1,
-      img: "/img/boltImg4.png",
-      title: "0-80 Alloy Steel \n Coarse Thread",
-      price: "$5.64",
-    },
-    {
-      id: 5,
-      totalPrice: "",
-      count: 1,
-      img: "/img/boltImg3.png",
-      title: "Carriage Bolts 1/4-20 \n UNC Steel Zinc",
-      price: "$5.64",
-    },
-    {
-      id: 6,
-      totalPrice: "",
-      count: 1,
-      img: "/img/boltImg1.png",
-      title: "High-Profile Socket \n Head Screws",
-      price: "$5.64",
-    },
-
-    {
-      id: 4,
-      totalPrice: "",
-      count: 1,
-      img: "/img/boltImg4.png",
-      title: "0-80 Alloy Steel \n Coarse Thread",
-      price: "$5.64",
-    },
-    {
-      id: 5,
-      totalPrice: "",
-      count: 1,
-      img: "/img/boltImg3.png",
-      title: "Carriage Bolts 1/4-20 \n UNC Steel Zinc",
-      price: "$5.64",
-    },
-    {
-      id: 6,
-      totalPrice: "",
-      count: 1,
-      img: "/img/boltImg1.png",
-      title: "High-Profile Socket \n Head Screws",
-      price: "$5.64",
-    },
-  ];
-
+const CategoryGrid = (props) => {
+  const { products, isFetchingProducts, handleProducts, handleCart } = props;
   return (
-    <div className="font-ubuntu w-full pl-5 pb-12">
+    <div className="font-ubuntu w-full">
+      {isFetchingProducts && (
+        <div className="text-center text-dark py-10">Loading...</div>
+      )}
       <div className="flex flex-wrap">
-        {data.productItems &&
-          data.productItems.length > 0 &&
-          data.productItems.map((item, index) => {
+        {!isFetchingProducts &&
+          products &&
+          products.length > 0 &&
+          products.map((product, index) => {
             return (
               <div
                 key={index}
@@ -108,47 +37,52 @@ const categoryGrid = () => {
                       <HearIcon className="text-grey opacity-70 text-xl cursor-pointer" />
                     </div>
                     <div className="max-w-250 mb-3">
-                      <img className="w-full" src={item.img} />
+                      <img
+                        className="w-full"
+                        src={
+                          product.primary_image?.url_thumbnail ||
+                          "/img/no-image.png"
+                        }
+                      />
                     </div>
                     <div className="font-medium text-center text-dark text-xl mb-3 whitespace-pre-line leading-7">
-                      {item.title}
+                      {product.name}
                     </div>
                   </div>
                   <div>
                     <div className="text-primary text-center font-normal text-lg mb-5">
-                      {item.price}
+                      ${(product?.price && product.price.toFixed(2)) || 0}
                     </div>
-                    <div>
-                      <div className="flex justify-between items-center mb-4 border rounded border-dark border-opacity-10">
-                        <div className="flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center p-4 px-4">
-                          <SubtractIcon className="text-black" />
-                        </div>
-                        <div className="text-dark">
-                          {item.count < 10 && 0}
-                          {item.count}
-                        </div>
-                        <div className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4 px-4">
-                          <PlusIcon className="text-dark" />
-                        </div>
-                      </div>
+                    <div className="mb-4">
+                      <ProductQuantity
+                        products={products}
+                        product={product}
+                        handleProducts={handleProducts}
+                      />
                     </div>
-                    <div className="flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4">
-                      <span className="mr-4">
-                        <img src="/img/add-to-cart.svg" alt="cart" />
-                      </span>
-                      <span className="font-medium font-base tracking-tight">
-                        Add to Cart
-                      </span>
-                    </div>
+                    <AddToCart product={product} handleData={handleCart} />
                   </div>
                 </div>
               </div>
             );
           })}
       </div>
-      <Pagination />
     </div>
   );
 };
 
-export default categoryGrid;
+CategoryGrid.defaultProps = {
+  products: [],
+  isFetchingProducts: false,
+  handleProducts: () => {},
+  handleCart: () => {},
+};
+
+CategoryGrid.propTypes = {
+  products: array,
+  isFetchingProducts: bool,
+  handleProducts: func,
+  handleCart: func,
+};
+
+export default CategoryGrid;
