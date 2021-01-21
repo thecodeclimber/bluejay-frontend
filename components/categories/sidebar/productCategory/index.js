@@ -1,56 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { func, shape } from "prop-types";
 import Link from "next/link";
 import classnames from "classnames";
-import { httpGet } from "../../../../utils/https";
 import {
   IoIosArrowUp as UpIcon,
   IoIosArrowDown as DownIcon,
 } from "react-icons/io";
-import URLS from "../../../../utils/urls";
+import { Context } from "../../../../hooks/store";
 
 const ProductCategory = (props) => {
-  const { query, handleSelectedCategory } = props;
+  const { query } = props;
+  const { categoryState } = useContext(Context);
   const [isOpen, setIsOpen] = useState(true);
-  const [isFetchingCategories, setIsFetchingCategories] = useState(false);
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    handleCategory(categories);
-  }, [query]);
-
-  const fetchCategories = () => {
-    setIsFetchingCategories(true);
-    httpGet(URLS.NEXT.CATEGORY.CATEGORIES, {
-      traceName: "get_all_categories",
-    }).then(
-      (res) => {
-        if (res.errors && Object.keys(res.errors).length > 0) {
-          alert(res.errors[Object.keys(res.errors)[0]]);
-        } else {
-          setCategories(res.data || []);
-          handleCategory(res.data || []);
-        }
-        setIsFetchingCategories(false);
-      },
-      (err) => {
-        setIsFetchingCategories(false);
-      }
-    );
-  };
-
-  const handleCategory = (categoriesData = []) => {
-    if (categoriesData && categoriesData.length > 0) {
-      const selectedCategory = categoriesData.find(
-        (category) => category?.custom_url?.url === `/${query?.slug.join("/")}/`
-      );
-      handleSelectedCategory(selectedCategory);
-    }
-  };
+  const categories = categoryState.categories || [];
 
   const toggleProductCategory = () => {
     setIsOpen(!isOpen);
@@ -74,11 +36,8 @@ const ProductCategory = (props) => {
           )}
         </div>
       </div>
-      {isFetchingCategories && (
-        <div className="text-center text-dark">Loading...</div>
-      )}
+
       {isOpen &&
-        !isFetchingCategories &&
         categories &&
         categories.length > 0 &&
         categories.map((category, index) => (
@@ -87,14 +46,14 @@ const ProductCategory = (props) => {
               href="/categories/[slug]"
               as={`/categories${category?.custom_url?.url}`}
             >
-              <a onClick={() => handleSelectedCategory(category)}>
+              <a>
                 <div
                   className={classnames(
                     "py-3 mr-2 text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer",
                     {
                       "bg-primary bg-opacity-05 text-primary":
                         category?.custom_url?.url ===
-                        `/${query?.slug.join("/")}/`,
+                        `/${query?.slug && query?.slug.join("/")}/`,
                     }
                   )}
                 >
@@ -125,7 +84,6 @@ const ProductCategory = (props) => {
 };
 
 ProductCategory.propTypes = {
-  handleSelectedCategory: func,
   query: shape({}),
 };
 

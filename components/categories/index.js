@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { shape } from "prop-types";
 import classnames from "classnames";
 import SideBar from "./sidebar";
@@ -11,6 +11,8 @@ import { httpGet } from "../../utils/https";
 import Drawer from "../elements/drawer";
 import CartAdded from "../cart/cartAdded";
 import URLS from "../../utils/urls";
+import { SORT_OPTIONS } from "../../utils/constants";
+import { Context } from "../../hooks/store";
 import Pagination from "../elements/pagination";
 
 const VIEW_TYPE = {
@@ -20,32 +22,63 @@ const VIEW_TYPE = {
 
 const ProductCategories = (props) => {
   const { query } = props;
+  const { categoryState } = useContext(Context);
   const [viewType, setViewType] = useState(VIEW_TYPE.GRID);
-  const [selectedCategory, setSelectedCategory] = useState();
   const [isFetchingProducts, setIsFetchingProducts] = useState(false);
   const [products, setProducts] = useState([]);
   const [isCartDrawer, setIsCartDrawer] = useState(false);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const categories = categoryState.categories || [];
+
+  const getSelectedCategory = () => {
+    if (categories && categories.length > 0) {
+      const selectedCategory = categories.find(
+        (category) =>
+          category?.custom_url?.url ===
+          `/${query?.slug && query.slug.join("/")}/`
+      );
+      return selectedCategory;
+    }
+    return {};
+  };
+
+  const selectedCategory = getSelectedCategory();
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (categories.length > 0) fetchProducts();
+  }, [query, categories]);
 
-  const fetchProducts = () => {
-    let searchUrl = URLS.NEXT.CATEGORY.SEARCH;
-    searchUrl += `?name=garden`;
+  const fetchProducts = (data) => {
+    const { direction, sort } = data || {};
+    let searchUrl = `${URLS.NEXT.CATEGORY.SEARCH}?include=primary_image`;
+    if (selectedCategory?.id) {
+      searchUrl += `&category_id=${selectedCategory?.id}`;
+    }
+    if (query?.q) {
+      searchUrl += `&name=${query.q}`;
+    }
+    searchUrl += `&sort=${sort || SORT_OPTIONS.ALPHABET.value}`;
+    if (direction) {
+      searchUrl += `&direction=${direction}`;
+    }
+    searchUrl += `&limit=6`;
+    setIsFetchingProducts(true);
     httpGet(searchUrl, {
       traceName: "get_products",
     }).then(
       (res) => {
-        if (res.errors && Object.keys(res.errors).length > 0) {
+        const data = [];
+        if (res?.errors && Object.keys(res.errors).length > 0) {
           alert(res.errors[Object.keys(res.errors)[0]]);
         } else if (res?.data && res.data.length > 0) {
-          const data = res.data.map((product) => {
+          const resData = res.data.map((product) => {
             product.quantity = 1;
             return product;
           });
-          setProducts(data);
+          data.push(...resData);
         }
+        setProducts(data);
+        setTotalProducts(res?.meta?.pagination?.total || 0);
         setIsFetchingProducts(false);
       },
       (err) => {
@@ -62,6 +95,14 @@ const ProductCategories = (props) => {
     setIsCartDrawer(isOpenDrawer);
   };
 
+  const handleSorting = (option = {}) => {
+    let options = {};
+    if (option.value !== SORT_OPTIONS.ALPHABET.value) {
+      options = { ...options, direction: option.value };
+    }
+    fetchProducts(options);
+  };
+
   return (
     <div className="font-ubuntu pt-6">
       <Drawer isOpen={isCartDrawer} closeDrawer={closeCartDrawer}>
@@ -73,32 +114,30 @@ const ProductCategories = (props) => {
             Anchors
           </div>
           <div className="text-primary font-light text-xl tracking-tight mt-3">
-            88,814 products found.
+            {totalProducts} products found.
           </div>
         </div>
         <div>
-          <div className="border border-dark rounded border-opacity-10 flex px-6 py-4">
-            <div className="pr-6">
+          <div className="border border-dark rounded border-opacity-10 flex">
+            <div
+              onClick={() => setViewType(VIEW_TYPE.GRID)}
+              className="px-6 py-4 cursor-pointer"
+            >
               <GridIcon
-                className={classnames(
-                  "text-xl text-dark opacity-25 cursor-pointer",
-                  {
-                    "opacity-100": viewType === VIEW_TYPE.GRID,
-                  }
-                )}
-                onClick={() => setViewType(VIEW_TYPE.GRID)}
+                className={classnames("text-xl text-dark opacity-25", {
+                  "opacity-100": viewType === VIEW_TYPE.GRID,
+                })}
               />
             </div>
-            <div className="border-r border-dark border-opacity-10" />
-            <div className="pl-6">
+            <div className="border-r border-dark border-opacity-10 my-4" />
+            <div
+              onClick={() => setViewType(VIEW_TYPE.LIST)}
+              className="px-6 py-4 cursor-pointer"
+            >
               <ListIcon
-                className={classnames(
-                  "text-xl text-dark opacity-25 cursor-pointer",
-                  {
-                    "opacity-100": viewType === VIEW_TYPE.LIST,
-                  }
-                )}
-                onClick={() => setViewType(VIEW_TYPE.LIST)}
+                className={classnames("text-xl text-dark opacity-25", {
+                  "opacity-100": viewType === VIEW_TYPE.LIST,
+                })}
               />
             </div>
           </div>
@@ -107,9 +146,13 @@ const ProductCategories = (props) => {
 
       <hr className="my-6 opacity-10 bg-dark" />
       <div className="container mx-auto flex">
-        <SideBar handleSelectedCategory={setSelectedCategory} query={query} />
+        <SideBar query={query} />
         <div className="w-full pl-5">
-          <Filters selectedCategory={selectedCategory} />
+          <Filters
+            query={query}
+            selectedCategory={selectedCategory}
+            handleSorting={handleSorting}
+          />
           <hr className="my-5 opacity-10 bg-dark" />
           {viewType === VIEW_TYPE.GRID && (
             <CategoryGrid

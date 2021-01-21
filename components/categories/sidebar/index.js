@@ -7,14 +7,11 @@ import Material from "./material";
 import ShopBy from "./shopBy";
 
 const SideBar = (props) => {
-  const { handleSelectedCategory, query } = props;
+  const { query } = props;
   return (
     <div className="font-ubuntu pb-10">
       <div className="w-full min-w-310 max-w-310">
-        <ProductCategory
-          handleSelectedCategory={handleSelectedCategory}
-          query={query}
-        />
+        <ProductCategory query={query} />
         <hr className="mt-6 mb-8 opacity-10 bg-dark mr-4" />
         <MaterialGrade />
         <hr className="mt-6 mb-8 opacity-10 bg-dark mr-4" />
