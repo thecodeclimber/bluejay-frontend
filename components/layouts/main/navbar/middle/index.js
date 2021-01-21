@@ -18,6 +18,8 @@ import {
 } from "react-icons/md";
 import { VscClose as CloseIcon } from "react-icons/vsc";
 
+let timer = "";
+
 const SearchType = {
   category: "category",
   history: "history",
@@ -40,57 +42,42 @@ const Search = (props) => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
   const [typedKeyword, setTypedKeyword] = useState("");
+  const [relatedProducts, setRelatedProducts] = useState({});
+  const [isFetchingProducts, setIsFetchingProducts] = useState(false);
   const [searchCategory, setSearchCategory] = useState({
     id: "",
     name: "All",
   });
-
-  const data = {};
-
-  data.searchProducts = [
-    {
-      img: "/img/screw-img1.svg",
-      name: "Alloy Steel Socket Head Screws",
-      price: "5.64",
-    },
-    {
-      img: "/img/screw-img1.svg",
-      name: "Alloy Steel Socket Head Screws",
-      price: "5.64",
-    },
-    {
-      img: "/img/screw-img1.svg",
-      name: "Alloy Steel Socket Head Screws",
-      price: "5.64",
-    },
-  ];
-
   const handleActiveSearchType = (type = "") => {
     setActiveSearchType(type);
   };
 
   const handleSearch = (e) => {
     if (!e.target.value) return;
+    setRelatedProducts([]);
     setTypedKeyword(e.target.value);
     let searchUrl = URLS.NEXT.PRODUCT.SEARCH;
     searchUrl += `?name=${e.target.value}`;
-    searchUrl += `&category_id=${searchCategory?.id}`;
+    searchUrl += `&category_id=${searchCategory?.id}&limit=5`;
     setIsSearching(true);
-    httpGet(searchUrl, { traceName: "search_products" }).then(
-      (res) => {
-        if (res.errors && Object.keys(res.errors).length > 0) {
-          alert(res.errors[Object.keys(res.errors)[0]]);
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      httpGet(searchUrl, { traceName: "search_products" }).then(
+        (res) => {
+          if (res.errors && Object.keys(res.errors).length > 0) {
+            alert(res.errors[Object.keys(res.errors)[0]]);
+            setIsSearching(false);
+          } else {
+            setIsSearching(false);
+            setSearchResult(res || []);
+            handleSearchHistory(res);
+          }
+        },
+        (err) => {
           setIsSearching(false);
-        } else {
-          setIsSearching(false);
-          setSearchResult(res || []);
-          handleSearchHistory(res);
         }
-      },
-      (err) => {
-        setIsSearching(false);
-      }
-    );
+      );
+    }, 400);
     setSearch(e.target.value);
   };
 
@@ -113,6 +100,34 @@ const Search = (props) => {
       }
       setSearchHistoryLocalStorage(searchHistory);
     }
+  };
+
+  const handleRelatedProducts = (result) => {
+    if (result.related_products[0][0] === -1) {
+      setRelatedProducts([]);
+      return;
+    }
+    setIsFetchingProducts(true);
+    const searchUrl = `${URLS.NEXT.PRODUCT.RELATED}?product_id=${result.related_products}`;
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      httpGet(searchUrl, { traceName: "related_products" }).then(
+        (res) => {
+          if (res.errors && Object.keys(res.errors).length > 0) {
+            alert(res.errors[Object.keys(res.errors)[0]]);
+            setIsSearching(false);
+          } else {
+            setIsSearching(false);
+            setRelatedProducts(res || []);
+            setIsFetchingProducts(false);
+          }
+        },
+        (err) => {
+          setIsSearching(false);
+          setIsFetchingProducts(false);
+        }
+      );
+    }, 400);
   };
 
   const handleMainSearch = (e, type) => {
@@ -189,12 +204,14 @@ const Search = (props) => {
           className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b z-30"
         >
           <SearchResult
-            {...data}
+            relatedProducts={relatedProducts}
             searchResult={searchResult}
             search={search}
             isSearching={isSearching}
             typedKeyword={typedKeyword}
+            isFetchingProducts={isFetchingProducts}
             handleSearch={handleSearch}
+            handleRelatedProducts={handleRelatedProducts}
           />
         </Menu>
       )}
@@ -227,14 +244,14 @@ const SearchCategory = (props) => {
               const { name, id } = category || {};
               return (
                 <Menu.Item as="div" key={index}>
-                  <div
-                    className="w-full"
+                  <button
+                    className="w-full focus:outline-none"
                     onClick={() => handleSearchedCategory(name, id)}
                   >
-                    <a className="text-base w-full flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none">
+                    <a className="text-base w-full focus:outline-none flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none">
                       {name}
                     </a>
-                  </div>
+                  </button>
                 </Menu.Item>
               );
             })}
@@ -310,10 +327,12 @@ const SearchResult = (props) => {
   const {
     isSearching,
     searchResult,
+    isFetchingProducts,
     search,
     handleSearch,
-    searchProducts,
+    relatedProducts,
     typedKeyword,
+    handleRelatedProducts,
   } = props || {};
   return (
     <Transition
@@ -355,33 +374,47 @@ const SearchResult = (props) => {
                       as="div"
                       key={index}
                       className="text-base flex items-center justify-between pl-6 pr-4 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
+                      onMouseOver={() => handleRelatedProducts(result)}
                     >
                       <div
                         className={classnames(
-                          "text-sm flex items-center font-medium",
-                          {
-                            "text-primary": result.name
-                              .toLowerCase()
-                              .includes(typedKeyword.toLowerCase()),
-                          }
+                          "text-sm flex items-center font-medium"
                         )}
-                      >
-                        {result.name}
-                      </div>
+                        dangerouslySetInnerHTML={{
+                          __html: result.name.replace(
+                            `${result.name.match(typedKeyword)}`,
+                            `<span style="color:#1E74DF">&nbsp;${result.name.match(
+                              typedKeyword
+                            )} </span>`
+                          ),
+                        }}
+                      />
                     </Menu.Item>
                   );
                 })}
             </Menu.Items>
             <div className="border-l border-dark border-opacity-05">
-              {searchProducts.length > 0 &&
-                searchProducts.map((product, index) => {
-                  const { img, price, name } = product || {};
+              {isFetchingProducts && (
+                <div className="bg-opacity-03 bg-dark flex h-full w-full min-w-450 justify-center items-center">
+                  Loading....
+                </div>
+              )}
+              {relatedProducts.length === 0 && !isFetchingProducts && (
+                <div className="bg-opacity-03 bg-dark flex h-full w-full min-w-450 justify-center items-center">
+                  No Related Products
+                </div>
+              )}
+              {!isFetchingProducts &&
+                relatedProducts.length > 0 &&
+                relatedProducts.map((product, index) => {
+                  const { image, price, name } = product || {};
+
                   return (
-                    <div className="pl-6" key={index}>
-                      <div className="flex py-2">
+                    <div className="px-6 " key={index}>
+                      <div className="flex py-3">
                         <div className="flex items-center">
                           <img
-                            src={img}
+                            src={image}
                             className="w-10 object-contain"
                             alt={`product-img-${index}`}
                           />
