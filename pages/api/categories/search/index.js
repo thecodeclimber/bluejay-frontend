@@ -4,7 +4,8 @@ import { verifyGetMethod } from "../../../../utils/helper";
 
 export default async (req, res) => {
   if (!verifyGetMethod(req, res)) return;
-  let { name, category_id, limit, direction, sort, include } = req.query || {};
+  let { name, category_id, limit, direction, sort, include, page } =
+    req.query || {};
   let productsUrl = `${URLS.BIG_COMMERCE.PRODUCT.PRODUCTS}?include=${
     include || "primary_image"
   }`;
@@ -21,6 +22,7 @@ export default async (req, res) => {
     productsUrl += `&direction=${direction}`;
   }
   productsUrl += `&limit=${limit || 20}`;
+  if (page) productsUrl += `&page=${page}`;
   const products = await httpGet(productsUrl, { isBigCommerce: true });
   return res.json(products);
 };

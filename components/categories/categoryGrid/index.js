@@ -4,13 +4,31 @@ import { array, bool, func } from "prop-types";
 import { FiHeart as HearIcon } from "react-icons/fi/index";
 import ProductQuantity from "../../elements/productQuantity";
 import AddToCart from "../../elements/addToCart";
+import ProductLoader from "../../elements/productLoader";
 
 const CategoryGrid = (props) => {
   const { products, isFetchingProducts, handleProducts, handleCart } = props;
   return (
     <div className="font-ubuntu w-full">
       {isFetchingProducts && (
-        <div className="text-center text-dark py-10">Loading...</div>
+        <div className="flex flex-wrap">
+          {Array(6)
+            .fill()
+            .map((d, index) => (
+              <div
+                key={index}
+                className={classnames(
+                  "sm:w-full md:w-1/2 px-3 lg:w-1/3 mb-6 pb-3",
+                  {
+                    "lg:pl-0 lg:pr-6": index % 3 === 0,
+                    "lg:pr-0 lg:pl-6": (index + 1) % 3 === 0,
+                  }
+                )}
+              >
+                <ProductLoader />
+              </div>
+            ))}
+        </div>
       )}
       <div className="flex flex-wrap">
         {!isFetchingProducts &&
@@ -28,7 +46,7 @@ const CategoryGrid = (props) => {
                   }
                 )}
               >
-                <div className="h-full flex flex-col justify-between bg-white border border-dark border-opacity-10 rounded px-6 py-5">
+                <div className="h-full flex flex-col justify-between bg-white border border-dark border-opacity-10 rounded px-6 py-5 hover:shadow-grey-8 hover:border-white">
                   <div>
                     <div className="flex justify-between">
                       <div className="bg-green text-xs font-normal text-white rounded-2xl px-3 h-5 h-full">
@@ -67,6 +85,9 @@ const CategoryGrid = (props) => {
             );
           })}
       </div>
+      {!isFetchingProducts && products.length === 0 && (
+        <div className="text-center text-dark py-10">No product available</div>
+      )}
     </div>
   );
 };

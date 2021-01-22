@@ -14,6 +14,8 @@ import URLS from "../../utils/urls";
 import { SORT_OPTIONS } from "../../utils/constants";
 import { Context } from "../../hooks/store";
 import Pagination from "../elements/pagination";
+import Loader from "../elements/loader";
+import { scrollTo } from "../../utils/helper";
 
 const VIEW_TYPE = {
   GRID: "grid",
@@ -27,7 +29,9 @@ const ProductCategories = (props) => {
   const [isFetchingProducts, setIsFetchingProducts] = useState(false);
   const [products, setProducts] = useState([]);
   const [isCartDrawer, setIsCartDrawer] = useState(false);
-  const [totalProducts, setTotalProducts] = useState(0);
+  const [paginationData, setPaginationData] = useState();
+  const [selectedPage, setSelectedPage] = useState();
+  const [selectedOption, setSelectedOption] = useState(SORT_OPTIONS.ALPHABET);
   const categories = categoryState.categories || [];
 
   const getSelectedCategory = () => {
@@ -46,10 +50,9 @@ const ProductCategories = (props) => {
 
   useEffect(() => {
     if (categories.length > 0) fetchProducts();
-  }, [query, categories]);
+  }, [query, categories, selectedOption, selectedPage]);
 
-  const fetchProducts = (data) => {
-    const { direction, sort } = data || {};
+  const fetchProducts = () => {
     let searchUrl = `${URLS.NEXT.CATEGORY.SEARCH}?include=primary_image`;
     if (selectedCategory?.id) {
       searchUrl += `&category_id=${selectedCategory?.id}`;
@@ -57,14 +60,19 @@ const ProductCategories = (props) => {
     if (query?.q) {
       searchUrl += `&name=${query.q}`;
     }
-    searchUrl += `&sort=${sort || SORT_OPTIONS.ALPHABET.value}`;
-    if (direction) {
-      searchUrl += `&direction=${direction}`;
+    if (selectedOption?.type === "direction") {
+      searchUrl += `&direction=${selectedOption?.value}`;
+    }
+    if (selectedOption?.type === "sort") {
+      searchUrl += `&sort=${selectedOption?.value}`;
     }
     searchUrl += `&limit=6`;
+    if (selectedPage) {
+      searchUrl += `&page=${selectedPage}`;
+    }
     setIsFetchingProducts(true);
     httpGet(searchUrl, {
-      traceName: "get_products",
+      traceName: "get_search_products",
     }).then(
       (res) => {
         const data = [];
@@ -78,7 +86,7 @@ const ProductCategories = (props) => {
           data.push(...resData);
         }
         setProducts(data);
-        setTotalProducts(res?.meta?.pagination?.total || 0);
+        setPaginationData(res?.meta?.pagination || {});
         setIsFetchingProducts(false);
       },
       (err) => {
@@ -95,16 +103,14 @@ const ProductCategories = (props) => {
     setIsCartDrawer(isOpenDrawer);
   };
 
-  const handleSorting = (option = {}) => {
-    let options = {};
-    if (option.value !== SORT_OPTIONS.ALPHABET.value) {
-      options = { ...options, direction: option.value };
-    }
-    fetchProducts(options);
+  const handleSelectedPage = (page = 1) => {
+    scrollTo(".scroll-point");
+    setSelectedPage(page);
   };
 
   return (
-    <div className="font-ubuntu pt-6">
+    <div className="font-ubuntu pt-6 ">
+      {categoryState?.isFetchingCategories && <Loader />}
       <Drawer isOpen={isCartDrawer} closeDrawer={closeCartDrawer}>
         <CartAdded closeCartDrawer={closeCartDrawer} isNewItem={true} />
       </Drawer>
@@ -114,7 +120,7 @@ const ProductCategories = (props) => {
             Anchors
           </div>
           <div className="text-primary font-light text-xl tracking-tight mt-3">
-            {totalProducts} products found.
+            {paginationData?.total || 0} products found.
           </div>
         </div>
         <div>
@@ -143,15 +149,15 @@ const ProductCategories = (props) => {
           </div>
         </div>
       </div>
-
       <hr className="my-6 opacity-10 bg-dark" />
       <div className="container mx-auto flex">
         <SideBar query={query} />
-        <div className="w-full pl-5">
+        <div className="w-full pl-5 scroll-point">
           <Filters
             query={query}
             selectedCategory={selectedCategory}
-            handleSorting={handleSorting}
+            selectedOption={selectedOption}
+            handleSorting={setSelectedOption}
           />
           <hr className="my-5 opacity-10 bg-dark" />
           {viewType === VIEW_TYPE.GRID && (
@@ -171,7 +177,10 @@ const ProductCategories = (props) => {
             />
           )}
           <div className="mb-12">
-            <Pagination />
+            <Pagination
+              paginationData={paginationData}
+              handleSelectedPage={handleSelectedPage}
+            />
           </div>
         </div>
       </div>

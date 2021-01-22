@@ -3,6 +3,7 @@
  */
 const initialCategoryState = {
   categories: [],
+  isFetchingCategories: false,
 };
 
 export default initialCategoryState;

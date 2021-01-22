@@ -18,7 +18,10 @@ import {
 import { VscClose as CloseIcon } from "react-icons/vsc";
 import URLS from "../../../../../utils/urls";
 import { Context } from "../../../../../hooks/store";
-import { setCategories } from "../../../../../hooks/category/actions";
+import {
+  setCategories,
+  setIsFetchingCategories,
+} from "../../../../../hooks/category/actions";
 
 const SearchType = {
   category: "category",
@@ -654,14 +657,13 @@ const Categories = (props) => {
 
 const MiddleNavbar = (props) => {
   const { categoryState, dispatchCategory } = useContext(Context);
-  const [isFetchingCategories, setIsFetchingCategories] = useState(false);
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
   const fetchCategories = () => {
-    setIsFetchingCategories(true);
+    dispatchCategory(setIsFetchingCategories(true));
     httpGet(URLS.NEXT.CATEGORY.CATEGORIES, {
       traceName: "get_all_categories",
     }).then(
@@ -671,10 +673,10 @@ const MiddleNavbar = (props) => {
         } else {
           dispatchCategory(setCategories(res.data || []));
         }
-        setIsFetchingCategories(false);
+        dispatchCategory(setIsFetchingCategories(false));
       },
       (err) => {
-        setIsFetchingCategories(false);
+        dispatchCategory(setIsFetchingCategories(false));
       }
     );
   };
@@ -684,12 +686,12 @@ const MiddleNavbar = (props) => {
         <Logo />
         <Categories
           {...props}
-          isFetchingCategories={isFetchingCategories}
+          isFetchingCategories={categoryState.isFetchingCategories}
           categories={categoryState.categories}
         />
         <Search
           {...props}
-          isFetchingCategories={isFetchingCategories}
+          isFetchingCategories={categoryState.isFetchingCategories}
           categories={categoryState.categories}
         />
       </div>

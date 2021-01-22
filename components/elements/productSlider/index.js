@@ -12,10 +12,17 @@ import Drawer from "../../elements/drawer";
 import CartAdded from "../../cart/cartAdded";
 import ProductQuantity from "../productQuantity";
 import AddToCart from "../addToCart";
+import ProductLoader from "../productLoader";
 
 const ProductSlider = (props) => {
-  const { dots, products, isLoading, handleProducts, displayProducts } =
-    props || {};
+  const {
+    dots,
+    products,
+    isLoading,
+    handleProducts,
+    displayProducts,
+    loaderLength,
+  } = props || {};
   const slider = useRef(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const [isCartDrawer, setIsCartDrawer] = useState(false);
@@ -27,6 +34,10 @@ const ProductSlider = (props) => {
       products.length > displayProducts ? displayProducts : products.length,
     slidesToScroll: 1,
     afterChange: (current) => setActiveSlide(current),
+  };
+  const loaderSettings = {
+    ...settings,
+    slidesToShow: loaderLength,
   };
 
   const moveLeft = () => {
@@ -57,7 +68,15 @@ const ProductSlider = (props) => {
       </Drawer>
       <div className="relative">
         {isLoading && (
-          <div className="text-center w-full mt-10">Loading...</div>
+          <Slider {...loaderSettings} className="overflow-hidden" ref={slider}>
+            {Array(6)
+              .fill()
+              .map((d, index) => (
+                <div className="py-10 px-4" key={index}>
+                  <ProductLoader />
+                </div>
+              ))}
+          </Slider>
         )}
         {!isLoading && (
           <>
@@ -93,7 +112,7 @@ const ProductSlider = (props) => {
                       >
                         <div
                           className={classnames(
-                            "max-w-310  border h-full rounded border-dark border-opacity-10 mx-4 lg:px-5 bg-white hover:shadow-grey-8 hover:border-white"
+                            "max-w-310 border h-full rounded border-dark border-opacity-10 mx-4 lg:px-5 bg-white hover:shadow-grey-8 hover:border-white"
                           )}
                         >
                           <div className="py-6 flex-col justify-between h-full">
@@ -180,6 +199,7 @@ ProductSlider.defaultProps = {
   products: [],
   handleProducts: () => {},
   displayProducts: 4,
+  loaderLength: 4,
 };
 
 ProductSlider.propTypes = {
@@ -188,6 +208,7 @@ ProductSlider.propTypes = {
   isLoading: bool,
   handleProducts: func,
   displayProducts: number,
+  loaderLength: number,
 };
 
 export default ProductSlider;

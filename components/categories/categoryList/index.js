@@ -3,13 +3,22 @@ import { array, bool, func } from "prop-types";
 import { FiHeart as HearIcon } from "react-icons/fi";
 import ProductQuantity from "../../elements/productQuantity";
 import AddToCart from "../../elements/addToCart";
+import ProductLoader from "../../elements/productLoader";
 
 const CategoryList = (props) => {
   const { products, isFetchingProducts, handleProducts, handleCart } = props;
   return (
     <div className="font-ubuntu w-full">
       {isFetchingProducts && (
-        <div className="text-center text-dark py-10">Loading...</div>
+        <div>
+          {Array(6)
+            .fill()
+            .map((d, index) => (
+              <div key={index} className="mb-5">
+                <ProductLoader isHorizontal={true} />
+              </div>
+            ))}
+        </div>
       )}
       <div className="flex  flex-wrap mb-3">
         {!isFetchingProducts &&
@@ -64,6 +73,9 @@ const CategoryList = (props) => {
             </div>
           ))}
       </div>
+      {!isFetchingProducts && products.length === 0 && (
+        <div className="text-center text-dark py-8">No product available</div>
+      )}
     </div>
   );
 };

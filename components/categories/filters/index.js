@@ -3,17 +3,15 @@ import { Menu, Transition } from "@headlessui/react";
 import { shape, func } from "prop-types";
 import { VscClose as CloseIcon } from "react-icons/vsc";
 import { MdArrowDropDown as DropDownIcon } from "react-icons/md";
-import { SORT_OPTIONS, SORT_OPTIONS_ARRAY } from "../../../utils/constants";
+import { SORT_OPTIONS_ARRAY } from "../../../utils/constants";
 import { useRouter } from "next/router";
 
 const Filters = (props) => {
   const router = useRouter();
-  const { selectedCategory, query, handleSorting } = props;
+  const { selectedCategory, query, handleSorting, selectedOption } = props;
   const [openDropdown, setOpenDropdown] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(SORT_OPTIONS.ALPHABET);
 
   const handleDropdownSelection = (option) => {
-    setSelectedOption(option);
     handleSorting(option);
     closeDropdown();
   };
@@ -41,15 +39,15 @@ const Filters = (props) => {
           </div>
         )}
       </div>
-      <Menu as="div" className="relative">
-        <div className="flex items-center text-base border border-dark border-opacity-10 text-black px-5 py-3 rounded">
+      <Menu as="div" className="relative" onMouseLeave={closeDropdown}>
+        <div
+          onClick={toggleDropdown}
+          className="flex cursor-pointer items-center text-base border border-dark border-opacity-10 text-black px-5 py-3 rounded"
+        >
           <span className="font-medium">Sort by:</span>
           <span className="mr-5 pl-1">{selectedOption.name}</span>
           <span>
-            <DropDownIcon
-              className="text-2lg text-black cursor-pointer"
-              onClick={toggleDropdown}
-            />
+            <DropDownIcon className="text-2lg text-black" />
           </span>
         </div>
         <Transition
@@ -60,7 +58,7 @@ const Filters = (props) => {
           leave="transition duration-75 ease-out"
           leaveFrom="transform scale-100 opacity-100"
           leaveTo="transform scale-95 opacity-0"
-          className="absolute z-10 right-0"
+          className="absolute z-10 right-0 w-full"
         >
           <Menu.Items
             className="font-ubuntu bg-white outline-none py-3 text-dark rounded-b shadow-grey-8"
@@ -96,12 +94,14 @@ const Filters = (props) => {
 Filters.defaultProps = {
   query: {},
   selectedCategory: {},
+  selectedOption: {},
   handleSorting: () => {},
 };
 
 Filters.propTypes = {
   query: shape({}),
   selectedCategory: shape({}),
+  selectedOption: shape({}),
   handleSorting: func,
 };
 
