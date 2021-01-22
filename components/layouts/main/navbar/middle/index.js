@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { httpGet } from "../../../../../utils/https";
 import URLS from "../../../../../utils/urls";
 import {
@@ -37,13 +38,15 @@ const Logo = () => (
 );
 
 const Search = (props) => {
+  const router = useRouter();
   const [activeSearchType, setActiveSearchType] = useState("");
   const [search, setSearch] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
-  const [typedKeyword, setTypedKeyword] = useState("");
-  const [relatedProducts, setRelatedProducts] = useState({});
-  const [isFetchingProducts, setIsFetchingProducts] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [isFetchingRelatedProducts, setisFetchingRelatedProducts] = useState(
+    false
+  );
   const [searchCategory, setSearchCategory] = useState({
     id: "",
     name: "All",
@@ -52,33 +55,41 @@ const Search = (props) => {
     setActiveSearchType(type);
   };
 
+  const goToCategory = (e, search) => {
+    if (e.key === "Enter") {
+      router.push({
+        pathname: `/categories/${searchCategory.name}?[pid]`,
+        query: { pid: search },
+      });
+    }
+  };
+
   const handleSearch = (e) => {
-    if (!e.target.value) return;
+    setSearch(e.target.value);
     setRelatedProducts([]);
-    setTypedKeyword(e.target.value);
+    if (!e.target.value) return;
     let searchUrl = URLS.NEXT.PRODUCT.SEARCH;
     searchUrl += `?name=${e.target.value}`;
     searchUrl += `&category_id=${searchCategory?.id}&limit=5`;
-    setIsSearching(true);
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
+      setIsSearching(true);
       httpGet(searchUrl, { traceName: "search_products" }).then(
         (res) => {
           if (res.errors && Object.keys(res.errors).length > 0) {
             alert(res.errors[Object.keys(res.errors)[0]]);
             setIsSearching(false);
           } else {
-            setIsSearching(false);
-            setSearchResult(res || []);
+            setSearchResult(res.data || []);
             handleSearchHistory(res);
           }
+          setIsSearching(false);
         },
         (err) => {
           setIsSearching(false);
         }
       );
     }, 400);
-    setSearch(e.target.value);
   };
 
   const handleSearchHistory = (res) => {
@@ -103,28 +114,28 @@ const Search = (props) => {
   };
 
   const handleRelatedProducts = (result) => {
-    if (result.related_products[0][0] === -1) {
+    if (result.related_products[0] === -1) {
       setRelatedProducts([]);
       return;
     }
-    setIsFetchingProducts(true);
-    const searchUrl = `${URLS.NEXT.PRODUCT.RELATED}?product_id=${result.related_products}`;
+    let searchUrl = URLS.NEXT.PRODUCT.RELATED;
+    searchUrl += `?product_ids=${result.related_products}`;
+    searchUrl += "&limit=5";
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
+      setisFetchingRelatedProducts(true);
       httpGet(searchUrl, { traceName: "related_products" }).then(
         (res) => {
           if (res.errors && Object.keys(res.errors).length > 0) {
             alert(res.errors[Object.keys(res.errors)[0]]);
-            setIsSearching(false);
+            setisFetchingRelatedProducts(false);
           } else {
-            setIsSearching(false);
             setRelatedProducts(res || []);
-            setIsFetchingProducts(false);
+            setisFetchingRelatedProducts(false);
           }
         },
         (err) => {
-          setIsSearching(false);
-          setIsFetchingProducts(false);
+          setisFetchingRelatedProducts(false);
         }
       );
     }, 400);
@@ -135,8 +146,8 @@ const Search = (props) => {
     handleSearch(e);
   };
 
-  const handleSearchedCategory = (category, id) => {
-    setSearchCategory({ id: id, name: category });
+  const handleSearchedCategory = (category) => {
+    setSearchCategory({ id: category.id, name: category.name });
   };
 
   return (
@@ -184,12 +195,15 @@ const Search = (props) => {
         )}
         placeholder="Search..."
         onClick={() => handleActiveSearchType(SearchType.history)}
+        // onKeyPress={(e) => goToCategory(e, search)}
         onChange={(e) => handleMainSearch(e, SearchType.result)}
         autoComplete="off"
       />
-      <div className="absolute inset-y-0 right-0 flex items-center px-4 border-l border-solid pointer-events-none border-dark border-opacity-05">
-        <SearchIcon className="text-xl text-primary" />
-      </div>
+      <Link href={`/categories?q=${search}`}>
+        <div className="absolute inset-y-0 right-0 flex items-center px-4 border-l border-solid cursor-pointer border-dark border-opacity-05">
+          <SearchIcon className="text-xl text-primary" />
+        </div>
+      </Link>
       {activeSearchType === SearchType.history && (
         <Menu
           as="div"
@@ -208,8 +222,7 @@ const Search = (props) => {
             searchResult={searchResult}
             search={search}
             isSearching={isSearching}
-            typedKeyword={typedKeyword}
-            isFetchingProducts={isFetchingProducts}
+            isFetchingRelatedProducts={isFetchingRelatedProducts}
             handleSearch={handleSearch}
             handleRelatedProducts={handleRelatedProducts}
           />
@@ -241,16 +254,15 @@ const SearchCategory = (props) => {
         <div className="max-h-350 overflow-y-auto">
           {categories.length > 0 &&
             categories.map((category, index) => {
-              const { name, id } = category || {};
               return (
                 <Menu.Item as="div" key={index}>
                   <button
                     className="w-full focus:outline-none"
-                    onClick={() => handleSearchedCategory(name, id)}
+                    onClick={() => handleSearchedCategory(category)}
                   >
-                    <a className="text-base w-full focus:outline-none flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none">
-                      {name}
-                    </a>
+                    <div className="text-base w-full focus:outline-none flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none">
+                      {category.name}
+                    </div>
                   </button>
                 </Menu.Item>
               );
@@ -292,7 +304,7 @@ const SearchHistory = () => {
       >
         {searchHistory.length > 0 &&
           searchHistory.map((history, index) => {
-            const { name, img } = history || {};
+            const { id, name, image } = history || {};
             return (
               <Menu.Item
                 as="div"
@@ -303,7 +315,7 @@ const SearchHistory = () => {
                   <div className="pr-3">
                     <img
                       key={index}
-                      src="/img/screw-img.svg"
+                      src={image}
                       className="w-6 object-contain"
                       alt={`product-img-${index}`}
                     />
@@ -327,11 +339,10 @@ const SearchResult = (props) => {
   const {
     isSearching,
     searchResult,
-    isFetchingProducts,
+    isFetchingRelatedProducts,
     search,
     handleSearch,
     relatedProducts,
-    typedKeyword,
     handleRelatedProducts,
   } = props || {};
   return (
@@ -376,54 +387,64 @@ const SearchResult = (props) => {
                       className="text-base flex items-center justify-between pl-6 pr-4 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
                       onMouseOver={() => handleRelatedProducts(result)}
                     >
-                      <div
-                        className={classnames(
-                          "text-sm flex items-center font-medium"
-                        )}
-                        dangerouslySetInnerHTML={{
-                          __html: result.name.replace(
-                            `${result.name.match(typedKeyword)}`,
-                            `<span style="color:#1E74DF">&nbsp;${result.name.match(
-                              typedKeyword
-                            )} </span>`
-                          ),
-                        }}
-                      />
+                      <Link href="/product/[id]" as={`/product/${result.id}`}>
+                        <div
+                          className={classnames(
+                            "text-sm flex items-center font-medium"
+                          )}
+                          dangerouslySetInnerHTML={{
+                            __html: result.name.replace(
+                              `${search}`,
+                              `<span style="color:#1E74DF">&nbsp;${search}</span>`
+                            ),
+                          }}
+                        />
+                      </Link>
                     </Menu.Item>
                   );
                 })}
             </Menu.Items>
             <div className="border-l border-dark border-opacity-05">
-              {isFetchingProducts && (
+              {isFetchingRelatedProducts && (
                 <div className="bg-opacity-03 bg-dark flex h-full w-full min-w-450 justify-center items-center">
                   Loading....
                 </div>
               )}
-              {relatedProducts.length === 0 && !isFetchingProducts && (
+              {!isFetchingRelatedProducts && relatedProducts.length === 0 && (
                 <div className="bg-opacity-03 bg-dark flex h-full w-full min-w-450 justify-center items-center">
                   No Related Products
                 </div>
               )}
-              {!isFetchingProducts &&
+              {!isFetchingRelatedProducts &&
                 relatedProducts.length > 0 &&
-                relatedProducts.map((product, index) => {
-                  const { image, price, name } = product || {};
-
+                relatedProducts.map((relatedProduct, index) => {
                   return (
-                    <div className="px-6 " key={index}>
-                      <div className="flex py-3">
-                        <div className="flex items-center">
-                          <img
-                            src={image}
-                            className="w-10 object-contain"
-                            alt={`product-img-${index}`}
-                          />
+                    <div
+                      className="px-6 hover:bg-primary hover:bg-opacity-05"
+                      key={index}
+                    >
+                      <Link
+                        href="/product/[id]"
+                        as={`/product/${relatedProduct.id}`}
+                      >
+                        <div className="flex py-3 cursor-pointer">
+                          <div className="flex items-center">
+                            <img
+                              src={relatedProduct.image}
+                              className="w-10 object-contain"
+                              alt={`product-img-${index}`}
+                            />
+                          </div>
+                          <div className="pl-4">
+                            <div className="font-normal">
+                              {relatedProduct.name}
+                            </div>
+                            <div className="font-medium">
+                              ${relatedProduct.price}
+                            </div>
+                          </div>
                         </div>
-                        <div className="pl-4">
-                          <div className="font-normal">{name}</div>
-                          <div className="font-medium">${price}</div>
-                        </div>
-                      </div>
+                      </Link>
                       <hr className="opacity-05" />
                     </div>
                   );

@@ -5,27 +5,29 @@ import { verifyGetMethod } from "../../../../utils/helper";
 export default async (req, res) => {
   if (!verifyGetMethod(req, res)) return;
   let { name, category_id, limit } = req.query || {};
-  let productsUrl = URLS.BIG_COMMERCE.PRODUCT.PRODUCTS;
+  let productsUrl = `${URLS.BIG_COMMERCE.PRODUCT.PRODUCTS}?include=primary_image`;
 
-  if (name && category_id) {
-    productsUrl += `?categories:in=${category_id}`;
-    productsUrl += `&keyword=${name}`;
-  } else {
-    productsUrl += `?keyword=${name}`;
+  if (category_id) {
+    productsUrl += `&categories:in=${category_id}`;
   }
-  const products = await httpGet(`${productsUrl}&limit=${limit}`, {
+  if (name) {
+    productsUrl += `&keyword=${name}`;
+  }
+  productsUrl += `&limit=${limit || 10}`;
+
+  const products = await httpGet(productsUrl, {
     isBigCommerce: true,
   });
-  const productsDetail = [];
   if (products?.data && products.data.length > 0) {
-    const product = products.data.map((product) => {
+    const productList = products.data.map((product) => {
       return {
+        id: product.id,
         name: product.name,
-        related_products: [product?.related_products],
+        image: product?.primary_image?.url_tiny,
+        related_products: product?.related_products || [],
       };
     });
-
-    productsDetail.push(...product);
+    return res.json({ data: productList });
   }
-  return res.json(productsDetail);
+  return res.json(products);
 };
