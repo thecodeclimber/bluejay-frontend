@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { httpGet } from "../../../../../utils/https";
-import URLS from "../../../../../utils/urls";
 import {
   getSearchHistoryLocalStorage,
   setSearchHistoryLocalStorage,
@@ -17,6 +16,12 @@ import {
   MdChevronRight as ChevronRight,
 } from "react-icons/md";
 import { VscClose as CloseIcon } from "react-icons/vsc";
+import URLS from "../../../../../utils/urls";
+import { Context } from "../../../../../hooks/store";
+import {
+  setCategories,
+  setIsFetchingCategories,
+} from "../../../../../hooks/category/actions";
 
 const SearchType = {
   category: "category",
@@ -225,10 +230,13 @@ const SearchCategory = (props) => {
         <div className="max-h-350 overflow-y-auto">
           {categories.length > 0 &&
             categories.map((category, index) => {
-              const { name, id } = category || {};
+              const { name, id, custom_url } = category || {};
               return (
                 <Menu.Item as="div" key={index}>
-                  <Link href="/categories/[id]" as={`/categories/${id}`}>
+                  <Link
+                    href="/categories/[slug]"
+                    as={`/categories${custom_url?.url}`}
+                  >
                     <a className="text-base flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none">
                       {name}
                     </a>
@@ -504,7 +512,7 @@ const Categories = (props) => {
                     {parentCategories &&
                       parentCategories.length > 0 &&
                       parentCategories.map((menu, index) => {
-                        const { id, name } = menu || {};
+                        const { id, name, custom_url } = menu || {};
                         return (
                           <Menu.Item
                             as="div"
@@ -512,10 +520,11 @@ const Categories = (props) => {
                             onMouseEnter={() => handleActiveList(id)}
                           >
                             <Link
-                              href="/categories/[id]"
-                              as={`/categories/${id}`}
+                              href="/categories/[slug]"
+                              as={`/categories${custom_url?.url}`}
                             >
                               <a
+                                onClick={() => setActiveCategory(false)}
                                 className={classnames(
                                   "text-base focus:outline-none flex items-center justify-between px-4 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer",
                                   {
@@ -537,15 +546,19 @@ const Categories = (props) => {
                   {subCategories && subCategories.length > 0 && (
                     <div className="bg-opacity-01 bg-dark min-w-300 border-r border-opacity-07 border-dark">
                       {subCategories.map((subMenu, index) => {
-                        const { name, id } = subMenu || {};
+                        const { name, id, custom_url } = subMenu || {};
                         return (
                           <Menu.Item
                             as="div"
                             key={index}
                             onMouseOver={() => handleActiveSubList(id)}
                           >
-                            <Link href={`/categories/${id}`}>
+                            <Link
+                              href="/categories/[slug]"
+                              as={`/categories${custom_url?.url}`}
+                            >
                               <a
+                                onClick={() => setActiveCategory(false)}
                                 className={classnames(
                                   "text-base focus:outline-none flex items-center justify-between px-4 py-3 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer",
                                   {
@@ -643,15 +656,34 @@ const Categories = (props) => {
 };
 
 const MiddleNavbar = (props) => {
-  const [isFetchingCategories, setIsFetchingCategories] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const { categoryState, dispatchCategory } = useContext(Context);
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
+  const sortCategories = (categoriesData = []) => {
+    const categories = [];
+    categoriesData.sort(
+      (prevCategory, nextCategory) =>
+        prevCategory.sort_order - nextCategory.sort_order
+    );
+    categoriesData.forEach((data) => {
+      if (!data.parent_id) {
+        categories.push(data);
+        const filteredData = categoriesData.filter(
+          (cat) => cat.parent_id === data.id
+        );
+        if (filteredData && filteredData.length > 0) {
+          categories.push(...filteredData);
+        }
+      }
+    });
+    return categories;
+  };
+
   const fetchCategories = () => {
-    setIsFetchingCategories(true);
+    dispatchCategory(setIsFetchingCategories(true));
     httpGet(URLS.NEXT.CATEGORY.CATEGORIES, {
       traceName: "get_all_categories",
     }).then(
@@ -659,12 +691,15 @@ const MiddleNavbar = (props) => {
         if (res.errors && Object.keys(res.errors).length > 0) {
           alert(res.errors[Object.keys(res.errors)[0]]);
         } else {
-          setCategories(res.data || []);
+          if (res?.data && res.data.length > 0) {
+            const getSortedCategories = sortCategories(res.data);
+            dispatchCategory(setCategories(getSortedCategories));
+          }
         }
-        setIsFetchingCategories(false);
+        dispatchCategory(setIsFetchingCategories(false));
       },
       (err) => {
-        setIsFetchingCategories(false);
+        dispatchCategory(setIsFetchingCategories(false));
       }
     );
   };
@@ -674,13 +709,13 @@ const MiddleNavbar = (props) => {
         <Logo />
         <Categories
           {...props}
-          isFetchingCategories={isFetchingCategories}
-          categories={categories}
+          isFetchingCategories={categoryState.isFetchingCategories}
+          categories={categoryState.categories}
         />
         <Search
           {...props}
-          isFetchingCategories={isFetchingCategories}
-          categories={categories}
+          isFetchingCategories={categoryState.isFetchingCategories}
+          categories={categoryState.categories}
         />
       </div>
     </div>

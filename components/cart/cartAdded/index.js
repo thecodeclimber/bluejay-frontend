@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import classnames from "classnames";
 import Link from "next/link";
 import getSymbolFromCurrency from "currency-symbol-map";
 import { bool, func } from "prop-types";
@@ -27,7 +28,12 @@ const CartAdded = (props) => {
 
   return (
     <div className="font-ubuntu tracking-tight max-w-550">
-      <div className="px-5 py-4 bg-primary flex justify-between items-center">
+      <div
+        className={classnames(
+          "px-5 py-4 bg-primary flex justify-between items-center",
+          { "mb-8": !isNewItem && cartLength > 0 }
+        )}
+      >
         <div className="text-xl font-light text-white">Basket</div>
         <div onClick={closeCartDrawer}>
           <CloseIcon className="text-white text-xl cursor-pointer" />
