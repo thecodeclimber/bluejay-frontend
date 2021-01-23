@@ -64,6 +64,16 @@ export const setUserLocalStorage = (data) => {
 };
 
 /**
+ * Remove history from local storage
+ *
+ * @return {Boolean}
+ */
+export const removeHistoryLocalStorage = () => {
+  localStorage.removeItem("searchHistory");
+  return true;
+};
+
+/**
  * Remove user from local storage
  *
  * @return {Boolean}

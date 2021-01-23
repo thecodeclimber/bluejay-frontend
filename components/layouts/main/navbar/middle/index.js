@@ -7,6 +7,7 @@ import URLS from "../../../../../utils/urls";
 import {
   getSearchHistoryLocalStorage,
   setSearchHistoryLocalStorage,
+  removeHistoryLocalStorage,
 } from "../../../../../utils/helper";
 import { Menu, Transition } from "@headlessui/react";
 import classnames from "classnames";
@@ -44,6 +45,7 @@ const Search = (props) => {
   const [searchResult, setSearchResult] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [searchedHistory, setSearchedHistory] = useState([]);
   const [isFetchingRelatedProducts, setisFetchingRelatedProducts] = useState(
     false
   );
@@ -55,11 +57,11 @@ const Search = (props) => {
     setActiveSearchType(type);
   };
 
-  const goToCategory = (e, search) => {
+  const goToCategory = (e) => {
     if (e.key === "Enter") {
       router.push({
-        pathname: `/categories/${searchCategory.name}?[pid]`,
-        query: { pid: search },
+        pathname: "/about",
+        query: { q: search },
       });
     }
   };
@@ -110,6 +112,20 @@ const Search = (props) => {
         }
       }
       setSearchHistoryLocalStorage(searchHistory);
+      setSearchedHistory(searchHistory);
+    }
+  };
+
+  const deleteSearchedHistory = (id) => {
+    if (id) {
+      const searchHistory = getSearchHistoryLocalStorage() || [];
+      if (searchHistory && searchHistory.length > 0) {
+        const remainingItems = searchHistory.filter(
+          (history) => history.id !== id
+        );
+        setSearchHistoryLocalStorage(remainingItems);
+        setSearchedHistory(remainingItems);
+      }
     }
   };
 
@@ -195,11 +211,11 @@ const Search = (props) => {
         )}
         placeholder="Search..."
         onClick={() => handleActiveSearchType(SearchType.history)}
-        // onKeyPress={(e) => goToCategory(e, search)}
+        onKeyPress={(e) => goToCategory(e)}
         onChange={(e) => handleMainSearch(e, SearchType.result)}
         autoComplete="off"
       />
-      <Link href={`/categories?q=${search}`}>
+      <Link href={`/categories/${search}`}>
         <div className="absolute inset-y-0 right-0 flex items-center px-4 border-l border-solid cursor-pointer border-dark border-opacity-05">
           <SearchIcon className="text-xl text-primary" />
         </div>
@@ -209,7 +225,11 @@ const Search = (props) => {
           as="div"
           className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b z-30"
         >
-          <SearchHistory />
+          <SearchHistory
+            searchedHistory={searchedHistory}
+            deleteSearchedHistory={deleteSearchedHistory}
+            removeHistoryLocalStorage={removeHistoryLocalStorage}
+          />
         </Menu>
       )}
       {activeSearchType === SearchType.result && (
@@ -273,8 +293,13 @@ const SearchCategory = (props) => {
   );
 };
 
-const SearchHistory = () => {
+const SearchHistory = (props) => {
+  const { deleteSearchedHistory, searchedHistory, removeHistoryLocalStorage } =
+    props || {};
   const searchHistory = getSearchHistoryLocalStorage() || [];
+
+  useEffect(() => {}, [searchedHistory]);
+
   return (
     <Transition
       show={true}
@@ -294,7 +319,10 @@ const SearchHistory = () => {
           )}
           placeholder="Search History"
         />
-        <div className="text-primary cursor-pointer truncate w-200 text-right">
+        <div
+          className="text-primary cursor-pointer truncate w-200 text-right"
+          onClick={removeHistoryLocalStorage}
+        >
           Clear search history
         </div>
       </div>
@@ -311,21 +339,26 @@ const SearchHistory = () => {
                 key={index}
                 className="text-base flex items-center justify-between px-4 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
               >
-                <div className="flex">
-                  <div className="pr-3">
-                    <img
-                      key={index}
-                      src={image}
-                      className="w-6 object-contain"
-                      alt={`product-img-${index}`}
-                    />
+                <Link href="/product/[id]" as={`/product/${id}`}>
+                  <div className="flex">
+                    <div className="pr-3">
+                      <img
+                        key={index}
+                        src={image || `/img/img-placeholder.png`}
+                        className="w-6 object-contain"
+                        alt={`product-img-${index}`}
+                      />
+                    </div>
+                    <div className="text-sm flex items-center text-dark">
+                      {name}
+                    </div>
                   </div>
-                  <div className="text-sm flex items-center text-dark">
-                    {name}
-                  </div>
-                </div>
+                </Link>
                 <div>
-                  <CloseIcon className="text-lg text-dark" />
+                  <CloseIcon
+                    className="text-lg text-dark"
+                    onClick={() => deleteSearchedHistory(id)}
+                  />
                 </div>
               </Menu.Item>
             );
@@ -380,6 +413,7 @@ const SearchResult = (props) => {
             >
               {searchResult.length > 0 &&
                 searchResult.map((result, index) => {
+                  const regexp = new RegExp(search, "gi");
                   return (
                     <Menu.Item
                       as="div"
@@ -394,8 +428,10 @@ const SearchResult = (props) => {
                           )}
                           dangerouslySetInnerHTML={{
                             __html: result.name.replace(
-                              `${search}`,
-                              `<span style="color:#1E74DF">&nbsp;${search}</span>`
+                              result.name.match(regexp),
+                              `<span style="color:#1E74DF">${result.name.match(
+                                regexp
+                              )}</span>`
                             ),
                           }}
                         />
@@ -430,7 +466,10 @@ const SearchResult = (props) => {
                         <div className="flex py-3 cursor-pointer">
                           <div className="flex items-center">
                             <img
-                              src={relatedProduct.image}
+                              src={
+                                relatedProduct.image ||
+                                `/img/img-placeholder.png`
+                              }
                               className="w-10 object-contain"
                               alt={`product-img-${index}`}
                             />
@@ -677,7 +716,10 @@ const Categories = (props) => {
                                   <div>
                                     {primary_image?.url_standard && (
                                       <img
-                                        src={primary_image?.url_standard}
+                                        src={
+                                          primary_image?.url_standard ||
+                                          `/img/img-placeholder.png`
+                                        }
                                         width="120px"
                                         height="120px"
                                         className="object-contain"
