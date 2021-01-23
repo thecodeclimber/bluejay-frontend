@@ -662,6 +662,26 @@ const MiddleNavbar = (props) => {
     fetchCategories();
   }, []);
 
+  const sortCategories = (categoriesData = []) => {
+    const categories = [];
+    categoriesData.sort(
+      (prevCategory, nextCategory) =>
+        prevCategory.sort_order - nextCategory.sort_order
+    );
+    categoriesData.forEach((data) => {
+      if (!data.parent_id) {
+        categories.push(data);
+        const filteredData = categoriesData.filter(
+          (cat) => cat.parent_id === data.id
+        );
+        if (filteredData && filteredData.length > 0) {
+          categories.push(...filteredData);
+        }
+      }
+    });
+    return categories;
+  };
+
   const fetchCategories = () => {
     dispatchCategory(setIsFetchingCategories(true));
     httpGet(URLS.NEXT.CATEGORY.CATEGORIES, {
@@ -671,7 +691,10 @@ const MiddleNavbar = (props) => {
         if (res.errors && Object.keys(res.errors).length > 0) {
           alert(res.errors[Object.keys(res.errors)[0]]);
         } else {
-          dispatchCategory(setCategories(res.data || []));
+          if (res?.data && res.data.length > 0) {
+            const getSortedCategories = sortCategories(res.data);
+            dispatchCategory(setCategories(getSortedCategories));
+          }
         }
         dispatchCategory(setIsFetchingCategories(false));
       },

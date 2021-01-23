@@ -90,14 +90,8 @@ const AddedToCart = (props) => {
     <div>
       {cartLength > 0 &&
         cartState.cart.cart_items.map((data, index) => {
-          const {
-            id,
-            name,
-            image_url,
-            quantity,
-            product_id,
-            extended_sale_price,
-          } = data || {};
+          const { id, name, image_url, product_id, extended_sale_price } =
+            data || {};
           return (
             <div key={index}>
               <div className="text-dark flex px-5 mt-5 mb-4 group">

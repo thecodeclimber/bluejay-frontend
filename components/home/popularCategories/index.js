@@ -1,9 +1,35 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import classnames from "classnames";
+import ContentLoader from "react-content-loader";
 import { BsArrowRight as RightArrowIcon } from "react-icons/bs";
 import { httpGet } from "../../../utils/https";
 import URLS from "../../../utils/urls";
+
+const productCategoriesLoader = () => (
+  <div className="flex">
+    <div className="border border-dark border-opacity-10 rounded">
+      <ContentLoader
+        speed={2}
+        width={"100%"}
+        height={380}
+        viewBox="0 0 287 380"
+        backgroundColor="#f3f3f3"
+        foregroundColor="#ecebeb"
+      >
+        <rect x="23" y="20" rx="3" ry="3" width="65" height="65" />
+        <rect x="110" y="40" rx="3" ry="3" width="150" height="20" />
+        <rect x="23" y="110" rx="3" ry="3" width="238" height="1" />
+        <rect x="23" y="140" rx="3" ry="3" width="238" height="16" />
+        <rect x="23" y="180" rx="3" ry="3" width="238" height="16" />
+        <rect x="23" y="220" rx="3" ry="3" width="238" height="16" />
+        <rect x="23" y="260" rx="3" ry="3" width="238" height="16" />
+        <rect x="23" y="305" rx="3" ry="3" width="238" height="1" />
+        <rect x="23" y="330" rx="3" ry="3" width="100" height="16" />
+      </ContentLoader>
+    </div>
+  </div>
+);
 
 const PopularCategories = () => {
   const [isFetching, setIsFetching] = useState(false);
@@ -44,14 +70,10 @@ const PopularCategories = () => {
           popularCategories.map((category, index) => (
             <div
               key={index}
-              className={classnames(
-                "sm:w-full md:w-1/2 mr-2 px-2 lg:w-1/3 mb-6",
-                {
-                  "lg:pl-0 lg:pr-2": index % popularCategories.length === 0,
-                  "lg:pr-0 lg:pr-4":
-                    (index + 1) % popularCategories.length === 0,
-                }
-              )}
+              className={classnames("w-full pl-4 pr-4 mb-6", {
+                "pl-0": index === 0,
+                "pr-0": index === popularCategories.length - 1,
+              })}
             >
               <div className="bg-white h-full shadow-grey-8 hover:shadow-blue-10 rounded px-6 pt-5 mb-6">
                 <div className="flex pt-1 items-center">
@@ -97,10 +119,24 @@ const PopularCategories = () => {
               </div>
             </div>
           ))}
-        {isFetching && (
-          <div className="flex justify-center w-full">Loading...</div>
-        )}
       </div>
+      {isFetching && (
+        <div className="flex">
+          {Array(4)
+            .fill()
+            .map((d, index) => (
+              <div
+                key={index}
+                className={classnames("w-full pl-4 pr-4 mb-6", {
+                  "pl-0": index === 0,
+                  "pr-0": index === 3,
+                })}
+              >
+                {productCategoriesLoader()}
+              </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import classnames from "classnames";
-import { shape, func, number, bool } from "prop-types";
+import { shape, func, string, bool } from "prop-types";
 import {
   formattingCartData,
   getFormattedCartParams,
@@ -133,7 +133,7 @@ AddToCart.defaultProps = {
 AddToCart.propTypes = {
   product: shape({}),
   handleData: func,
-  tempCartId: number,
+  tempCartId: string,
   isSaveForLater: bool,
 };
 

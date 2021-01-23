@@ -117,7 +117,8 @@ const ProductCategories = (props) => {
       <div className="flex container mx-auto justify-between items-center">
         <div className="flex items-center">
           <div className="text-3xl text-dark font-light tracking-tight mr-6">
-            Anchors
+            {!query?.q && !selectedCategory?.name && "Total"}
+            {query?.q || selectedCategory?.name}
           </div>
           <div className="text-primary font-light text-xl tracking-tight mt-3">
             {paginationData?.total || 0} products found.
@@ -150,9 +151,9 @@ const ProductCategories = (props) => {
         </div>
       </div>
       <hr className="my-6 opacity-10 bg-dark" />
-      <div className="container mx-auto flex">
+      <div className="container mx-auto flex scroll-point">
         <SideBar query={query} />
-        <div className="w-full pl-5 scroll-point">
+        <div className="w-full pl-5">
           <Filters
             query={query}
             selectedCategory={selectedCategory}
