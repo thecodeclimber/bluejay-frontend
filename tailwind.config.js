@@ -35,6 +35,7 @@ module.exports = {
       60: "60px",
       100: "90px",
       200: "200px",
+      220: "219px",
       250: "280px",
       300: "300px",
       310: "315px",
@@ -135,6 +136,7 @@ module.exports = {
       },
       lineHeight: {
         2: "0.875rem",
+        21: "21px",
       },
       inset: {
         "-5": "-5rem",

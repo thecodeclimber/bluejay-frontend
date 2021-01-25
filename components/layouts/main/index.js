@@ -1,7 +1,5 @@
 import React, { useEffect, useContext } from "react";
 import { useRouter } from "next/router";
-import { getUserData } from "../../../utils/helper";
-import { setUser } from "../../../hooks/user/actions";
 import { setModal } from "../../../hooks/modal/actions";
 import { setCart, setSaveForLaterCart } from "../../../hooks/cart/actions";
 import { MODAL_TYPES } from "../../../hooks/modal/constants";
@@ -21,21 +19,13 @@ import Auth from "./auth";
 const MainLayout = (props) => {
   const router = useRouter();
   const { children } = props;
-  const {
-    userState,
-    dispatchUser,
-    modalState,
-    dispatchModal,
-    dispatchCart,
-  } = useContext(Context);
+  const { modalState, dispatchModal, dispatchCart } = useContext(Context);
 
   useEffect(() => {
     const { reset, token } = router.query || {};
     if (reset && token && modalState.activeModal !== MODAL_TYPES.NEW_PASSWORD) {
       dispatchModal(setModal(MODAL_TYPES.NEW_PASSWORD));
     }
-    const userData = getUserData(userState);
-    if (userData) dispatchUser(setUser(userData));
     fetchCartData();
   }, []);
 
