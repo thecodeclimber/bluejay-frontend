@@ -40,15 +40,7 @@ export default async (req, res) => {
   }
   const productsUrl = `${URLS.BIG_COMMERCE.PRODUCT.PRODUCTS}?id:in=${productIds}&include=primary_image`;
   const products = await httpGet(productsUrl, { isBigCommerce: true });
-  if (products.status === 401) {
-    res.status(401);
-    res.json({
-      errors: {
-        error: MESSAGES.UNAUTHORIZED,
-      },
-    });
-    return;
-  }
+
   const productsData = [];
   if (products?.data && products.data.length > 0) {
     const productsList = products.data.map((data) => {
@@ -56,7 +48,7 @@ export default async (req, res) => {
         id: data.id,
         name: data.name,
         price: data.price,
-        image: data.primary_image.url_thumbnail,
+        image: data.primary_image?.url_thumbnail,
       };
     });
     productsData.push(...productsList);

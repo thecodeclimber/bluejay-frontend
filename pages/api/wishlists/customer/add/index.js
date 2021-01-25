@@ -26,7 +26,8 @@ export default async (req, res) => {
     return;
   }
   const customerId = token?.customer_id;
-  const customerWishlistUrl = `${URLS.BIG_COMMERCE.WISHLIST.WISHLISTS}?customer_id=${customerId}`;
+  let productIds = [];
+  const customerWishlistUrl = `${URLS.BIG_COMMERCE.WISHLIST.WISHLISTS}?customer_id=${customerId}&limit=1`;
   const customerWishlists = await httpGet(customerWishlistUrl, {
     isBigCommerce: true,
   });
@@ -56,7 +57,13 @@ export default async (req, res) => {
     const wishlistItem = await httpPost(wishlistItemUrl, params, {
       isBigCommerce: true,
     });
-
+    if (
+      wishlistItem?.data &&
+      wishlistItem.data?.items &&
+      wishlistItem.data.items.length > 0
+    ) {
+      productIds = wishlistItem.data.items.map((d) => d.product_id);
+    }
     if (wishlistItem.status === 401) {
       res.status(401);
       res.json({
@@ -66,28 +73,55 @@ export default async (req, res) => {
       });
       return;
     }
-    return res.json(wishlistItem);
-  }
-  params = {
-    ...params,
-    name: "wishlist",
-    is_public: false,
-  };
-  const wishlistResponse = httpPost(
-    URLS.BIG_COMMERCE.WISHLIST.WISHLISTS,
-    params,
-    {
-      isBigCommerce: true,
+  } else {
+    params = {
+      ...params,
+      name: "wishlist",
+      is_public: false,
+    };
+    const wishlistResponse = await httpPost(
+      URLS.BIG_COMMERCE.WISHLIST.WISHLISTS,
+      params,
+      {
+        isBigCommerce: true,
+      }
+    );
+    if (wishlistResponse.status === 401) {
+      res.status(401);
+      res.json({
+        errors: {
+          error: MESSAGES.UNAUTHORIZED,
+        },
+      });
+      return;
     }
-  );
-  if (wishlistResponse.status === 401) {
-    res.status(401);
-    res.json({
-      errors: {
-        error: MESSAGES.UNAUTHORIZED,
-      },
-    });
-    return;
+    if (
+      wishlistResponse?.data &&
+      wishlistResponse.data?.items &&
+      wishlistResponse.data.items.length > 0
+    ) {
+      productIds = wishlistResponse.data.items.map((d) => d.product_id);
+    }
   }
-  return res.json(wishlistResponse);
+
+  if (productIds && productIds.length > 0) {
+    productIds = [...new Set(productIds)];
+  }
+
+  const productsUrl = `${URLS.BIG_COMMERCE.PRODUCT.PRODUCTS}?id:in=${productIds}&include=primary_image`;
+  const products = await httpGet(productsUrl, { isBigCommerce: true });
+  const productsData = [];
+  if (products?.data && products.data.length > 0) {
+    const productsList = products.data.map((data) => {
+      return {
+        id: data.id,
+        name: data.name,
+        price: data.price,
+        image: data.primary_image?.url_thumbnail,
+      };
+    });
+    productsData.push(...productsList);
+  }
+
+  return res.json(productsData);
 };

@@ -1,10 +1,10 @@
 import React from "react";
 import classnames from "classnames";
 import { array, bool, func } from "prop-types";
-import { FiHeart as HearIcon } from "react-icons/fi/index";
 import ProductQuantity from "../../elements/productQuantity";
 import AddToCart from "../../elements/addToCart";
 import ProductLoader from "../../elements/productLoader";
+import WishlistIcon from "../../elements/wishlistIcon";
 
 const CategoryGrid = (props) => {
   const { products, isFetchingProducts, handleProducts, handleCart } = props;
@@ -52,7 +52,7 @@ const CategoryGrid = (props) => {
                       <div className="bg-green text-xs font-normal text-white rounded-2xl px-3 h-5 h-full">
                         New
                       </div>
-                      <HearIcon className="text-grey opacity-70 text-xl cursor-pointer" />
+                      <WishlistIcon product={product} />
                     </div>
                     <div className="max-w-250 mb-3">
                       <img

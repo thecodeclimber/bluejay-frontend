@@ -42,30 +42,28 @@ export default async (req, res) => {
   }
 
   if (!wishlists?.data && !wishlists?.data.length) return;
-  if (wishlists?.data && wishlists.data.length > 0) {
-    if (wishlists.data[0].items && wishlists.data[0].items.length > 0) {
-      const selectedItem = wishlists.data[0].items.find(
-        (itemData) => itemData.product_id === productId
-      );
-      const wishlistId = wishlists.data[0]?.id;
-      const deleteCustomerWishlistUrl = `${URLS.BIG_COMMERCE.WISHLIST.ITEM.replace(
-        "{WISHLIST_ID}",
-        wishlistId
-      )}/${selectedItem.id}`;
-      const wishlistDeleted = httpDelete(deleteCustomerWishlistUrl, {
-        isBigCommerce: true,
+  if (wishlists.data[0]?.items && wishlists.data[0].items.length > 0) {
+    const selectedItem = wishlists.data[0].items.find(
+      (itemData) => itemData.product_id === productId
+    );
+    const wishlistId = wishlists.data[0]?.id;
+    const deleteCustomerWishlistUrl = `${URLS.BIG_COMMERCE.WISHLIST.ITEM.replace(
+      "{WISHLIST_ID}",
+      wishlistId
+    )}/${selectedItem.id}`;
+    const wishlistDeleted = await httpDelete(deleteCustomerWishlistUrl, {
+      isBigCommerce: true,
+    });
+    if (wishlistDeleted.status === 401) {
+      res.status(401);
+      res.json({
+        errors: {
+          error: MESSAGES.UNAUTHORIZED,
+        },
       });
-      if (wishlistDeleted.status === 401) {
-        res.status(401);
-        res.json({
-          errors: {
-            error: MESSAGES.UNAUTHORIZED,
-          },
-        });
-        return;
-      }
-      return res.json(wishlistDeleted);
+      return;
     }
+    return res.json(wishlistDeleted);
   }
   return;
 };

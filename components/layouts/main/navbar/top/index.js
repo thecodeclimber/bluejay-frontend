@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useContext } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import classnames from "classnames";
 import { Menu, Transition } from "@headlessui/react";
 import {
   MdAccountCircle as UserIcon,
@@ -366,7 +367,7 @@ const FavoritesMenuItems = (subMenuList) => {
   const wishListData = [...subMenuList].slice(0, 4);
   return (
     <Menu.Items
-      className="font-ubuntu bg-white outline-none py-3 mt-3 -right-8 text-dark rounded relative min-w-300 shadow-grey-8"
+      className="font-ubuntu bg-white outline-none pt-3 mt-3 -right-8 text-dark rounded relative min-w-300 shadow-grey-8"
       static
     >
       <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
@@ -375,32 +376,34 @@ const FavoritesMenuItems = (subMenuList) => {
           Your wishlist is empty
         </div>
       )}
-      {wishListData.length > 0 &&
-        wishListData.map((subMenu, index) => {
-          const { image, name, price } = subMenu || {};
-          return (
-            <Fragment key={index}>
-              <Menu.Item
-                as="div"
-                className="flex justify-between items-center text-dark py-4 cursor-pointer hover:bg-opacity-05 hover:bg-primary focus:outline-none"
-              >
-                <div className="pl-6 pr-4 flex items-center">
-                  <img
-                    src={image}
-                    width="30"
-                    height="30"
-                    className="object-contain"
-                  />
-                </div>
-                <div className="text-xs leading-4 w-48">{name}</div>
-                <div className="text-sm font-medium pr-6 pl-10">${price}</div>
-              </Menu.Item>
-              {index !== wishListData.length - 1 && (
-                <hr className="opacity-05 mx-6" />
-              )}
-            </Fragment>
-          );
-        })}
+      <div className={classnames({ "pb-3": wishListData.length < 4 })}>
+        {wishListData.length > 0 &&
+          wishListData.map((subMenu, index) => {
+            const { image, name, price } = subMenu || {};
+            return (
+              <Fragment key={index}>
+                <Menu.Item
+                  as="div"
+                  className="flex justify-between items-center text-dark py-4 cursor-pointer hover:bg-opacity-05 hover:bg-primary focus:outline-none"
+                >
+                  <div className="pl-6 pr-4 flex items-center">
+                    <img
+                      src={image}
+                      width="30"
+                      height="30"
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="text-xs leading-4 w-48">{name}</div>
+                  <div className="text-sm font-medium pr-6 pl-10">${price}</div>
+                </Menu.Item>
+                {index !== wishListData.length - 1 && (
+                  <hr className="opacity-05 mx-6" />
+                )}
+              </Fragment>
+            );
+          })}
+      </div>
       {wishListData.length >= 4 && (
         <Menu.Item
           as="div"

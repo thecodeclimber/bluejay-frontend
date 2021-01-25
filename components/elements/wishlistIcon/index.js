@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import classnames from "classnames";
 import { shape } from "prop-types";
-import { FiHeart as HeartIcon } from "react-icons/fi";
+import { FiHeart as FavoriteIcon } from "react-icons/fi";
 import { httpPost, httpDelete } from "../../../utils/https";
 import { Context } from "../../../hooks/store";
 import { setModal } from "../../../hooks/modal/actions";
@@ -12,14 +12,14 @@ import URLS from "../../../utils/urls";
 const WishlistIcon = (props) => {
   const { product } = props || {};
   const { userState, dispatchModal, dispatchUser } = useContext(Context);
-  const [loadingWishlistId, setLoadingWishlistId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleWishlistsItem = (product, isFavorite) => {
     if (!userState.user?.id) {
       dispatchModal(setModal(MODAL_TYPES.LOGIN));
       return;
     }
-    setLoadingWishlistId(product.id);
+    setIsLoading(true);
     if (isFavorite) {
       const deleteUrl = `${URLS.NEXT.WISHLIST.DELETE}?product_id=${product.id}`;
       httpDelete(deleteUrl, {
@@ -35,7 +35,7 @@ const WishlistIcon = (props) => {
             dispatchUser(setUserWishlists(filteredWishlists));
           }
         }
-        setLoadingWishlistId("");
+        setIsLoading(false);
       });
       return;
     }
@@ -48,28 +48,21 @@ const WishlistIcon = (props) => {
       if (res.errors && Object.keys(res.errors).length > 0) {
         alert(res.errors[Object.keys(res.errors)[0]]);
       } else {
-        const productData = {
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          image: product?.primary_image?.url_standard || "",
-        };
-        dispatchUser(setUserWishlists([productData, ...userState.wishlists]));
+        dispatchUser(setUserWishlists(res || []));
       }
-      setLoadingWishlistId("");
+      setIsLoading(false);
     });
   };
 
   const isFavorite = userState.wishlists.some((data) => data.id === product.id);
   return (
-    <HeartIcon
+    <FavoriteIcon
       className={classnames("text-xl cursor-pointer", {
         "fill-current text-primary": isFavorite,
-        "text-grey ": !isFavorite,
-        "fill-current opacity-50 text-primary cursor-not-allowed":
-          loadingWishlistId === product.id,
+        "text-grey opacity-70": !isFavorite,
+        "fill-current opacity-50 text-primary cursor-not-allowed": isLoading,
       })}
-      onClick={() => handleWishlistsItem(product, isFavorite)}
+      onClick={() => !isLoading && handleWishlistsItem(product, isFavorite)}
     />
   );
 };

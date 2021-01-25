@@ -8,7 +8,6 @@ import {
   IoIosArrowForward as SlideRightArrow,
   IoIosArrowBack as SlideLeftArrow,
 } from "react-icons/io";
-import { FiHeart as HeartIcon } from "react-icons/fi";
 import Drawer from "../../elements/drawer";
 import CartAdded from "../../cart/cartAdded";
 import ProductQuantity from "../productQuantity";
