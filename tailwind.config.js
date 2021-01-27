@@ -40,10 +40,12 @@ module.exports = {
       300: "300px",
       310: "315px",
       350: "350px",
+      365: "365px",
       400: "472px",
       550: "584px",
       650: "640px",
       700: "692px",
+      830: "830px",
     },
     minHeight: {
       300: "320px",
@@ -59,6 +61,8 @@ module.exports = {
       default: "10px",
       xl: "20px",
       "2xl": "25px",
+      "3xl": "6.25rem",
+      full: "9999px",
     },
     colors: {
       white: "#fff",
@@ -66,6 +70,7 @@ module.exports = {
       light: "#eaeeee",
       dark: "#232F3E",
       grey: "#9fa5bd",
+      gray90: "#FAFCFF",
       primary: "#1E74DF",
       blue: "#385797",
       orange: "#DE4837",
@@ -139,6 +144,7 @@ module.exports = {
         21: "21px",
       },
       inset: {
+        4: "4rem",
         "-5": "-5rem",
         "-8": "-8px",
         "-30": "-30px",

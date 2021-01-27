@@ -9,7 +9,7 @@ const DashboardLayout = (props) => {
     <Base>
       <div className="flex h-full">
         <Sidebar />
-        <div>
+        <div className="w-full">
           <Navbar />
           {children}
         </div>
