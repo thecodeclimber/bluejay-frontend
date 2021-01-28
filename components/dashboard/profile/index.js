@@ -6,12 +6,12 @@ import PersonalData from "./personalData";
 
 const Profile = () => {
   return (
-    <div className="px-16 py-10 h-full bg-gray90 tracking-tight font-ubuntu">
-      <div className="flex items-center justify-between">
+    <div className="pt-8 px-12 bg-gray90 tracking-tight font-ubuntu">
+      <div className="flex">
         <MyBasket />
         <MyWishlist />
       </div>
-      <div className="flex items-center justify-between py-12">
+      <div className="flex pt-16 pb-40">
         <MyOrders />
         <PersonalData />
       </div>

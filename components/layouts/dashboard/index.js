@@ -7,7 +7,7 @@ const DashboardLayout = (props) => {
   const { children } = props;
   return (
     <Base>
-      <div className="flex h-full">
+      <div className="relative flex">
         <Sidebar />
         <div className="w-full">
           <Navbar />

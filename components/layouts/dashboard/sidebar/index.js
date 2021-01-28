@@ -41,7 +41,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="max-w-220 flex flex-col bg-dark h-full">
+    <div className="max-w-220 flex flex-col bg-dark">
       <div>
         <div className="flex px-4 py-5 items-center">
           <img src="/img/dashboard-logo.png" className="mr-4" />
@@ -52,7 +52,7 @@ const Sidebar = () => {
         <hr className="mb-5 opacity-07 bg-white h-px" />
       </div>
       {sidebarList && sidebarList.length > 0 && (
-        <div className="flex flex-col justify-between h-full">
+        <div className="flex flex-col justify-between">
           <div>
             {sidebarList.map((data, index) => {
               if (index === sidebarList.length - 1) return;
@@ -74,14 +74,16 @@ const Sidebar = () => {
               );
             })}
           </div>
-          <div className="flex items-center font-ubuntu px-4 py-5 font-medium text-white bg-dark hover:bg-error cursor-pointer text-sm tracking-tight">
-            <div className="ml-1 mr-4">
-              <img
-                src={sidebarList[sidebarList.length - 1].icon}
-                alt={`img-${sidebarList.length - 1}`}
-              />
+          <div className="fixed bottom-0">
+            <div className="flex items-center font-ubuntu pl-4 py-5 font-medium text-white bg-dark hover:bg-error cursor-pointer text-sm tracking-tight">
+              <div className="ml-1 mr-4">
+                <img
+                  src={sidebarList[sidebarList.length - 1].icon}
+                  alt={`img-${sidebarList.length - 1}`}
+                />
+              </div>
+              <div>{sidebarList[sidebarList.length - 1].name}</div>
             </div>
-            <div>{sidebarList[sidebarList.length - 1].name}</div>
           </div>
         </div>
       )}
