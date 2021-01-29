@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import classnames from "classnames";
-import { RiSubtractFill as SubtractIcon } from "react-icons/ri/index";
 import { HiOutlineArrowLeft as ArrowIcon } from "react-icons/hi";
-import { RiArrowDownSLine as ArrowDown } from "react-icons/ri";
+import {
+  RiArrowDownSLine as ArrowDown,
+  RiSubtractFill as SubtractIcon,
+} from "react-icons/ri";
 
 const boltSpecifications = {
   boltSpec: [

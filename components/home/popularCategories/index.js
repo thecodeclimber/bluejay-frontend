@@ -79,7 +79,7 @@ const PopularCategories = () => {
                 <div className="flex pt-1 items-center">
                   <div className="mr-6">
                     <img
-                      src={category.image_url}
+                      src={category.image_url || "/img/img-placeholder.png"}
                       alt={`img-${index}`}
                       width="60px"
                       className="h-60 object-cover"

@@ -12,7 +12,6 @@ import Price from "./price";
 
 const Specification = (props) => {
   const { productDetail, setProductDetail } = props;
-
   return (
     <div>
       <div className="container mx-auto flex">

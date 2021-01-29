@@ -1,9 +1,9 @@
 import React from "react";
 import { array, bool, func } from "prop-types";
-import { FiHeart as HearIcon } from "react-icons/fi";
 import ProductQuantity from "../../elements/productQuantity";
 import AddToCart from "../../elements/addToCart";
 import ProductLoader from "../../elements/productLoader";
+import WishlistIcon from "../../elements/wishlistIcon";
 
 const CategoryList = (props) => {
   const { products, isFetchingProducts, handleProducts, handleCart } = props;
@@ -52,7 +52,7 @@ const CategoryList = (props) => {
                         ${(product?.price && product.price.toFixed(2)) || 0}
                       </div>
                       <div className="mr-6">
-                        <HearIcon className="text-grey opacity-70 text-xl cursor-pointer" />
+                        <WishlistIcon product={product} />
                       </div>
                     </div>
                   </div>

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { MESSAGES } from "./constants";
+import { getUserData } from "./helper";
 
 /**
  * Cancel Token
@@ -38,17 +39,24 @@ export const getCommonHeaders = (url, additional_headers = {}) => {
       "Access-Control-Allow-Origin": "*",
       "Cache-Control": "no-cache",
       ...light_step_headers,
-      ...additional_headers,
-    };
-
-    const bigCommerce = {
-      "X-Auth-Client": process.env.NEXT_PUBLIC_CLIENT_ID,
-      "X-Auth-Token": process.env.NEXT_PUBLIC_ACCESS_TOKEN,
     };
 
     if (isBigCommerce) {
-      headers = { ...headers, ...bigCommerce };
+      headers = {
+        ...headers,
+        "X-Auth-Client": process.env.NEXT_PUBLIC_CLIENT_ID,
+        "X-Auth-Token": process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+        ...additional_headers,
+      };
+    } else {
+      const userData = getUserData();
+      if (userData?.token) {
+        headers = { ...headers, Authorization: `Bearer ${userData.token}` };
+      }
+      headers = { ...headers, ...additional_headers };
+      delete headers.isBigCommerce;
     }
+
     return headers;
   } catch (e) {
     return {};
@@ -179,6 +187,7 @@ export const httpGet = async (
     if (!isBigCommerce) ({ isBigCommerce } = HELPER_PARAMS);
     headers.traceName = traceName;
     headers.isBigCommerce = isBigCommerce;
+
     return axios
       .get(url, {
         headers: getCommonHeaders(url, headers),

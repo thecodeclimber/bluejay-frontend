@@ -4,6 +4,7 @@ import { USER_STRUCTURE } from "./constants";
  */
 const initialUserState = {
   user: USER_STRUCTURE,
+  wishlists: [],
 };
 
 export default initialUserState;

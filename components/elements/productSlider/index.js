@@ -2,12 +2,12 @@ import React, { useRef, useState } from "react";
 import { array, bool, func, number } from "prop-types";
 import Link from "next/link";
 import classnames from "classnames";
+import WishlistIcon from "../wishlistIcon/index";
 import Slider from "react-slick";
 import {
   IoIosArrowForward as SlideRightArrow,
   IoIosArrowBack as SlideLeftArrow,
 } from "react-icons/io";
-import { FiHeart as HeartIcon } from "react-icons/fi";
 import Drawer from "../../elements/drawer";
 import CartAdded from "../../cart/cartAdded";
 import ProductQuantity from "../productQuantity";
@@ -121,7 +121,9 @@ const ProductSlider = (props) => {
                                 <div className="bg-green text-xs flex items-center font-normal text-white rounded-2xl h-full px-3 h-5">
                                   New
                                 </div>
-                                <HeartIcon className="text-grey opacity-70 text-xl cursor-pointer" />
+                                <div>
+                                  <WishlistIcon product={product} />
+                                </div>
                               </div>
                               <img
                                 className="m-auto mb-5"

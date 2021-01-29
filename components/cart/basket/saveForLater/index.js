@@ -2,7 +2,6 @@ import React, { useContext, useState } from "react";
 import Link from "next/link";
 import classnames from "classnames";
 import getSymbolFromCurrency from "currency-symbol-map";
-import { FiStar as StarIcon } from "react-icons/fi";
 import { Context } from "../../../../hooks/store";
 import { setSaveForLaterCart } from "../../../../hooks/cart/actions";
 import { AiOutlineDelete as DeleteIcon } from "react-icons/ai";
@@ -15,6 +14,7 @@ import {
 import URLS from "../../../../utils/urls";
 import ProductQuantity from "../../../elements/productQuantity";
 import AddToCart from "../../../elements/addToCart";
+import WishlistIcon from "../../../elements/wishlistIcon";
 
 let timer = "";
 
@@ -125,6 +125,7 @@ const saveForLater = () => {
             product_id,
             extended_sale_price,
           } = data || {};
+
           return (
             <div
               key={index}
@@ -168,12 +169,10 @@ const saveForLater = () => {
                     <div className="py-1">
                       <div className="border-r border-dark border-opacity-10 ml-5 h-full" />
                     </div>
-                    <div className="flex items-center ml-5">
-                      <span className="mr-4">
-                        <StarIcon className="text-base" />
-                      </span>
-                      <span className="text-sm">Add to Favorites</span>
-                    </div>
+                    <WishlistIcon
+                      product={{ id: product_id }}
+                      isSaveForLater={true}
+                    />
                   </div>
                   <div className="tracking-tight">
                     <span className="text-dark text-sm font-light mr-1">

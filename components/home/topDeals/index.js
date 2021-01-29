@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { httpGet } from "../../../utils/https";
 import URLS from "../../../utils/urls";
 import ProductSlider from "../../elements/productSlider";
@@ -47,7 +48,9 @@ const TopDeals = () => {
         </div>
         <div className="h-full absolute flex justify-between right-0 top-0 items-center">
           <div className="right-0 mr-4 text-normal text-primary text-lg cursor-pointer">
-            Show All ({totalTopDeals})
+            <Link href="/categories">
+              <a>Show All ({totalTopDeals})</a>
+            </Link>
           </div>
         </div>
       </div>
