@@ -40,12 +40,10 @@ module.exports = {
       300: "300px",
       310: "315px",
       350: "350px",
-      365: "365px",
       400: "472px",
       550: "584px",
       650: "640px",
       700: "692px",
-      830: "830px",
     },
     minHeight: {
       300: "320px",
@@ -126,6 +124,8 @@ module.exports = {
     extend: {
       backgroundImage: (theme) => ({
         "about-card": "url('/img/about-card.svg')",
+        "my-basket": "url('/img/dashboard-image-1.svg')",
+        "my-wishlist": "url('/img/dashboard-image-2.png')",
         "customer-review": "url('/img/customer-review.svg')",
         account: "url('/img/account-background.png')",
         "customer-card":

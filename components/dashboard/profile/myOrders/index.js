@@ -22,7 +22,7 @@ const MyOrders = () => {
   ];
 
   return (
-    <div className="max-w-830 flex flex-col w-full bg-white rounded-lg p-6 shadow-grey-8 tracking-tight mr-10">
+    <div className="w-8/12 flex flex-col bg-white rounded-lg p-6 shadow-grey-8 tracking-tight mr-10">
       <div className="flex items-center justify-between w-full pb-6">
         <div className="text-dark text-2xl font-light whitespace-pre">
           My

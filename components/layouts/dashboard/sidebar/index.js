@@ -1,17 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import classname from "classnames";
+import Link from "next/link";
 
 const Sidebar = () => {
+  const [activeList, setActiveList] = useState(0);
   const sidebarList = [
     {
       icon: "/img/user-icon.svg",
       name: "My Profile",
-      link: "",
+      link: "profile",
     },
     {
       icon: "/img/user-cart-icon.svg",
       name: "My Orders",
-      link: "",
+      link: "orders",
     },
     {
       icon: "/img/invoice-icon.svg",
@@ -40,8 +42,12 @@ const Sidebar = () => {
     },
   ];
 
+  const handleSidebarList = (index) => {
+    setActiveList(index);
+  };
+
   return (
-    <div className="max-w-220 flex flex-col bg-dark">
+    <div className="relative max-w-220 flex flex-col bg-dark">
       <div>
         <div className="flex px-4 py-5 items-center">
           <img src="/img/dashboard-logo.png" className="mr-4" />
@@ -57,36 +63,39 @@ const Sidebar = () => {
             {sidebarList.map((data, index) => {
               if (index === sidebarList.length - 1) return;
               return (
-                <div
-                  className={classname(
-                    "flex items-center font-ubuntu px-4 py-5 font-medium text-white bg-dark hover:bg-primary cursor-pointer text-sm tracking-tight",
-                    {
-                      "bg-primary": index === 0,
-                    }
-                  )}
-                  key={index}
-                >
-                  <div className="ml-1 mr-4">
-                    <img src={data.icon} alt={`img-${index}`} />
+                <Link href="/dashboard/[slug]" as={`/dashboard/${data.link}`}>
+                  <div
+                    className={classname(
+                      "flex items-center font-ubuntu px-4 py-5 font-medium text-white bg-dark hover:bg-primary cursor-pointer text-sm tracking-tight",
+                      {
+                        "bg-primary": index === activeList,
+                      }
+                    )}
+                    key={index}
+                    onClick={() => handleSidebarList(index)}
+                  >
+                    <div className="ml-1 mr-4">
+                      <img src={data.icon} alt={`img-${index}`} />
+                    </div>
+                    <div>{data.name}</div>
                   </div>
-                  <div>{data.name}</div>
-                </div>
+                </Link>
               );
             })}
           </div>
-          <div className="fixed bottom-0">
-            <div className="flex items-center font-ubuntu pl-4 py-5 font-medium text-white bg-dark hover:bg-error cursor-pointer text-sm tracking-tight">
-              <div className="ml-1 mr-4">
-                <img
-                  src={sidebarList[sidebarList.length - 1].icon}
-                  alt={`img-${sidebarList.length - 1}`}
-                />
-              </div>
-              <div>{sidebarList[sidebarList.length - 1].name}</div>
-            </div>
-          </div>
         </div>
       )}
+      <div className="absolute bottom-0 w-full">
+        <div className="flex items-center font-ubuntu pl-4 py-5 font-medium text-white bg-white bg-opacity-03 hover:bg-error cursor-pointer text-sm tracking-tight">
+          <div className="ml-1 mr-4">
+            <img
+              src={sidebarList[sidebarList.length - 1].icon}
+              alt={`img-${sidebarList.length - 1}`}
+            />
+          </div>
+          <div>{sidebarList[sidebarList.length - 1].name}</div>
+        </div>
+      </div>
     </div>
   );
 };

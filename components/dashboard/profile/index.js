@@ -6,8 +6,8 @@ import PersonalData from "./personalData";
 
 const Profile = () => {
   return (
-    <div className="pt-8 px-12 bg-gray90 tracking-tight font-ubuntu">
-      <div className="flex">
+    <div className="flex flex-col justify-center pt-8 px-12 bg-gray90 tracking-tight font-ubuntu">
+      <div className="flex justify-between w-full">
         <MyBasket />
         <MyWishlist />
       </div>

@@ -19,12 +19,12 @@ const Navbar = () => {
   ];
 
   return (
-    <div className="flex items-center justify-between py-6 px-12 w-full shadow-grey-8 tracking-tight">
+    <div className="flex items-center justify-between py-6 px-12 w-full tracking-tight ">
       <div className="flex items-center">
         <div className="text-3xl font-light text-dark mr-10">
           My <span className="font-medium">Profile</span>
         </div>
-        <button className="flex items-center text-base font-normal whitespace-pre py-4 px-6 text-dark border border-dark rounded-3xl border-opacity-10 focus:outline-none">
+        <button className="flex items-center text-base font-normal whitespace-pre py-3 px-5 text-dark border border-dark rounded-3xl border-opacity-10 focus:outline-none">
           Go to marketplace
           <RightArrow className="text-xl ml-4" />
         </button>
