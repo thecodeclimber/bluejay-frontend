@@ -10,6 +10,7 @@ import {
   formattingCartData,
   setCartLocalStorage,
   removeCartLocalStorage,
+  getProductUrl,
 } from "../../../../utils/helper";
 import URLS from "../../../../utils/urls";
 import ProductQuantity from "../../../elements/productQuantity";
@@ -118,7 +119,9 @@ const CartItems = () => {
             image_url,
             product_id,
             extended_sale_price,
+            url,
           } = data || {};
+          const productUrl = getProductUrl(url);
           return (
             <div
               key={index}
@@ -133,8 +136,8 @@ const CartItems = () => {
                     <div className="text-base tracking-tight">
                       <div className="font-normal leading-5 mb-2">
                         <Link
-                          href="/product/[id]"
-                          as={`/product/${product_id}`}
+                          href="/product/[slug]"
+                          as={`/product/${productUrl}`}
                         >
                           <a className="text-dark hover:text-primary">{name}</a>
                         </Link>

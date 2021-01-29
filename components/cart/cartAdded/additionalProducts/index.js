@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import Link from "next/link";
 import classnames from "classnames";
 import ContentLoader from "react-content-loader";
 import { httpGet } from "../../../../utils/https";
@@ -116,9 +117,16 @@ const AdditionalProducts = () => {
                   className="object-contain"
                 />
                 <div className="pl-5">
-                  <div className="font-normal text-xs text-dark leading-2 mb-1">
-                    {data.name}
-                  </div>
+                  <Link
+                    href="/product/[slug]"
+                    as={`/product${data?.custom_url?.url}`}
+                  >
+                    <a>
+                      <div className="font-normal text-xs text-dark leading-2 mb-1 hover:text-primary">
+                        {data.name}
+                      </div>
+                    </a>
+                  </Link>
                   <div className="font-medium text-sm text-dark">
                     ${data.price}
                   </div>

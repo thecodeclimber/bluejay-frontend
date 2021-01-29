@@ -588,7 +588,7 @@ const Categories = (props) => {
                       categoryProducts &&
                       categoryProducts.length > 0 &&
                       categoryProducts.map((row, index) => {
-                        const { id, name, primary_image } = row || {};
+                        const { name, primary_image, custom_url } = row || {};
                         return (
                           <Menu.Item
                             as="div"
@@ -604,7 +604,10 @@ const Categories = (props) => {
                               }
                             )}
                           >
-                            <Link href="/product/[id]" as={`/product/${id}`}>
+                            <Link
+                              href="/product/[slug]"
+                              as={`/product${custom_url?.url}`}
+                            >
                               <a>
                                 <div
                                   className={classnames(

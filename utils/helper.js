@@ -421,3 +421,16 @@ export const scrollTo = (className, toScroll = "") => {
 
   return true;
 };
+
+/**
+ * Get product url
+ *
+ * @param {String} urlString
+ *
+ * @return {String}
+ */
+export const getProductUrl = (urlString) => {
+  if (!urlString) return "";
+  const last = urlString.split("/");
+  return last[last.length - 2];
+};
