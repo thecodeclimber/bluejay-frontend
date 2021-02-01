@@ -135,7 +135,7 @@ const ProductSlider = (props) => {
                             <div className="font-medium text-center text-xl mb-3 whitespace-pre-line tracking-tight leading-7">
                               <Link
                                 href="/product/[slug]"
-                                as={`/product${product?.custom_url?.url}`}
+                                as={`/product${product?.custom_url?.url}${product?.id}`}
                               >
                                 <a className="text-dark hover:text-primary">
                                   {product.name}

@@ -1,6 +1,7 @@
 import React from "react";
 import classnames from "classnames";
 import { array, bool, func } from "prop-types";
+import Link from "next/link";
 import ProductQuantity from "../../elements/productQuantity";
 import AddToCart from "../../elements/addToCart";
 import ProductLoader from "../../elements/productLoader";
@@ -64,7 +65,14 @@ const CategoryGrid = (props) => {
                       />
                     </div>
                     <div className="font-medium text-center text-dark text-xl mb-3 whitespace-pre-line leading-7">
-                      {product.name}
+                      <Link
+                        href="/product/[slug]"
+                        as={`/product${product?.custom_url?.url}${product?.id}`}
+                      >
+                        <a className="text-dark hover:text-primary block">
+                          {product.name}
+                        </a>
+                      </Link>
                     </div>
                   </div>
                   <div>

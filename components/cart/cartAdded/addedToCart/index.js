@@ -91,7 +91,8 @@ const AddedToCart = (props) => {
     <div>
       {cartLength > 0 &&
         cartState.cart.cart_items.map((data, index) => {
-          const { id, name, image_url, extended_sale_price, url } = data || {};
+          const { id, name, image_url, extended_sale_price, url, product_id } =
+            data || {};
           const productUrl = getProductUrl(url);
           return (
             <div key={index}>
@@ -107,7 +108,7 @@ const AddedToCart = (props) => {
                     <div className="text-base mb-3 font-normal leading-5">
                       <Link
                         href="/product/[slug]"
-                        as={`/product/${productUrl}`}
+                        as={`/product/${productUrl}/${product_id}`}
                       >
                         <a
                           onClick={closeCartDrawer}

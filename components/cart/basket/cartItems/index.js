@@ -137,7 +137,7 @@ const CartItems = () => {
                       <div className="font-normal leading-5 mb-2">
                         <Link
                           href="/product/[slug]"
-                          as={`/product/${productUrl}`}
+                          as={`/product/${productUrl}/${product_id}`}
                         >
                           <a className="text-dark hover:text-primary">{name}</a>
                         </Link>

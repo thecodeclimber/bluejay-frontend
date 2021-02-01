@@ -143,7 +143,7 @@ const saveForLater = () => {
                       <div className="font-normal text-dark leading-5 mb-2">
                         <Link
                           href="/product/[slug]"
-                          as={`/product/${productUrl}`}
+                          as={`/product/${productUrl}/${product_id}`}
                         >
                           <a className="text-dark hover:text-primary">{name}</a>
                         </Link>

@@ -118,6 +118,7 @@ export default async (req, res) => {
         name: data.name,
         price: data.price,
         image: data.primary_image?.url_thumbnail,
+        slug: data.custom_url?.url,
       };
     });
     productsData.push(...productsList);

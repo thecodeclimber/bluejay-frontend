@@ -372,30 +372,33 @@ const FavoritesMenuItems = (subMenuList) => {
     >
       <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
       {wishListData.length === 0 && (
-        <div className="flex justify-center items-center pt-4 pb-6">
+        <div className="flex justify-center items-center py-4">
           Your wishlist is empty
         </div>
       )}
       <div className={classnames({ "pb-3": wishListData.length < 4 })}>
         {wishListData.length > 0 &&
           wishListData.map((subMenu, index) => {
-            const { image, name, price } = subMenu || {};
+            const { id, slug, image, name, price } = subMenu || {};
             return (
               <Fragment key={index}>
-                <Menu.Item
-                  as="div"
-                  className="flex justify-between items-center text-dark py-4 cursor-pointer hover:bg-opacity-05 hover:bg-primary focus:outline-none"
-                >
-                  <div className="pl-6 pr-4 flex items-center">
-                    <img
-                      src={image}
-                      width="30"
-                      height="30"
-                      className="object-contain"
-                    />
-                  </div>
-                  <div className="text-xs leading-4 w-48">{name}</div>
-                  <div className="text-sm font-medium pr-6 pl-10">${price}</div>
+                <Menu.Item as="div">
+                  <Link href="/product/[slug]" as={`/product${slug}${id}`}>
+                    <a className="flex justify-between items-center text-dark py-4 cursor-pointer hover:bg-opacity-05 hover:bg-primary hover:text-primary focus:outline-none">
+                      <div className="pl-6 pr-4 flex items-center">
+                        <img
+                          src={image}
+                          width="30"
+                          height="30"
+                          className="object-contain"
+                        />
+                      </div>
+                      <div className="text-xs leading-4 w-48">{name}</div>
+                      <div className="text-sm font-medium pr-6 pl-10">
+                        ${price}
+                      </div>
+                    </a>
+                  </Link>
                 </Menu.Item>
                 {index !== wishListData.length - 1 && (
                   <hr className="opacity-05 mx-6" />
