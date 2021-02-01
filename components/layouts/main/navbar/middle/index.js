@@ -51,6 +51,7 @@ const Search = (props) => {
   const [isSearching, setIsSearching] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [searchedHistory, setSearchedHistory] = useState([]);
+  const [inputValue, setInputValue] = useState({});
   const [isFetchingRelatedProducts, setisFetchingRelatedProducts] = useState(
     false
   );
@@ -109,7 +110,7 @@ const Search = (props) => {
         );
       }
       if (!isDataAlreadyExist) {
-        if (searchHistory && searchHistory.length > 7) {
+        if (searchHistory && searchHistory.length > 3) {
           searchHistory.unshift(res.data[0]);
           searchHistory.pop();
         } else {
@@ -165,10 +166,15 @@ const Search = (props) => {
   const handleMainSearch = (e, type) => {
     handleActiveSearchType(type);
     handleSearch(e);
+    setInputValue(e.target.value);
   };
 
   const handleSearchedCategory = (category) => {
     setSearchCategory({ id: category.id, name: category.name });
+  };
+
+  const handleSearchInputValue = (value) => {
+    setInputValue(value);
   };
 
   return (
@@ -215,12 +221,13 @@ const Search = (props) => {
           }
         )}
         placeholder="Search..."
+        value={inputValue.name}
         onClick={() => handleActiveSearchType(SearchType.history)}
         onKeyPress={(e) => goToCategory(e)}
         onChange={(e) => handleMainSearch(e, SearchType.result)}
         autoComplete="off"
       />
-      <Link href={`/categories/${search}`}>
+      <Link href="/product/[id]" as={`/product/${inputValue.id}`}>
         <div className="absolute inset-y-0 right-0 flex items-center px-4 border-l border-solid cursor-pointer border-dark border-opacity-05">
           <SearchIcon className="text-xl text-primary" />
         </div>
@@ -231,6 +238,7 @@ const Search = (props) => {
           className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b z-30"
         >
           <SearchHistory
+            handleSearchInputValue={handleSearchInputValue}
             searchedHistory={searchedHistory}
             deleteSearchedHistory={deleteSearchedHistory}
             removeHistoryLocalStorage={removeHistoryLocalStorage}
@@ -243,6 +251,7 @@ const Search = (props) => {
           className="absolute w-full mt-11 bg-white shadow-grey-8 rounded-b z-30"
         >
           <SearchResult
+            handleSearchInputValue={handleSearchInputValue}
             relatedProducts={relatedProducts}
             searchResult={searchResult}
             search={search}
@@ -279,9 +288,13 @@ const SearchCategory = (props) => {
         <div className="max-h-350 overflow-y-auto">
           {categories.length > 0 &&
             categories.map((category, index) => {
-              const { name, id, custom_url } = category || {};
+              const { name, custom_url } = category || {};
               return (
-                <Menu.Item as="div" key={index}>
+                <Menu.Item
+                  as="div"
+                  key={index}
+                  onClick={(e) => handleSearchedCategory(category)}
+                >
                   <Link
                     href="/categories/[slug]"
                     as={`/categories${custom_url?.url}`}
@@ -300,11 +313,26 @@ const SearchCategory = (props) => {
 };
 
 const SearchHistory = (props) => {
-  const { deleteSearchedHistory, searchedHistory, removeHistoryLocalStorage } =
-    props || {};
-  const searchHistory = getSearchHistoryLocalStorage() || [];
+  const {
+    deleteSearchedHistory,
+    searchedHistory,
+    handleSearchInputValue,
+    removeHistoryLocalStorage,
+  } = props || {};
+  const [historyData, setHistoryData] = useState([]);
+  const [searchedResult, SetSearchedResult] = useState([]);
 
-  useEffect(() => {}, [searchedHistory]);
+  useEffect(() => {
+    const searchHistory = getSearchHistoryLocalStorage() || [];
+    setHistoryData(searchHistory);
+  }, [searchedHistory]);
+
+  const handleHistorySearch = (e) => {
+    const searchedItem = historyData.filter((data) =>
+      data.name.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    SetSearchedResult(searchedItem);
+  };
 
   return (
     <Transition
@@ -324,6 +352,7 @@ const SearchHistory = (props) => {
             {}
           )}
           placeholder="Search History"
+          onChange={handleHistorySearch}
         />
         <div
           className="text-primary cursor-pointer truncate w-200 text-right"
@@ -336,14 +365,49 @@ const SearchHistory = (props) => {
         className="font-ubuntu outline-none py-3 text-dark relative min-w-200"
         static
       >
-        {searchHistory.length > 0 &&
-          searchHistory.map((history, index) => {
+        {" "}
+        {searchedResult.length > 0 &&
+          searchedResult.map((result, index) => {
+            const { id, name, image } = result || {};
+            return (
+              <Menu.Item
+                as="div"
+                key={index}
+                className="text-base flex items-center justify-between px-4 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
+              >
+                <Link href="/product/[id]" as={`/product/${id}`}>
+                  <div className="flex">
+                    <div className="pr-3">
+                      <img
+                        src={image || `/img/img-placeholder.png`}
+                        className="w-6 object-contain"
+                        alt={`product-img-${index}`}
+                      />
+                    </div>
+                    <div className="text-sm flex items-center text-dark">
+                      {name}
+                    </div>
+                  </div>
+                </Link>
+                <div>
+                  <CloseIcon
+                    className="text-lg text-dark"
+                    onClick={() => deleteSearchedHistory(id)}
+                  />
+                </div>
+              </Menu.Item>
+            );
+          })}
+        {!searchedResult.length > 0 &&
+          historyData.length > 0 &&
+          historyData.map((history, index) => {
             const { id, name, image } = history || {};
             return (
               <Menu.Item
                 as="div"
                 key={index}
                 className="text-base flex items-center justify-between px-4 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
+                onClick={(e) => handleSearchInputValue(history)}
               >
                 <Link href="/product/[id]" as={`/product/${id}`}>
                   <div className="flex">
@@ -378,12 +442,21 @@ const SearchResult = (props) => {
   const {
     isSearching,
     searchResult,
+    handleSearchInputValue,
     isFetchingRelatedProducts,
     search,
     handleSearch,
     relatedProducts,
     handleRelatedProducts,
   } = props || {};
+
+  const escapeRegExp = (stringToGoIntoTheRegex) => {
+    return stringToGoIntoTheRegex.replace(
+      /[-\/\\^\s+|\s+$$*+?.()|[\]{}]/g,
+      "\\$&"
+    );
+  };
+
   return (
     <Transition
       show={true}
@@ -419,7 +492,8 @@ const SearchResult = (props) => {
             >
               {searchResult.length > 0 &&
                 searchResult.map((result, index) => {
-                  const regexp = new RegExp(search, "gi");
+                  var stringToGoIntoTheRegex = escapeRegExp(search);
+                  const regexp = new RegExp(stringToGoIntoTheRegex, "gi");
                   return (
                     <Menu.Item
                       as="div"
@@ -435,11 +509,12 @@ const SearchResult = (props) => {
                           dangerouslySetInnerHTML={{
                             __html: result.name.replace(
                               result.name.match(regexp),
-                              `<span style="color:#1E74DF">${result.name.match(
+                              ` <span style="color:#1E74DF">${result.name.match(
                                 regexp
-                              )}</span>`
+                              )}</span> `
                             ),
                           }}
+                          onClick={(e) => handleSearchInputValue(result)}
                         />
                       </Link>
                     </Menu.Item>
