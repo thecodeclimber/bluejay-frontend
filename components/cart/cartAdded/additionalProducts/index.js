@@ -1,8 +1,24 @@
 import React, { useState, useEffect, useContext } from "react";
 import classnames from "classnames";
+import ContentLoader from "react-content-loader";
 import { httpGet } from "../../../../utils/https";
 import { Context } from "../../../../hooks/store";
 import URLS from "../../../../utils/urls";
+
+const additionalProductsLoader = () => (
+  <ContentLoader
+    speed={2}
+    width={"100%"}
+    height={60}
+    viewBox="0 0 287 80"
+    backgroundColor="#f3f3f3"
+    foregroundColor="#ecebeb"
+  >
+    <rect x="23" y="20" rx="3" ry="3" width="65" height="65" />
+    <rect x="110" y="20" rx="3" ry="3" width="150" height="20" />
+    <rect x="110" y="60" rx="3" ry="3" width="80" height="20" />
+  </ContentLoader>
+);
 
 const AdditionalProducts = () => {
   const [isFetching, setIsFetching] = useState(false);
@@ -54,11 +70,27 @@ const AdditionalProducts = () => {
         <span className="font-medium">Additional Products</span>
       </div>
       <div className="flex flex-wrap px-5">
-        {isFetching && (
-          <div className="text-dark w-full text-center pb-8 min-w-500">
-            Loading...
-          </div>
-        )}
+        {isFetching &&
+          Array(12)
+            .fill()
+            .map((d, index) => (
+              <div key={index} className="w-1/3 mb-6">
+                <div
+                  className={classnames(
+                    "flex w-full",
+                    {
+                      "border-l border-dark border-opacity-05 pl-4 pr-2":
+                        index % 3 !== 0,
+                    },
+                    {
+                      "pr-4": index % 3 === 0,
+                    }
+                  )}
+                >
+                  {additionalProductsLoader()}
+                </div>
+              </div>
+            ))}
         {!isFetching &&
           additionalProducts.length > 0 &&
           additionalProducts.map((data, index) => (
@@ -77,7 +109,7 @@ const AdditionalProducts = () => {
               >
                 <img
                   src={
-                    data.primary_image?.url_tiny || "img/img-placeholder.png"
+                    data.primary_image?.url_tiny || "/img/img-placeholder.png"
                   }
                   alt={`img-${index}`}
                   width="40px"

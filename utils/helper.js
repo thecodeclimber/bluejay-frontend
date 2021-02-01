@@ -402,3 +402,32 @@ export const getCartData = (isSaveForLater = false) => {
   }
   return cartData;
 };
+
+/**
+ * Scroll to Specific element by class name
+ *
+ * @param {String} className [Class name with dot(.) prefix]
+ *
+ * @return {Boolean}
+ */
+export const scrollTo = (className, toScroll = "") => {
+  const el = document.querySelector(className);
+  if (!el) return false;
+
+  let toScrollEl = "";
+  if (toScroll) toScrollEl = document.querySelector(toScroll);
+
+  const options = {
+    behavior: "smooth",
+    block: "start",
+    inline: "center",
+  };
+
+  if (toScrollEl) {
+    toScrollEl.scrollIntoView(options);
+  } else {
+    el.parentElement.scrollIntoView(options);
+  }
+
+  return true;
+};

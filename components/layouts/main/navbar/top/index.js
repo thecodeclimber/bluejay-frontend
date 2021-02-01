@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useContext } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import classnames from "classnames";
 import { Menu, Transition } from "@headlessui/react";
 import {
   MdAccountCircle as UserIcon,
@@ -105,7 +106,7 @@ const TopNavbar = () => {
           link: "/cart",
         },
         {
-          name: "My Wish List (0)",
+          name: `My Wish List (${userState.wishlists?.length})`,
           isExpanded: true,
         },
         {
@@ -119,29 +120,9 @@ const TopNavbar = () => {
     {
       title: RightMenuTitles.Favorites,
       icon: FavoriteIcon,
-      subMenuList: [
-        {
-          img: "/img/screw.png",
-          title: "Alloy Steel Ultra-Low-Profile Socket Head Screws",
-          price: "5.64",
-        },
-        {
-          img: "/img/screw.png",
-          title: "Alloy Steel Ultra-Low-Profile Socket Head Screws",
-          price: "5.64",
-        },
-        {
-          img: "/img/screw.png",
-          title: "Alloy Steel Ultra-Low-Profile Socket Head Screws",
-          price: "5.64",
-        },
-        {
-          img: "/img/screw.png",
-          title: "Alloy Steel Ultra-Low-Profile Socket Head Screws",
-          price: "5.64",
-        },
-      ],
+      subMenuList: userState.wishlists,
       show: Boolean(userState.user?.id),
+      fromApi: true,
     },
     {
       title: RightMenuTitles.Orders,
@@ -177,6 +158,7 @@ const TopNavbar = () => {
         },
       ],
       show: Boolean(userState.user?.id),
+      fromApi: false,
     },
     {
       title: RightMenuTitles.SignUp,
@@ -184,6 +166,7 @@ const TopNavbar = () => {
       subMenuList: [],
       show: !Boolean(userState.user?.id),
       onClick: () => dispatchModal(setModal(MODAL_TYPES.REGISTRATION)),
+      fromApi: false,
     },
     {
       title: RightMenuTitles.Login,
@@ -191,6 +174,7 @@ const TopNavbar = () => {
       subMenuList: [],
       show: !Boolean(userState.user?.id),
       onClick: () => dispatchModal(setModal(MODAL_TYPES.LOGIN)),
+      fromApi: false,
     },
     {
       title: RightMenuTitles.Cart,
@@ -202,6 +186,7 @@ const TopNavbar = () => {
         subTitle: "Keep Shopping",
       },
       show: true,
+      fromApi: false,
       onClick: () => openCartDrawer(),
     },
   ];
@@ -276,7 +261,8 @@ const TopNavbar = () => {
         </div>
         <div className="relative flex items-center">
           {data.menuRight.map((menu, index) => {
-            const { subMenuList, show, detail, onClick } = menu || {};
+            const { subMenuList, show, fromApi, detail, onClick } = menu || {};
+
             const isSubMenuList = subMenuList && subMenuList.length > 0;
             const isDetail = detail && Object.keys(detail).length > 0;
             return (
@@ -301,32 +287,33 @@ const TopNavbar = () => {
                       ) : (
                         menu.title
                       )}
-                      {(isSubMenuList || isDetail) && (
+                      {(isSubMenuList || isDetail || fromApi) && (
                         <ArrowIcon className={classes.arrow} />
                       )}
                     </Menu.Button>
                   )}
-                  {activeMenu === menu.title && (isSubMenuList || isDetail) && (
-                    <Transition
-                      show={activeMenu === menu.title}
-                      enter="transition duration-100 ease-out"
-                      enterFrom="transform scale-95 opacity-0"
-                      enterTo="transform scale-100 opacity-100"
-                      leave="transition duration-75 ease-out"
-                      leaveFrom="transform scale-100 opacity-100"
-                      leaveTo="transform scale-95 opacity-0"
-                      className="absolute z-40 right-0"
-                    >
-                      {menu.title === RightMenuTitles.Favorites &&
-                        FavoritesMenuItems(subMenuList)}
-                      {menu.title === RightMenuTitles.Account &&
-                        AccountMenuItems(subMenuList)}
-                      {menu.title === RightMenuTitles.Orders &&
-                        OrdersMenuItems(subMenuList)}
-                      {menu.title === RightMenuTitles.Cart &&
-                        CartMenuItems(detail, setActiveMenuName)}
-                    </Transition>
-                  )}
+                  {activeMenu === menu.title &&
+                    (isSubMenuList || isDetail || fromApi) && (
+                      <Transition
+                        show={activeMenu === menu.title}
+                        enter="transition duration-100 ease-out"
+                        enterFrom="transform scale-95 opacity-0"
+                        enterTo="transform scale-100 opacity-100"
+                        leave="transition duration-75 ease-out"
+                        leaveFrom="transform scale-100 opacity-100"
+                        leaveTo="transform scale-95 opacity-0"
+                        className="absolute z-40 right-0"
+                      >
+                        {menu.title === RightMenuTitles.Favorites &&
+                          FavoritesMenuItems(subMenuList)}
+                        {menu.title === RightMenuTitles.Account &&
+                          AccountMenuItems(subMenuList)}
+                        {menu.title === RightMenuTitles.Orders &&
+                          OrdersMenuItems(subMenuList)}
+                        {menu.title === RightMenuTitles.Cart &&
+                          CartMenuItems(detail, setActiveMenuName)}
+                      </Transition>
+                    )}
                 </Fragment>
               </Menu>
             );
@@ -376,45 +363,58 @@ const ContactUsDetail = (detail) => (
   </Menu.Items>
 );
 
-const FavoritesMenuItems = (subMenuList) => (
-  <Menu.Items
-    className="font-ubuntu bg-white outline-none pt-3 mt-3 -right-8 text-dark rounded relative min-w-300 shadow-grey-8"
-    static
-  >
-    <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
-    {subMenuList.map((subMenu, index) => {
-      const { img, title, price } = subMenu || {};
-      return (
-        <Fragment key={index}>
-          <Menu.Item
-            as="div"
-            className="flex justify-between items-center text-dark py-4 cursor-pointer hover:bg-opacity-05 hover:bg-primary focus:outline-none"
-          >
-            <div className="pl-6 pr-4 flex items-center">
-              <Image
-                src={img}
-                width="30"
-                height="30"
-                className="object-contain"
-              />
-            </div>
-            <div className="text-xs leading-4 w-48">{title}</div>
-            <div className="text-sm font-medium pr-6 pl-10">${price}</div>
-          </Menu.Item>
-          {index !== subMenuList.length - 1 && (
-            <hr className="opacity-05 mx-6" />
-          )}
-        </Fragment>
-      );
-    })}
-    <Menu.Item
-      as="div"
-      className="text-primary text-sm text-center w-full py-4 bg-primary bg-opacity-05 rounded-b  focus:outline-none cursor-pointer"
+const FavoritesMenuItems = (subMenuList) => {
+  const wishListData = [...subMenuList].slice(0, 4);
+  return (
+    <Menu.Items
+      className="font-ubuntu bg-white outline-none pt-3 mt-3 -right-8 text-dark rounded relative min-w-300 shadow-grey-8"
+      static
     >
-      Show all results
-    </Menu.Item>
-  </Menu.Items>
-);
+      <span className="w-5 h-5 -mt-2 mr-5 rounded-sm bg-white absolute -z-1 right-0 top-0 transform rotate-45" />
+      {wishListData.length === 0 && (
+        <div className="flex justify-center items-center pt-4 pb-6">
+          Your wishlist is empty
+        </div>
+      )}
+      <div className={classnames({ "pb-3": wishListData.length < 4 })}>
+        {wishListData.length > 0 &&
+          wishListData.map((subMenu, index) => {
+            const { image, name, price } = subMenu || {};
+            return (
+              <Fragment key={index}>
+                <Menu.Item
+                  as="div"
+                  className="flex justify-between items-center text-dark py-4 cursor-pointer hover:bg-opacity-05 hover:bg-primary focus:outline-none"
+                >
+                  <div className="pl-6 pr-4 flex items-center">
+                    <img
+                      src={image}
+                      width="30"
+                      height="30"
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="text-xs leading-4 w-48">{name}</div>
+                  <div className="text-sm font-medium pr-6 pl-10">${price}</div>
+                </Menu.Item>
+                {index !== wishListData.length - 1 && (
+                  <hr className="opacity-05 mx-6" />
+                )}
+              </Fragment>
+            );
+          })}
+      </div>
+      {wishListData.length >= 4 && (
+        <Menu.Item
+          as="div"
+          className="text-primary text-sm text-center w-full py-4 bg-primary bg-opacity-05 rounded-b  focus:outline-none cursor-pointer"
+        >
+          Show all results
+        </Menu.Item>
+      )}
+    </Menu.Items>
+  );
+};
 
 const AccountMenuItems = (subMenuList) => {
   return (

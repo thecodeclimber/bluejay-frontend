@@ -35,6 +35,7 @@ const URLS = {
     },
     WISHLIST: {
       WISHLISTS: `${BIG_COMMERCE_BASE_URL}/wishlists`,
+      ITEM: `${BIG_COMMERCE_BASE_URL}/wishlists/{WISHLIST_ID}/items`,
     },
     CART: {
       CART: `${BIG_COMMERCE_BASE_URL}/carts`,
@@ -54,6 +55,7 @@ const URLS = {
       CATEGORIES: `${NEXT_BASE_URL}/categories`,
       POPULAR: `${NEXT_BASE_URL}/categories/popular`,
       PRODUCTS: `${NEXT_BASE_URL}/categories/products`,
+      SEARCH: `${NEXT_BASE_URL}/categories/search`,
     },
     PRODUCT: {
       PRODUCTS: `${NEXT_BASE_URL}/products`,
@@ -64,6 +66,12 @@ const URLS = {
       PURCHASED: `${NEXT_BASE_URL}/products/purchased`,
       ADDITIONAL: `${NEXT_BASE_URL}/products/additional`,
       RELATED: `${NEXT_BASE_URL}/products/related-products`,
+    },
+    WISHLIST: {
+      WISHLISTS: `${NEXT_BASE_URL}/wishlists`,
+      CUSTOMER: `${NEXT_BASE_URL}/wishlists/customer`,
+      ADD: `${NEXT_BASE_URL}/wishlists/customer/add`,
+      DELETE: `${NEXT_BASE_URL}/wishlists/customer/delete`,
     },
     BRAND: {
       BRANDS: `${NEXT_BASE_URL}/brands`,
