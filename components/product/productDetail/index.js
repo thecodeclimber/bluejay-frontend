@@ -14,7 +14,7 @@ const ProductDetail = (props) => {
   const [isFetchingProductDetail, setIsFetchingProductDetail] = useState(false);
 
   useEffect(() => {
-    fetchProductDetail();
+    if (query.id) fetchProductDetail();
   }, [query.id]);
 
   const fetchProductDetail = () => {

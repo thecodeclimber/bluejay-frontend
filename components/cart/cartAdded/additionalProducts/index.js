@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
+import { func } from "prop-types";
+import Link from "next/link";
 import classnames from "classnames";
 import ContentLoader from "react-content-loader";
 import { httpGet } from "../../../../utils/https";
@@ -20,7 +22,8 @@ const additionalProductsLoader = () => (
   </ContentLoader>
 );
 
-const AdditionalProducts = () => {
+const AdditionalProducts = (props) => {
+  const { closeCartDrawer } = props;
   const [isFetching, setIsFetching] = useState(false);
   const { cartState } = useContext(Context);
   const [additionalProducts, setAdditionalProducts] = useState([]);
@@ -116,9 +119,16 @@ const AdditionalProducts = () => {
                   className="object-contain"
                 />
                 <div className="pl-5">
-                  <div className="font-normal text-xs text-dark leading-2 mb-1">
-                    {data.name}
-                  </div>
+                  <Link
+                    href="/product/[slug]"
+                    as={`/product${data?.custom_url?.url}${data?.id}`}
+                  >
+                    <a onClick={closeCartDrawer}>
+                      <div className="font-normal text-xs text-dark leading-2 mb-1 hover:text-primary">
+                        {data.name}
+                      </div>
+                    </a>
+                  </Link>
                   <div className="font-medium text-sm text-dark">
                     ${data.price}
                   </div>
@@ -129,6 +139,14 @@ const AdditionalProducts = () => {
       </div>
     </div>
   );
+};
+
+AdditionalProducts.defaultProps = {
+  closeCartDrawer: () => {},
+};
+
+AdditionalProducts.propTypes = {
+  closeCartDrawer: func,
 };
 
 export default AdditionalProducts;
