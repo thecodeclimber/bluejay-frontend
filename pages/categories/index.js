@@ -13,6 +13,6 @@ export default function ProductCategoriesPage(query) {
   );
 }
 
-ProductCategoriesPage.getInitialProps = async ({ query, patname }) => {
-  return { ...query, ...patname };
+ProductCategoriesPage.getInitialProps = async ({ query, pathname }) => {
+  return { ...query, ...pathname };
 };

@@ -11,6 +11,7 @@ import {
   setCartLocalStorage,
   formattingCartData,
   removeCartLocalStorage,
+  getProductUrl,
 } from "../../../../utils/helper";
 import URLS from "../../../../utils/urls";
 import ProductQuantity from "../../../elements/productQuantity";
@@ -90,8 +91,9 @@ const AddedToCart = (props) => {
     <div>
       {cartLength > 0 &&
         cartState.cart.cart_items.map((data, index) => {
-          const { id, name, image_url, product_id, extended_sale_price } =
+          const { id, name, image_url, extended_sale_price, url, product_id } =
             data || {};
+          const productUrl = getProductUrl(url);
           return (
             <div key={index}>
               <div className="text-dark flex px-5 mt-5 mb-4 group">
@@ -104,7 +106,10 @@ const AddedToCart = (props) => {
                 <div className="flex justify-between items-center w-full">
                   <div>
                     <div className="text-base mb-3 font-normal leading-5">
-                      <Link href="/product/[id]" as={`/product/${product_id}`}>
+                      <Link
+                        href="/product/[slug]"
+                        as={`/product/${productUrl}/${product_id}`}
+                      >
                         <a
                           onClick={closeCartDrawer}
                           className="text-dark hover:text-primary"
