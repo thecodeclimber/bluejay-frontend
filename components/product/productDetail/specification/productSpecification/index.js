@@ -1,31 +1,37 @@
 import React, { useContext } from "react";
 import { shape } from "prop-types";
-import {
-  BsFillBookmarkFill as BookmarkFillIcon,
-  BsBookmark as BookmarkUnFillIcon,
-} from "react-icons/bs";
 import { Context } from "../../../../../hooks/store";
 import WishlistIcon from "../../../../elements/wishlistIcon";
+import { httpDelete } from "../../../../../utils/https";
+import URLS from "../../../../../utils/urls";
+import AddToCart from "../../../../elements/AddToCart";
 
 const ProductSpecification = (props) => {
   const { productDetail } = props;
-  const { cartState, dispatchCart } = useContext(Context);
+  const { cartState } = useContext(Context);
   const saveForLaterCartLength =
     (cartState.saveForLaterCart?.cart_items &&
       cartState.saveForLaterCart.cart_items.length) ||
     0;
 
-  const getIsSaveForLater = () => {
-    return (
-      (saveForLaterCartLength > 0 &&
-        cartState.saveForLaterCart.cart_items.some(
-          (item) => item.product_id === productDetail.id
-        )) ||
-      false
+  const getSaveForLater = () => {
+    if (saveForLaterCartLength === 0) return {};
+    const cartData = cartState.saveForLaterCart.cart_items.find(
+      (item) => item.product_id === productDetail.id
+    );
+    return cartData || {};
+  };
+
+  const deleteSaveForLater = () => {
+    httpDelete(URLS.NEXT.CART.ADD, {
+      traceName: "delete_save_for_later_cart",
+    }).then(
+      (res) => {},
+      (err) => {}
     );
   };
 
-  const isSaveForLater = getIsSaveForLater();
+  const cartData = getSaveForLater();
 
   return (
     <div className="container mx-auto  font-ubuntu ">
@@ -34,11 +40,11 @@ const ProductSpecification = (props) => {
           {productDetail?.name}
         </div>
         <div className="flex justify-between items-center">
-          {isSaveForLater ? (
-            <BookmarkFillIcon className="text-xl text-primary mr-10" />
-          ) : (
-            <BookmarkUnFillIcon className="text-xl text-grey opacity-70 mr-10" />
-          )}
+          <AddToCart
+            isFromProductDetailPage={true}
+            isDeleteSaveForLater={Boolean(cartData?.id)}
+            product={productDetail}
+          />
           <WishlistIcon product={productDetail} />
         </div>
       </div>
