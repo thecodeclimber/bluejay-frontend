@@ -63,10 +63,12 @@ const Search = (props) => {
     setActiveSearchType(type);
   };
 
-  const goToCategory = (e) => {
-    if (e.key === "Enter") {
+  const goToCategory = (e, isFromButtonClick = false) => {
+    if (e.key === "Enter" || isFromButtonClick) {
       router.push({
-        pathname: "/about",
+        pathname: `/categories${
+          searchCategory.name === "All" ? "" : `${searchCategory.url}`
+        }`,
         query: { q: search },
       });
     }
@@ -167,10 +169,17 @@ const Search = (props) => {
     handleActiveSearchType(type);
     handleSearch(e);
     setInputValue(e.target.value);
+    if (!e.target.value) {
+      handleActiveSearchType(SearchType.history);
+    }
   };
 
   const handleSearchedCategory = (category) => {
-    setSearchCategory({ id: category.id, name: category.name });
+    setSearchCategory({
+      id: category.id,
+      name: category.name,
+      url: category?.custom_url?.url,
+    });
   };
 
   const handleSearchInputValue = (value) => {
@@ -227,11 +236,13 @@ const Search = (props) => {
         onChange={(e) => handleMainSearch(e, SearchType.result)}
         autoComplete="off"
       />
-      <Link href="/product/[id]" as={`/product/${inputValue.id}`}>
-        <div className="absolute inset-y-0 right-0 flex items-center px-4 border-l border-solid cursor-pointer border-dark border-opacity-05">
-          <SearchIcon className="text-xl text-primary" />
-        </div>
-      </Link>
+
+      <div
+        className="absolute inset-y-0 right-0 flex items-center px-4 border-l border-solid cursor-pointer border-dark border-opacity-05"
+        onClick={(e) => goToCategory(e, true)}
+      >
+        <SearchIcon className="text-xl text-primary" />
+      </div>
       {activeSearchType === SearchType.history && (
         <Menu
           as="div"
@@ -288,21 +299,15 @@ const SearchCategory = (props) => {
         <div className="max-h-350 overflow-y-auto">
           {categories.length > 0 &&
             categories.map((category, index) => {
-              const { name, custom_url } = category || {};
+              const { name } = category || {};
               return (
                 <Menu.Item
                   as="div"
                   key={index}
+                  className="text-base flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
                   onClick={(e) => handleSearchedCategory(category)}
                 >
-                  <Link
-                    href="/categories/[slug]"
-                    as={`/categories${custom_url?.url}`}
-                  >
-                    <a className="text-base flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none">
-                      {name}
-                    </a>
-                  </Link>
+                  {name}
                 </Menu.Item>
               );
             })}
@@ -334,6 +339,10 @@ const SearchHistory = (props) => {
     SetSearchedResult(searchedItem);
   };
 
+  const clearHistory = () => {
+    setHistoryData([]);
+  };
+
   return (
     <Transition
       show={true}
@@ -356,7 +365,10 @@ const SearchHistory = (props) => {
         />
         <div
           className="text-primary cursor-pointer truncate w-200 text-right"
-          onClick={removeHistoryLocalStorage}
+          onClick={() => {
+            removeHistoryLocalStorage();
+            clearHistory();
+          }}
         >
           Clear search history
         </div>
@@ -375,7 +387,10 @@ const SearchHistory = (props) => {
                 key={index}
                 className="text-base flex items-center justify-between px-4 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
               >
-                <Link href="/product/[id]" as={`/product/${id}`}>
+                <Link
+                  href="/product/[slug]"
+                  as={`/product${result?.custom_url}${result?.id}`}
+                >
                   <div className="flex">
                     <div className="pr-3">
                       <img
@@ -409,7 +424,10 @@ const SearchHistory = (props) => {
                 className="text-base flex items-center justify-between px-4 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
                 onClick={(e) => handleSearchInputValue(history)}
               >
-                <Link href="/product/[id]" as={`/product/${id}`}>
+                <Link
+                  href="/product/[slug]"
+                  as={`/product${history?.custom_url}${history?.id}`}
+                >
                   <div className="flex">
                     <div className="pr-3">
                       <img
@@ -452,7 +470,7 @@ const SearchResult = (props) => {
 
   const escapeRegExp = (stringToGoIntoTheRegex) => {
     return stringToGoIntoTheRegex.replace(
-      /[-\/\\^\s+|\s+$$*+?.()|[\]{}]/g,
+      /[-_""''\/\\^\s+|\s+&$*+?.()|[\]{}]/g,
       "\\$&"
     );
   };
@@ -501,17 +519,18 @@ const SearchResult = (props) => {
                       className="text-base flex items-center justify-between pl-6 pr-4 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
                       onMouseOver={() => handleRelatedProducts(result)}
                     >
-                      <Link href="/product/[id]" as={`/product/${result.id}`}>
+                      <Link
+                        href="/product/[slug]"
+                        as={`/product${result?.custom_url}${result?.id}`}
+                      >
                         <div
-                          className={classnames(
-                            "text-sm flex items-center font-medium"
-                          )}
+                          className={classnames("text-sm font-medium")}
                           dangerouslySetInnerHTML={{
                             __html: result.name.replace(
                               result.name.match(regexp),
-                              ` <span style="color:#1E74DF">${result.name.match(
+                              `<span style="color:#1E74DF">${result.name.match(
                                 regexp
-                              )}</span> `
+                              )}</span>`
                             ),
                           }}
                           onClick={(e) => handleSearchInputValue(result)}
@@ -541,8 +560,8 @@ const SearchResult = (props) => {
                       key={index}
                     >
                       <Link
-                        href="/product/[id]"
-                        as={`/product/${relatedProduct.id}`}
+                        href="/product/[slug]"
+                        as={`/product${relatedProduct?.custom_url}${relatedProduct?.id}`}
                       >
                         <div className="flex py-3 cursor-pointer">
                           <div className="flex items-center">

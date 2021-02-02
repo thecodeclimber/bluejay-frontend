@@ -24,6 +24,7 @@ export default async (req, res) => {
         id: product.id,
         name: product.name,
         image: product?.primary_image?.url_tiny,
+        custom_url: product?.custom_url?.url,
         related_products: product?.related_products || [],
       };
     });
