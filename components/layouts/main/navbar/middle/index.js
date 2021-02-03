@@ -64,12 +64,13 @@ const Search = (props) => {
   };
 
   const goToCategory = (e, isFromButtonClick = false) => {
+    if (!search.trim()) return;
     if (e.key === "Enter" || isFromButtonClick) {
       router.push({
         pathname: `/categories${
           searchCategory.name === "All" ? "" : `${searchCategory.url}`
         }`,
-        query: { q: search },
+        query: { q: search.trim() },
       });
     }
   };
@@ -91,7 +92,6 @@ const Search = (props) => {
             setIsSearching(false);
           } else {
             setSearchResult(res.data || []);
-            handleSearchHistory(res);
           }
           setIsSearching(false);
         },
@@ -103,20 +103,20 @@ const Search = (props) => {
   };
 
   const handleSearchHistory = (res) => {
-    if (res && res.data && res.data.length > 0) {
+    if (res) {
       const searchHistory = getSearchHistoryLocalStorage() || [];
       let isDataAlreadyExist = false;
       if (searchHistory && searchHistory.length > 0) {
         isDataAlreadyExist = searchHistory.some(
-          (history) => history.id == res.data[0]?.id
+          (history) => history.id == res?.id
         );
       }
       if (!isDataAlreadyExist) {
         if (searchHistory && searchHistory.length > 3) {
-          searchHistory.unshift(res.data[0]);
+          searchHistory.unshift(res);
           searchHistory.pop();
         } else {
-          searchHistory.push(res.data[0]);
+          searchHistory.push(res);
         }
       }
       setSearchHistoryLocalStorage(searchHistory);
@@ -184,6 +184,7 @@ const Search = (props) => {
 
   const handleSearchInputValue = (value) => {
     setInputValue(value);
+    handleSearchHistory(value);
   };
 
   return (
@@ -230,7 +231,7 @@ const Search = (props) => {
           }
         )}
         placeholder="Search..."
-        value={inputValue.name}
+        value={inputValue.name || search}
         onClick={() => handleActiveSearchType(SearchType.history)}
         onKeyPress={(e) => goToCategory(e)}
         onChange={(e) => handleMainSearch(e, SearchType.result)}
@@ -305,7 +306,9 @@ const SearchCategory = (props) => {
                   as="div"
                   key={index}
                   className="text-base flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
-                  onClick={(e) => handleSearchedCategory(category)}
+                  onClick={
+                    ((e) => handleSearchedCategory(category), show(false))
+                  }
                 >
                   {name}
                 </Menu.Item>
@@ -391,7 +394,7 @@ const SearchHistory = (props) => {
                   href="/product/[slug]"
                   as={`/product${result?.custom_url}${result?.id}`}
                 >
-                  <div className="flex">
+                  <a className="flex">
                     <div className="pr-3">
                       <img
                         src={image || `/img/img-placeholder.png`}
@@ -402,7 +405,7 @@ const SearchHistory = (props) => {
                     <div className="text-sm flex items-center text-dark">
                       {name}
                     </div>
-                  </div>
+                  </a>
                 </Link>
                 <div>
                   <CloseIcon
@@ -422,26 +425,30 @@ const SearchHistory = (props) => {
                 as="div"
                 key={index}
                 className="text-base flex items-center justify-between px-4 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
-                onClick={(e) => handleSearchInputValue(history)}
               >
-                <Link
-                  href="/product/[slug]"
-                  as={`/product${history?.custom_url}${history?.id}`}
+                <div
+                  className="w-full"
+                  onClick={(e) => handleSearchInputValue(history)}
                 >
-                  <div className="flex">
-                    <div className="pr-3">
-                      <img
-                        key={index}
-                        src={image || `/img/img-placeholder.png`}
-                        className="w-6 object-contain"
-                        alt={`product-img-${index}`}
-                      />
-                    </div>
-                    <div className="text-sm flex items-center text-dark">
-                      {name}
-                    </div>
-                  </div>
-                </Link>
+                  <Link
+                    href="/product/[slug]"
+                    as={`/product${history?.custom_url}${history?.id}`}
+                  >
+                    <a className="flex">
+                      <div className="pr-3">
+                        <img
+                          key={index}
+                          src={image || `/img/img-placeholder.png`}
+                          className="w-6 object-contain"
+                          alt={`product-img-${index}`}
+                        />
+                      </div>
+                      <div className="text-sm flex items-center text-dark">
+                        {name}
+                      </div>
+                    </a>
+                  </Link>
+                </div>
                 <div>
                   <CloseIcon
                     className="text-lg text-dark"
@@ -468,10 +475,15 @@ const SearchResult = (props) => {
     handleRelatedProducts,
   } = props || {};
 
-  const escapeRegExp = (stringToGoIntoTheRegex) => {
-    return stringToGoIntoTheRegex.replace(
-      /[-_""''\/\\^\s+|\s+&$*+?.()|[\]{}]/g,
-      "\\$&"
+  const showResult = (result) => {
+    const regexp = new RegExp(
+      search.replace(/[\\^$*+?.()|[\]{}]/g, "\\$&"),
+      "gi"
+    );
+    const searchedWord = result.name.match(regexp);
+    return result.name.replaceAll(
+      searchedWord?.length > 0 ? searchedWord[0] : searchedWord,
+      (match) => `<span style="color:#1E74DF">${match}</span>`
     );
   };
 
@@ -510,8 +522,6 @@ const SearchResult = (props) => {
             >
               {searchResult.length > 0 &&
                 searchResult.map((result, index) => {
-                  var stringToGoIntoTheRegex = escapeRegExp(search);
-                  const regexp = new RegExp(stringToGoIntoTheRegex, "gi");
                   return (
                     <Menu.Item
                       as="div"
@@ -523,15 +533,10 @@ const SearchResult = (props) => {
                         href="/product/[slug]"
                         as={`/product${result?.custom_url}${result?.id}`}
                       >
-                        <div
+                        <a
                           className={classnames("text-sm font-medium")}
                           dangerouslySetInnerHTML={{
-                            __html: result.name.replace(
-                              result.name.match(regexp),
-                              `<span style="color:#1E74DF">${result.name.match(
-                                regexp
-                              )}</span>`
-                            ),
+                            __html: showResult(result),
                           }}
                           onClick={(e) => handleSearchInputValue(result)}
                         />
@@ -563,7 +568,7 @@ const SearchResult = (props) => {
                         href="/product/[slug]"
                         as={`/product${relatedProduct?.custom_url}${relatedProduct?.id}`}
                       >
-                        <div className="flex py-3 cursor-pointer">
+                        <a className="flex py-3 cursor-pointer">
                           <div className="flex items-center">
                             <img
                               src={
@@ -582,7 +587,7 @@ const SearchResult = (props) => {
                               ${relatedProduct.price}
                             </div>
                           </div>
-                        </div>
+                        </a>
                       </Link>
                       <hr className="opacity-05" />
                     </div>
@@ -810,37 +815,34 @@ const Categories = (props) => {
                               href="/product/[slug]"
                               as={`/product${custom_url?.url}${id}`}
                             >
-                              <a>
-                                <div
-                                  className={classnames(
-                                    "h-full flex items-center justify-center border-opacity-10 border-dark",
-                                    {
-                                      "border-b":
-                                        index <= 2 &&
-                                        categoryProducts.length > 3,
-                                      "border-r": index != 2 && index != 5,
-                                    }
+                              <div
+                                className={classnames(
+                                  "h-full flex items-center justify-center border-opacity-10 border-dark",
+                                  {
+                                    "border-b":
+                                      index <= 2 && categoryProducts.length > 3,
+                                    "border-r": index != 2 && index != 5,
+                                  }
+                                )}
+                              >
+                                <div>
+                                  {primary_image?.url_standard && (
+                                    <img
+                                      src={
+                                        primary_image?.url_standard ||
+                                        `/img/img-placeholder.png`
+                                      }
+                                      width="120px"
+                                      height="120px"
+                                      className="object-contain"
+                                      alt={`product-img-${index}`}
+                                    />
                                   )}
-                                >
-                                  <div>
-                                    {primary_image?.url_standard && (
-                                      <img
-                                        src={
-                                          primary_image?.url_standard ||
-                                          `/img/img-placeholder.png`
-                                        }
-                                        width="120px"
-                                        height="120px"
-                                        className="object-contain"
-                                        alt={`product-img-${index}`}
-                                      />
-                                    )}
-                                    <div className="py-4 text-center px-2  font-medium leading-4 w-32 leading-5">
-                                      {name}
-                                    </div>
+                                  <div className="py-4 text-center px-2  font-medium leading-4 w-32 leading-5">
+                                    {name}
                                   </div>
                                 </div>
-                              </a>
+                              </div>
                             </Link>
                           </Menu.Item>
                         );
