@@ -14,14 +14,7 @@ import { setCart, setSaveForLaterCart } from "../../../hooks/cart/actions";
 import URLS from "../../../utils/urls";
 
 const AddToCart = (props) => {
-  const {
-    product,
-    handleData,
-    tempCartId,
-    isSaveForLater,
-    isFromProductDetailPage,
-    isDeleteSaveForLater,
-  } = props;
+  const { product, handleData, tempCartId, isSaveForLater } = props;
   const { dispatchCart } = useContext(Context);
   const [isProductLoading, setIsProductLoading] = useState();
 
@@ -87,60 +80,47 @@ const AddToCart = (props) => {
 
   return (
     <>
-      {isFromProductDetailPage && (
-        <>
-          {isDeleteSaveForLater ? (
-            <BookmarkFillIcon className="text-xl text-primary mr-10" />
-          ) : (
-            <BookmarkUnFillIcon className="text-xl text-grey opacity-70 mr-10" />
+      {tempCartId ? (
+        <div
+          onClick={() => !isProductLoading && addToCart(product)}
+          className={classnames(
+            "flex items-center cursor-pointer text-primary",
+            {
+              "cursor-not-allowed opacity-25": isProductLoading,
+            }
           )}
-        </>
-      )}
-      {!isFromProductDetailPage && (
-        <>
-          {tempCartId ? (
-            <div
-              onClick={() => !isProductLoading && addToCart(product)}
-              className={classnames(
-                "flex items-center cursor-pointer text-primary",
-                {
-                  "cursor-not-allowed opacity-25": isProductLoading,
-                }
-              )}
-            >
-              <span className="mr-4">
-                {isSaveForLater ? (
-                  <BookmarkIcon className="text-lg" />
-                ) : (
-                  <img
-                    src="/img/Cart.svg"
-                    alt="cart-img"
-                    width="16px"
-                    className="fill-current text-dark"
-                  />
-                )}
-              </span>
-              <span className="text-sm">
-                {isSaveForLater ? "Save for Later" : "Add to Cart"}
-              </span>
-            </div>
-          ) : (
-            <div
-              onClick={() => !isProductLoading && addToCart(product)}
-              className={classnames(
-                "flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4 mb-10",
-                {
-                  "opacity-70 cursor-not-allowed": isProductLoading,
-                }
-              )}
-            >
-              <img className="mr-4" src="/img/add-to-cart.svg" alt="cart" />
-              <span className="font-medium font-base tracking-tight">
-                {isProductLoading ? "Loading..." : "Add to Cart"}
-              </span>
-            </div>
+        >
+          <span className="mr-4">
+            {isSaveForLater ? (
+              <BookmarkIcon className="text-lg" />
+            ) : (
+              <img
+                src="/img/Cart.svg"
+                alt="cart-img"
+                width="16px"
+                className="fill-current text-dark"
+              />
+            )}
+          </span>
+          <span className="text-sm">
+            {isSaveForLater ? "Save for Later" : "Add to Cart"}
+          </span>
+        </div>
+      ) : (
+        <div
+          onClick={() => !isProductLoading && addToCart(product)}
+          className={classnames(
+            "flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4 mb-10",
+            {
+              "opacity-70 cursor-not-allowed": isProductLoading,
+            }
           )}
-        </>
+        >
+          <img className="mr-4" src="/img/add-to-cart.svg" alt="cart" />
+          <span className="font-medium font-base tracking-tight">
+            {isProductLoading ? "Loading..." : "Add to Cart"}
+          </span>
+        </div>
       )}
     </>
   );
@@ -150,8 +130,6 @@ AddToCart.defaultProps = {
   product: {},
   handleData: () => {},
   isSaveForLater: false,
-  isFromProductDetailPage: false,
-  isDeleteSaveForLater: false,
 };
 
 AddToCart.propTypes = {
@@ -159,8 +137,6 @@ AddToCart.propTypes = {
   handleData: func,
   tempCartId: string,
   isSaveForLater: bool,
-  isFromProductDetailPage: bool,
-  isDeleteSaveForLater: bool,
 };
 
 export default AddToCart;

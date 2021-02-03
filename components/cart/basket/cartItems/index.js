@@ -153,6 +153,8 @@ const CartItems = () => {
                       products={cartState.cart.cart_items}
                       product={data}
                       handleProducts={(items) => handleQuantity(items, data)}
+                      inputClassNames="max-w-60"
+                      isfromCartPage={true}
                     />
                   </div>
                 </div>
