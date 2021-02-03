@@ -1,11 +1,18 @@
 import React from "react";
 import classnames from "classnames";
-import { array, func, shape, bool } from "prop-types";
+import { array, func, shape, bool, string } from "prop-types";
 import { RiSubtractFill as SubtractIcon } from "react-icons/ri";
 import { FiPlus as PlusIcon } from "react-icons/fi";
 
 const ProductQuantity = (props) => {
-  const { products, handleProducts, product, fromDrawer } = props;
+  const {
+    products,
+    handleProducts,
+    product,
+    fromDrawer,
+    inputClassNames,
+    isfromCartPage,
+  } = props;
 
   const decreaseQuantity = () => {
     let productsData;
@@ -36,6 +43,32 @@ const ProductQuantity = (props) => {
       productsData = {
         ...product,
         quantity: product?.quantity ? product.quantity + 1 : 1,
+      };
+    }
+    handleProducts(productsData);
+  };
+
+  const handleChange = (e) => {
+    if (e.keyCode === 40) return decreaseQuantity();
+    if (e.keyCode === 38) return increaseQuantity();
+    let inputValue = Number(e.target.value) || 0;
+    if (
+      (e.type === "blur" && inputValue === 0) ||
+      (isfromCartPage && inputValue === 0)
+    ) {
+      inputValue = 1;
+    }
+    if (isNaN(inputValue)) return;
+    let productsData;
+    if (products.length > 0) {
+      productsData = [...products];
+      const index = productsData.findIndex((data) => data.id === product.id);
+      if (index === -1) return;
+      productsData[index].quantity = inputValue;
+    } else {
+      productsData = {
+        ...product,
+        quantity: inputValue,
       };
     }
     handleProducts(productsData);
@@ -72,7 +105,7 @@ const ProductQuantity = (props) => {
           <div
             onClick={() => product.quantity > 1 && decreaseQuantity()}
             className={classnames(
-              "flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center p-4 px-4",
+              "flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center p-4",
               {
                 "cursor-not-allowed": product.quantity <= 1,
               }
@@ -80,13 +113,24 @@ const ProductQuantity = (props) => {
           >
             <SubtractIcon className="text-dark" />
           </div>
-          <div className="min-w-60 text-dark text-center text-base">
-            {product.quantity < 10 && 0}
-            {product.quantity}
+          <div>
+            <input
+              autoComplete="off"
+              type="text"
+              name="quantity"
+              className={`w-full text-dark text-center text-base py-3 ${inputClassNames}`}
+              value={Number(product.quantity).toLocaleString("en-US", {
+                minimumIntegerDigits: 2,
+                useGrouping: false,
+              })}
+              onChange={handleChange}
+              onBlur={handleChange}
+              onKeyDown={handleChange}
+            />
           </div>
           <div
             onClick={increaseQuantity}
-            className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4 px-4"
+            className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4"
           >
             <PlusIcon className="text-dark" />
           </div>
@@ -101,6 +145,8 @@ ProductQuantity.defaultProps = {
   products: [],
   product: {},
   fromDrawer: false,
+  isfromCartPage: false,
+  inputClassNames: "",
 };
 
 ProductQuantity.propTypes = {
@@ -108,6 +154,8 @@ ProductQuantity.propTypes = {
   products: array,
   product: shape({}),
   fromDrawer: bool,
+  isfromCartPage: bool,
+  inputClassNames: string,
 };
 
 export default ProductQuantity;

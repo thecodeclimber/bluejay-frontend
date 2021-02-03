@@ -79,7 +79,7 @@ const AddToCart = (props) => {
   };
 
   return (
-    <div>
+    <>
       {tempCartId ? (
         <div
           onClick={() => !isProductLoading && addToCart(product)}
@@ -122,7 +122,7 @@ const AddToCart = (props) => {
           </span>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
