@@ -52,6 +52,7 @@ const Search = (props) => {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [searchedHistory, setSearchedHistory] = useState([]);
   const [inputValue, setInputValue] = useState({});
+  const [activeList, setActiveList] = useState();
   const [isFetchingRelatedProducts, setisFetchingRelatedProducts] = useState(
     false
   );
@@ -59,28 +60,13 @@ const Search = (props) => {
     id: "",
     name: "All",
   });
-  const handleActiveSearchType = (type = "") => {
-    setActiveSearchType(type);
-  };
-
-  const goToCategory = (e, isFromButtonClick = false) => {
-    if (!search.trim()) return;
-    if (e.key === "Enter" || isFromButtonClick) {
-      router.push({
-        pathname: `/categories${
-          searchCategory.name === "All" ? "" : `${searchCategory.url}`
-        }`,
-        query: { q: search.trim() },
-      });
-    }
-  };
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
     setRelatedProducts([]);
     if (!e.target.value) return;
     let searchUrl = URLS.NEXT.PRODUCT.SEARCH;
-    searchUrl += `?name=${e.target.value}`;
+    searchUrl += `?name=${search}`;
     searchUrl += `&category_id=${searchCategory?.id}&limit=5`;
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
@@ -92,6 +78,7 @@ const Search = (props) => {
             setIsSearching(false);
           } else {
             setSearchResult(res.data || []);
+            setActiveList(res?.data[0]?.id);
           }
           setIsSearching(false);
         },
@@ -165,6 +152,22 @@ const Search = (props) => {
     }, 400);
   };
 
+  const handleActiveSearchType = (type = "") => {
+    setActiveSearchType(type);
+  };
+
+  const goToCategory = (e, isFromButtonClick = false) => {
+    if (!search.trim()) return;
+    if (e.charCode === 13 || isFromButtonClick) {
+      router.push({
+        pathname: `/categories${
+          searchCategory.name === "All" ? "" : `${searchCategory.url}`
+        }`,
+        query: { q: search.trim() },
+      });
+    }
+  };
+
   const handleMainSearch = (e, type) => {
     handleActiveSearchType(type);
     handleSearch(e);
@@ -187,12 +190,16 @@ const Search = (props) => {
     handleSearchHistory(value);
   };
 
+  const handleActiveList = (id) => {
+    setActiveList(id);
+  };
+
   return (
     <div
       className="relative flex flex-grow ml-6 rounded-md"
       onMouseLeave={() => handleActiveSearchType()}
     >
-      <Menu as="div" className="relative">
+      <Menu as="div" className="relative z-50">
         <Menu.Button
           onMouseOver={() => handleActiveSearchType(SearchType.category)}
           className={classnames(
@@ -213,6 +220,7 @@ const Search = (props) => {
         {activeSearchType === SearchType.category && (
           <SearchCategory
             {...props}
+            handleActiveSearchType={handleActiveSearchType}
             handleSearchedCategory={handleSearchedCategory}
           />
         )}
@@ -232,7 +240,11 @@ const Search = (props) => {
         )}
         placeholder="Search..."
         value={inputValue.name || search}
-        onClick={() => handleActiveSearchType(SearchType.history)}
+        onClick={() =>
+          handleActiveSearchType(
+            search ? SearchType.result : SearchType.history
+          )
+        }
         onKeyPress={(e) => goToCategory(e)}
         onChange={(e) => handleMainSearch(e, SearchType.result)}
         autoComplete="off"
@@ -252,6 +264,7 @@ const Search = (props) => {
           <SearchHistory
             handleSearchInputValue={handleSearchInputValue}
             searchedHistory={searchedHistory}
+            handleActiveSearchType={handleActiveSearchType}
             deleteSearchedHistory={deleteSearchedHistory}
             removeHistoryLocalStorage={removeHistoryLocalStorage}
           />
@@ -267,6 +280,8 @@ const Search = (props) => {
             relatedProducts={relatedProducts}
             searchResult={searchResult}
             search={search}
+            handleActiveList={handleActiveList}
+            activeList={activeList}
             isSearching={isSearching}
             isFetchingRelatedProducts={isFetchingRelatedProducts}
             handleSearch={handleSearch}
@@ -279,7 +294,8 @@ const Search = (props) => {
 };
 
 const SearchCategory = (props) => {
-  const { categories, handleSearchedCategory } = props || {};
+  const { categories, handleSearchedCategory, handleActiveSearchType } =
+    props || {};
 
   return (
     <Transition
@@ -306,9 +322,10 @@ const SearchCategory = (props) => {
                   as="div"
                   key={index}
                   className="text-base flex items-center justify-between px-6 py-2 truncate text-dark hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
-                  onClick={
-                    ((e) => handleSearchedCategory(category), show(false))
-                  }
+                  onClick={(e) => {
+                    handleSearchedCategory(category);
+                    handleActiveSearchType();
+                  }}
                 >
                   {name}
                 </Menu.Item>
@@ -326,6 +343,7 @@ const SearchHistory = (props) => {
     searchedHistory,
     handleSearchInputValue,
     removeHistoryLocalStorage,
+    handleActiveSearchType,
   } = props || {};
   const [historyData, setHistoryData] = useState([]);
   const [searchedResult, SetSearchedResult] = useState([]);
@@ -365,6 +383,9 @@ const SearchHistory = (props) => {
           )}
           placeholder="Search History"
           onChange={handleHistorySearch}
+          onClick={(e) => {
+            handleActiveSearchType(SearchType.history);
+          }}
         />
         <div
           className="text-primary cursor-pointer truncate w-200 text-right"
@@ -380,7 +401,6 @@ const SearchHistory = (props) => {
         className="font-ubuntu outline-none py-3 text-dark relative min-w-200"
         static
       >
-        {" "}
         {searchedResult.length > 0 &&
           searchedResult.map((result, index) => {
             const { id, name, image } = result || {};
@@ -416,7 +436,7 @@ const SearchHistory = (props) => {
               </Menu.Item>
             );
           })}
-        {!searchedResult.length > 0 &&
+        {!searchedResult &&
           historyData.length > 0 &&
           historyData.map((history, index) => {
             const { id, name, image } = history || {};
@@ -470,17 +490,19 @@ const SearchResult = (props) => {
     handleSearchInputValue,
     isFetchingRelatedProducts,
     search,
+    handleActiveList,
+    activeList,
     handleSearch,
     relatedProducts,
     handleRelatedProducts,
   } = props || {};
 
   const showResult = (result) => {
-    const regexp = new RegExp(
+    const regExp = new RegExp(
       search.replace(/[\\^$*+?.()|[\]{}]/g, "\\$&"),
       "gi"
     );
-    const searchedWord = result.name.match(regexp);
+    const searchedWord = result.name.match(regExp);
     return result.name.replaceAll(
       searchedWord?.length > 0 ? searchedWord[0] : searchedWord,
       (match) => `<span style="color:#1E74DF">${match}</span>`
@@ -526,15 +548,23 @@ const SearchResult = (props) => {
                     <Menu.Item
                       as="div"
                       key={index}
-                      className="text-base flex items-center justify-between pl-6 pr-4 py-2 truncate hover:text-primary hover:bg-primary hover:bg-opacity-05 cursor-pointer focus:outline-none"
-                      onMouseOver={() => handleRelatedProducts(result)}
+                      className={classnames(
+                        "text-base flex items-center justify-between pl-6 pr-4 py-2 truncate cursor-pointer focus:outline-none",
+                        {
+                          "bg-primary bg-opacity-05 ": result.id === activeList,
+                        }
+                      )}
+                      onMouseOver={() => {
+                        handleRelatedProducts(result);
+                        handleActiveList(result.id);
+                      }}
                     >
                       <Link
                         href="/product/[slug]"
                         as={`/product${result?.custom_url}${result?.id}`}
                       >
                         <a
-                          className={classnames("text-sm font-medium")}
+                          className={classnames("text-sm font-medium w-full")}
                           dangerouslySetInnerHTML={{
                             __html: showResult(result),
                           }}
