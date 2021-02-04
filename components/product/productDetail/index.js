@@ -7,6 +7,7 @@ import Specification from "./specification";
 import BreadCrum from "./breadCrum";
 import URLS from "../../../utils/urls";
 import Loader from "../../elements/loader";
+import { MAX_QUANTITY } from "../../../utils/constants";
 
 const ProductDetail = (props) => {
   const { query } = props;
@@ -30,7 +31,9 @@ const ProductDetail = (props) => {
           if (res.data) {
             res.data = {
               ...res.data,
-              quantity: 1,
+              quantity: res.data?.order_quantity_minimum || 1,
+              order_quantity_maximum:
+                res.data?.order_quantity_maximum || MAX_QUANTITY,
             };
             setProductDetail(res.data || {});
           }
