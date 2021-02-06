@@ -1,40 +1,15 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { IoIosArrowDropleftCircle as LeftArrow } from "react-icons/io";
 import { IoIosArrowDroprightCircle as RightArrow } from "react-icons/io";
 import Slider from "react-slick";
 import classnames from "classnames";
-
-const data = [
-  {
-    title: "SPECIAL OFFER",
-    description: " GET UP TO <b>50% OFF</b>",
-    img: "/img/banner-image.png",
-  },
-  {
-    title: "SPECIAL OFFER",
-    description: " GET UP TO <b>30% OFF</b> ",
-    img: "/img/banner-image.png",
-  },
-  {
-    title: "SPECIAL OFFER",
-    description: " GET UP TO <b>20% OFF</b>",
-    img: "/img/banner-image.png",
-  },
-  {
-    title: "SPECIAL OFFER",
-    description: " GET UP TO <b>30% OFF</b> ",
-    img: "/img/banner-image.png",
-  },
-  {
-    title: "SPECIAL OFFER",
-    description: " GET UP TO <b>50% OFF</b> ",
-    img: "/img/banner-image.png",
-  },
-];
+import { httpGet } from "../../../utils/https";
+import URLS from "../../../utils/urls";
 
 const Banner = () => {
   const slider = useRef(null);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [bannersData, setBannersData] = useState([]);
   const settings = {
     dots: false,
     infinite: true,
@@ -43,6 +18,19 @@ const Banner = () => {
     slidesToScroll: 1,
     afterChange: (current) => setActiveSlide(current),
   };
+
+  useEffect(() => {
+    const bannerUrl = `${URLS.NEXT.BANNER.BANNERS}`;
+    httpGet(bannerUrl, {
+      traceName: "get_banners",
+    }).then((res) => {
+      if (res.errors && Object.keys(res.errors).length > 0) {
+        alert(res.errors[Object.keys(res.errors)[0]]);
+      } else {
+        setBannersData(res);
+      }
+    });
+  }, []);
 
   const moveLeft = () => {
     slider.current.slickPrev();
@@ -74,28 +62,33 @@ const Banner = () => {
         </div>
         <div className="h-full w-full ">
           <Slider {...settings} className="w-full" ref={slider}>
-            {data.length > 0 &&
-              data.map((dataItem, index) => (
+            {bannersData.length > 0 &&
+              bannersData.map((dataItem, index) => (
                 <div className="h-full w-full" key={index}>
                   <div className="relative flex justify-center">
-                    <img
-                      className="min-h-300 h-full w-full"
-                      src={dataItem.img}
-                      alt="banner-image"
-                    />
+                    {console.log(dataItem.content)}
+                    <div
+                      className="text-white text-4xl tracking-tight font-light font-ubuntu pb-8 rounded-lg overflow-hidden"
+                      dangerouslySetInnerHTML={{
+                        __html: `${dataItem.content}`,
+                      }}
+                    ></div>
                     <div className="absolute h-full w-full top-0 text-center flex justify-center items-center">
                       <div className="p-40">
                         <div className="text-white pb-4 tracking-widest text-xl font-ubuntu font-medium">
-                          {dataItem.title}
+                          SPECIAL OFFER
                         </div>
                         <div
                           className="text-white text-4xl tracking-tight font-light font-ubuntu pb-8"
                           dangerouslySetInnerHTML={{
-                            __html: `${dataItem.description}`,
+                            __html: `${dataItem.name}`,
                           }}
                         ></div>
                         <button className="rounded bg-primary tracking-tight text-white py-2 px-8 text-lg focus:outline-none">
-                          Check it out
+                          <a href="https://www.google.com/" target="_blank">
+                            {" "}
+                            Check it out
+                          </a>
                         </button>
                       </div>
                     </div>
@@ -104,8 +97,8 @@ const Banner = () => {
               ))}
           </Slider>
           <div className="pt-10 z-30 flex justify-center items-center">
-            {data.length > 0 &&
-              data.map((item, index) => {
+            {bannersData.length > 0 &&
+              bannersData.map((item, index) => {
                 return (
                   <div
                     className={classnames("  rounded mx-4 cursor-pointer", {
