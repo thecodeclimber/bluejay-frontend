@@ -1,50 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import classname from "classnames";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { dashboardSideBarList } from "../../../../utils/constants";
 
 const Sidebar = () => {
-  const [activeList, setActiveList] = useState(0);
-  const sidebarList = [
-    {
-      icon: "/img/user-icon.svg",
-      name: "My Profile",
-      link: "profile",
-    },
-    {
-      icon: "/img/user-cart-icon.svg",
-      name: "My Orders",
-      link: "orders",
-    },
-    {
-      icon: "/img/invoice-icon.svg",
-      name: "Invoices",
-      link: "",
-    },
-    {
-      icon: "/img/wishlist-icon.svg",
-      name: "Wish List",
-      link: "",
-    },
-    {
-      icon: "/img/order-icon.svg",
-      name: "Order History",
-      link: "",
-    },
-    {
-      icon: "/img/setting-icon.svg",
-      name: "Account Details",
-      link: "",
-    },
-    {
-      icon: "/img/logout-icon.svg",
-      name: "Logout",
-      link: "",
-    },
-  ];
+  const [activeList, setActiveList] = useState("");
+  const router = useRouter();
 
-  const handleSidebarList = (index) => {
-    setActiveList(index);
-  };
+  useEffect(() => {
+    const pathName = router?.pathname && router?.pathname.split("/").pop();
+    if (pathName && activeList !== pathName) {
+      setActiveList(pathName);
+    }
+  }, [router]);
 
   return (
     <div className="relative max-w-220 flex flex-col bg-dark">
@@ -57,28 +26,32 @@ const Sidebar = () => {
         </div>
         <hr className="mb-5 opacity-07 bg-white h-px" />
       </div>
-      {sidebarList && sidebarList.length > 0 && (
+      {dashboardSideBarList && dashboardSideBarList.length > 0 && (
         <div className="flex flex-col justify-between">
           <div>
-            {sidebarList.map((data, index) => {
-              if (index === sidebarList.length - 1) return;
+            {dashboardSideBarList.map((data, index) => {
+              if (index === dashboardSideBarList.length - 1) return;
               return (
-                <Link href="/dashboard/[slug]" as={`/dashboard/${data.link}`}>
-                  <div
-                    className={classname(
-                      "flex items-center font-ubuntu px-4 py-5 font-medium text-white bg-dark hover:bg-primary cursor-pointer text-sm tracking-tight",
-                      {
-                        "bg-primary": index === activeList,
-                      }
-                    )}
-                    key={index}
-                    onClick={() => handleSidebarList(index)}
-                  >
-                    <div className="ml-1 mr-4">
-                      <img src={data.icon} alt={`img-${index}`} />
+                <Link
+                  href="/dashboard/[slug]"
+                  as={`/dashboard/${data.link || "#"}`}
+                  key={index}
+                >
+                  <a>
+                    <div
+                      className={classname(
+                        "flex items-center font-ubuntu px-4 py-5 font-medium text-white bg-dark hover:bg-primary cursor-pointer text-sm tracking-tight",
+                        {
+                          "bg-primary": data.link === activeList,
+                        }
+                      )}
+                    >
+                      <div className="ml-1 mr-4">
+                        <img src={data.icon} alt={`img-${index}`} />
+                      </div>
+                      <div>{data.name}</div>
                     </div>
-                    <div>{data.name}</div>
-                  </div>
+                  </a>
                 </Link>
               );
             })}
@@ -89,11 +62,13 @@ const Sidebar = () => {
         <div className="flex items-center font-ubuntu pl-4 py-5 font-medium text-white bg-white bg-opacity-03 hover:bg-error cursor-pointer text-sm tracking-tight">
           <div className="ml-1 mr-4">
             <img
-              src={sidebarList[sidebarList.length - 1].icon}
-              alt={`img-${sidebarList.length - 1}`}
+              src={dashboardSideBarList[dashboardSideBarList.length - 1].icon}
+              alt={`img-${dashboardSideBarList.length - 1}`}
             />
           </div>
-          <div>{sidebarList[sidebarList.length - 1].name}</div>
+          <div>
+            {dashboardSideBarList[dashboardSideBarList.length - 1].name}
+          </div>
         </div>
       </div>
     </div>
