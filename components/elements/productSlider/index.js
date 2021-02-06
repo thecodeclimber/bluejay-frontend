@@ -2,12 +2,12 @@ import React, { useRef, useState } from "react";
 import { array, bool, func, number } from "prop-types";
 import Link from "next/link";
 import classnames from "classnames";
+import WishlistIcon from "../wishlistIcon/index";
 import Slider from "react-slick";
 import {
   IoIosArrowForward as SlideRightArrow,
   IoIosArrowBack as SlideLeftArrow,
 } from "react-icons/io";
-import { FiHeart as HeartIcon } from "react-icons/fi";
 import Drawer from "../../elements/drawer";
 import CartAdded from "../../cart/cartAdded";
 import ProductQuantity from "../productQuantity";
@@ -104,67 +104,67 @@ const ProductSlider = (props) => {
             <div className="container mx-auto flex justify-between">
               {products.length > 0 && (
                 <Slider {...settings} className="overflow-hidden" ref={slider}>
-                  {products.map((product, index) => {
-                    return (
+                  {products.map((product, index) => (
+                    <div
+                      className="mr-6 focus:outline-none py-10 h-full"
+                      key={index}
+                    >
                       <div
-                        className="mr-6 focus:outline-none py-10 h-full"
-                        key={index}
+                        className={classnames(
+                          "max-w-310 border h-full rounded border-dark border-opacity-10 mx-4 lg:px-5 bg-white hover:shadow-grey-8 hover:border-white"
+                        )}
                       >
-                        <div
-                          className={classnames(
-                            "max-w-310 border h-full rounded border-dark border-opacity-10 mx-4 lg:px-5 bg-white hover:shadow-grey-8 hover:border-white"
-                          )}
-                        >
-                          <div className="py-6 flex-col justify-between h-full">
-                            <div className="h-full">
-                              <div className="relative flex justify-between -mb-6 h-full">
-                                <div className="bg-green text-xs flex items-center font-normal text-white rounded-2xl h-full px-3 h-5">
-                                  New
-                                </div>
-                                <HeartIcon className="text-grey opacity-70 text-xl cursor-pointer" />
+                        <div className="py-6 flex-col justify-between h-full">
+                          <div className="h-full">
+                            <div className="relative flex justify-between -mb-6 h-full">
+                              <div className="bg-green text-xs flex items-center font-normal text-white rounded-2xl h-full px-3 h-5">
+                                New
                               </div>
-                              <img
-                                className="m-auto mb-5"
-                                src={
-                                  product.primary_image?.url_thumbnail ||
-                                  "/img/no-image.png"
-                                }
-                                alt={`img-${index}`}
-                              />
-                              <div className="font-medium text-center text-xl mb-3 whitespace-pre-line tracking-tight leading-7">
-                                <Link
-                                  href="/product/[id]"
-                                  as={`/product/${product.id}`}
-                                >
-                                  <a className="text-dark hover:text-primary">
-                                    {product.name}
-                                  </a>
-                                </Link>
+                              <div>
+                                <WishlistIcon product={product} />
                               </div>
                             </div>
-                            <div>
-                              <div className="text-primary  text-center font-normal text-lg mb-4 tracking-tight">
-                                $
-                                {(product?.price && product.price.toFixed(2)) ||
-                                  0}
-                              </div>
-                              <div className="mb-4">
-                                <ProductQuantity
-                                  products={products}
-                                  product={product}
-                                  handleProducts={handleProducts}
-                                />
-                              </div>
-                              <AddToCart
+                            <img
+                              className="m-auto mb-5"
+                              src={
+                                product.primary_image?.url_thumbnail ||
+                                "/img/no-image.png"
+                              }
+                              alt={`img-${index}`}
+                            />
+                            <div className="font-medium text-center text-xl mb-3 whitespace-pre-line tracking-tight leading-7">
+                              <Link
+                                href="/product/[slug]"
+                                as={`/product${product?.custom_url?.url}${product?.id}`}
+                              >
+                                <a className="text-dark hover:text-primary">
+                                  {product.name}
+                                </a>
+                              </Link>
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-primary  text-center font-normal text-lg mb-4 tracking-tight">
+                              $
+                              {(product?.price && product.price.toFixed(2)) ||
+                                0}
+                            </div>
+                            <div className="mb-4">
+                              <ProductQuantity
+                                products={products}
                                 product={product}
-                                handleData={handleCart}
+                                handleProducts={handleProducts}
                               />
                             </div>
+                            <AddToCart
+                              product={product}
+                              handleData={handleCart}
+                            />
                           </div>
                         </div>
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
                 </Slider>
               )}
             </div>

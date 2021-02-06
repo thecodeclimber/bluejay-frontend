@@ -127,7 +127,7 @@ const NewPassword = () => {
     <div className="bg-dark fixed inset-0 w-100 h-100 z-30 bg-opacity-75  justify-center items-center overflow-y-auto">
       <div className="flex items-center h-full">
         <div
-          className="font-ubuntu bg-white rounded shadow-grey-8 py-6 px-8 max-w-400 w-full text-dark m-auto"
+          className="font-ubuntu bg-white rounded shadow-grey-8 py-6 px-8 max-w-400 w-full text-dark m-auto z-50"
           static="true"
         >
           <div className="flex justify-end">
@@ -136,86 +136,94 @@ const NewPassword = () => {
               onClick={() => dispatchModal(setModal())}
             />
           </div>
-          <div className="font-medium mb-3 text-3xl text-sm leading-8 text-center">
+          <div className="font-medium mb-2 text-3xl text-sm leading-8 text-center">
             New Password
           </div>
           <div className="text-dark opacity-75 text-sm font-light py-6 leading-4">
             Lorem Ipsum is simply dummy text of the printing & typesetting
             industry. Lorem Ipsum has been the industry's standard dummy
           </div>
-          <div className="mb-6 relative">
-            <input
-              type={formData.isPasswordVisible ? "text" : "password"}
-              value={formData.password}
-              onChange={handleFormData}
-              name="password"
-              placeholder="Password"
+          <div className="flex-col space-y-2">
+            <div className="relative">
+              <input
+                type={formData.isPasswordVisible ? "text" : "password"}
+                value={formData.password}
+                onChange={handleFormData}
+                name="password"
+                placeholder="Password"
+                className={classnames(
+                  "w-full border border-dark h-12 rounded border-opacity-10 pl-4 pr-12 font-normal focus:outline-none",
+                  {
+                    "font-medium": formData.password,
+                  }
+                )}
+              />
+              {!formData.isPasswordVisible && (
+                <EyeIcon
+                  className="absolute right-0 top-0 text-dark text-lg h-12 mr-5 cursor-pointer"
+                  onClick={() => togglePasswordVisibility("isPasswordVisible")}
+                />
+              )}
+              {formData.isPasswordVisible && (
+                <InvisibleEyeIcon
+                  className="absolute right-0 top-0 text-dark text-lg h-12 mr-5 cursor-pointer"
+                  onClick={() => togglePasswordVisibility("isPasswordVisible")}
+                />
+              )}
+              {errorPassword && (
+                <div className="text-error text-sm mt-1 pl-4">
+                  {errorPassword}
+                </div>
+              )}
+            </div>
+            <div>
+              <input
+                type="password"
+                value={formData.repeatPassword}
+                onChange={handleFormData}
+                name="repeatPassword"
+                placeholder="Repeat Password"
+                className={classnames(
+                  "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
+                  {
+                    "font-medium": formData.repeatPassword,
+                  }
+                )}
+              />
+              {errorRepeatPassword && (
+                <div className="text-error text-sm mt-1 pl-4">
+                  {errorRepeatPassword}
+                </div>
+              )}
+            </div>
+            <button
+              className="font-medium w-full py-3 items-center rounded bg-primary text-white border-alpha-05 focus:outline-none mb-3"
+              onClick={changePassword}
               className={classnames(
-                "w-full border border-dark h-12 rounded border-opacity-10 pl-4 pr-12 font-normal focus:outline-none",
+                "font-medium w-full py-3 items-center rounded bg-primary text-white border-alpha-05 focus:outline-none mb-3",
                 {
-                  "font-medium": formData.password,
+                  "cursor-not-allowed bg-opacity-70": formData.isLoading,
                 }
               )}
-            />
-            {!formData.isPasswordVisible && (
-              <EyeIcon
-                className="absolute right-0 top-0 text-dark text-lg h-12 mr-5 cursor-pointer"
-                onClick={() => togglePasswordVisibility("isPasswordVisible")}
-              />
-            )}
-            {formData.isPasswordVisible && (
-              <InvisibleEyeIcon
-                className="absolute right-0 top-0 text-dark text-lg h-12 mr-5 cursor-pointer"
-                onClick={() => togglePasswordVisibility("isPasswordVisible")}
-              />
-            )}
-            {errorPassword && (
-              <div className="text-error text-sm mt-1 pl-4">
-                {errorPassword}
-              </div>
-            )}
+              disabled={formData.isLoading}
+            >
+              {formData.isLoading ? "Loading..." : "Change Password"}
+            </button>
+            <button
+              className="font-medium w-full py-3 items-center rounded bg-white text-dark border border-dark border-opacity-25 opacity-50 focus:outline-none mb-6"
+              onClick={() => dispatchModal(setModal())}
+            >
+              Cancel
+            </button>
           </div>
-          <div className="mb-6">
-            <input
-              type="password"
-              value={formData.repeatPassword}
-              onChange={handleFormData}
-              name="repeatPassword"
-              placeholder="Repeat Password"
-              className={classnames(
-                "w-full border border-dark h-12 rounded border-opacity-10 px-4 font-normal focus:outline-none",
-                {
-                  "font-medium": formData.repeatPassword,
-                }
-              )}
-            />
-            {errorRepeatPassword && (
-              <div className="text-error text-sm mt-1 pl-4">
-                {errorRepeatPassword}
-              </div>
-            )}
-          </div>
-          <button
-            className="font-medium w-full py-3 items-center rounded bg-primary text-white border-alpha-05 focus:outline-none mb-3"
-            onClick={changePassword}
-            className={classnames(
-              "font-medium w-full py-3 items-center rounded bg-primary text-white border-alpha-05 focus:outline-none mb-3",
-              {
-                "cursor-not-allowed bg-opacity-70": formData.isLoading,
-              }
-            )}
-            disabled={formData.isLoading}
-          >
-            {formData.isLoading ? "Loading..." : "Change Password"}
-          </button>
-          <button
-            className="font-medium w-full py-3 items-center rounded bg-white text-dark border border-dark border-opacity-25 opacity-50 focus:outline-none mb-6"
-            onClick={() => dispatchModal(setModal())}
-          >
-            Cancel
-          </button>
         </div>
       </div>
+      {!formData.isLoading && (
+        <div
+          className="fixed top-0 h-full w-full z-20"
+          onClick={() => dispatchModal(setModal())}
+        />
+      )}
     </div>
   );
 };

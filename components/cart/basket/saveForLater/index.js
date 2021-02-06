@@ -2,7 +2,6 @@ import React, { useContext, useState } from "react";
 import Link from "next/link";
 import classnames from "classnames";
 import getSymbolFromCurrency from "currency-symbol-map";
-import { FiStar as StarIcon } from "react-icons/fi";
 import { Context } from "../../../../hooks/store";
 import { setSaveForLaterCart } from "../../../../hooks/cart/actions";
 import { AiOutlineDelete as DeleteIcon } from "react-icons/ai";
@@ -11,10 +10,12 @@ import {
   formattingCartData,
   setCartLocalStorage,
   removeCartLocalStorage,
+  getProductUrl,
 } from "../../../../utils/helper";
 import URLS from "../../../../utils/urls";
 import ProductQuantity from "../../../elements/productQuantity";
 import AddToCart from "../../../elements/addToCart";
+import WishlistIcon from "../../../elements/wishlistIcon";
 
 let timer = "";
 
@@ -124,7 +125,9 @@ const saveForLater = () => {
             image_url,
             product_id,
             extended_sale_price,
+            url,
           } = data || {};
+          const productUrl = getProductUrl(url);
           return (
             <div
               key={index}
@@ -139,8 +142,8 @@ const saveForLater = () => {
                     <div className="text-base tracking-tight">
                       <div className="font-normal text-dark leading-5 mb-2">
                         <Link
-                          href="/product/[id]"
-                          as={`/product/${product_id}`}
+                          href="/product/[slug]"
+                          as={`/product/${productUrl}/${product_id}`}
                         >
                           <a className="text-dark hover:text-primary">{name}</a>
                         </Link>
@@ -156,6 +159,8 @@ const saveForLater = () => {
                       products={cartState.saveForLaterCart.cart_items}
                       product={data}
                       handleProducts={(items) => handleQuantity(items, data)}
+                      inputClassNames="max-w-60"
+                      isfromCartPage={true}
                     />
                   </div>
                 </div>
@@ -168,12 +173,10 @@ const saveForLater = () => {
                     <div className="py-1">
                       <div className="border-r border-dark border-opacity-10 ml-5 h-full" />
                     </div>
-                    <div className="flex items-center ml-5">
-                      <span className="mr-4">
-                        <StarIcon className="text-base" />
-                      </span>
-                      <span className="text-sm">Add to Favorites</span>
-                    </div>
+                    <WishlistIcon
+                      product={{ id: product_id }}
+                      isSaveForLater={true}
+                    />
                   </div>
                   <div className="tracking-tight">
                     <span className="text-dark text-sm font-light mr-1">

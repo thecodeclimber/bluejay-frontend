@@ -86,7 +86,7 @@ const CartAdded = (props) => {
       )}
       <AddedToCart closeCartDrawer={closeCartDrawer} />
       {cartLength !== 0 && <hr className="mt-11 opacity-10 text-dark mx-5" />}
-      <AdditionalProducts />
+      <AdditionalProducts closeCartDrawer={closeCartDrawer} />
       <hr className="mt-1 mb-5 opacity-05 text-dark mx-5" />
       <div className="px-5">
         <div className="flex justify-between text-dark mb-3">

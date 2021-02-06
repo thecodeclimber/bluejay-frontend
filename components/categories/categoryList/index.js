@@ -1,9 +1,10 @@
 import React from "react";
 import { array, bool, func } from "prop-types";
-import { FiHeart as HearIcon } from "react-icons/fi";
+import Link from "next/link";
 import ProductQuantity from "../../elements/productQuantity";
 import AddToCart from "../../elements/addToCart";
 import ProductLoader from "../../elements/productLoader";
+import WishlistIcon from "../../elements/wishlistIcon";
 
 const CategoryList = (props) => {
   const { products, isFetchingProducts, handleProducts, handleCart } = props;
@@ -45,14 +46,21 @@ const CategoryList = (props) => {
                       ID: {product.id}
                     </div>
                     <div className="flex items-center">
-                      <div className="font-medium text-left text-dark text-xl mr-6 leading-7 tracking-tight">
-                        {product.name}
+                      <div className="font-medium text-left text-xl mr-6 leading-7 tracking-tight">
+                        <Link
+                          href="/product/[slug]"
+                          as={`/product${product?.custom_url?.url}${product?.id}`}
+                        >
+                          <a className="text-dark hover:text-primary block">
+                            {product.name}
+                          </a>
+                        </Link>
                       </div>
                       <div className="text-primary text-center font-normal text-lg mr-6 tracking-tight">
                         ${(product?.price && product.price.toFixed(2)) || 0}
                       </div>
                       <div className="mr-6">
-                        <HearIcon className="text-grey opacity-70 text-xl cursor-pointer" />
+                        <WishlistIcon product={product} />
                       </div>
                     </div>
                   </div>

@@ -79,14 +79,16 @@ const AddToCart = (props) => {
   };
 
   return (
-    <div>
+    <>
       {tempCartId ? (
         <div
           onClick={() => !isProductLoading && addToCart(product)}
-          className={classnames("flex items-center cursor-pointer", {
-            "text-primary": !isProductLoading,
-            "cursor-not-allowed text-dark opacity-25": isProductLoading,
-          })}
+          className={classnames(
+            "flex items-center cursor-pointer text-primary",
+            {
+              "cursor-not-allowed opacity-25": isProductLoading,
+            }
+          )}
         >
           <span className="mr-4">
             {isSaveForLater ? (
@@ -108,7 +110,7 @@ const AddToCart = (props) => {
         <div
           onClick={() => !isProductLoading && addToCart(product)}
           className={classnames(
-            "flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4",
+            "flex items-center justify-center cursor-pointer text-white bg-primary rounded py-4 mb-10",
             {
               "opacity-70 cursor-not-allowed": isProductLoading,
             }
@@ -120,7 +122,7 @@ const AddToCart = (props) => {
           </span>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
