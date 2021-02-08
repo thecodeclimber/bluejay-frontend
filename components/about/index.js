@@ -6,7 +6,7 @@ import CompanyAccount from "./companyAccount";
 import GetYourCompany from "./getYourCompany";
 import OurStory from "./ourStory";
 import OurHistory from "./ourHistory";
-// import TimeLine from "./timeLine";
+import TimeLine from "./timeLine";
 
 const About = () => {
   return (
@@ -22,8 +22,8 @@ const About = () => {
       <CustomerReviews />
       <CompanyAccount />
       <OurStory />
-      {/* <TimeLine />
-      <hr className="mb-16 opacity-10 bg-dark" /> */}
+      <TimeLine />
+      <hr className="mb-16 opacity-10 bg-dark" />
       <OurHistory />
       <hr className="mb-16 opacity-10 bg-dark" />
       <GetYourCompany />
