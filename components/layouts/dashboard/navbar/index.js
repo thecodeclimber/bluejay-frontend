@@ -20,7 +20,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between py-6 px-12 w-full tracking-tight ">
+      <div className="flex relative shadow-grey-8 items-center justify-between py-6 px-12 w-full tracking-tight ">
         <div className="flex items-center">
           <div className="text-3xl font-light text-dark mr-10">
             My <span className="font-medium">Profile</span>

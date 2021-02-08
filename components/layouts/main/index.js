@@ -20,7 +20,7 @@ import URLS from "../../../utils/urls";
 const MainLayout = (props) => {
   const router = useRouter();
   const { children } = props;
-  const { modalState, dispatchModal, dispatchCart } = useContext(Context);
+  const { userState, modalState, dispatchModal, dispatchCart, dispatchUser } = useContext(Context);
 
   useEffect(() => {
     const { reset, token } = router.query || {};
@@ -31,8 +31,8 @@ const MainLayout = (props) => {
   }, []);
 
   useEffect(() => {
-    if (userState.user?.id) fetchUserWishlists();
-  }, [userState.user?.id]);
+    if (userState?.user?.id) fetchUserWishlists();
+  }, [userState?.user?.id]);
 
   const fetchUserWishlists = () => {
     const wishlistUrl = `${URLS.NEXT.WISHLIST.CUSTOMER}?id=${userState.user.id}`;

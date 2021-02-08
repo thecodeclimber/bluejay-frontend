@@ -32,27 +32,21 @@ const Sidebar = () => {
             {dashboardSideBarList.map((data, index) => {
               if (index === dashboardSideBarList.length - 1) return;
               return (
-                <Link
-                  href="/dashboard/[slug]"
-                  as={`/dashboard/${data.link || "#"}`}
-                  key={index}
-                >
-                  <a>
-                    <div
-                      className={classname(
-                        "flex items-center font-ubuntu px-4 py-5 font-medium text-white bg-dark hover:bg-primary cursor-pointer text-sm tracking-tight",
-                        {
-                          "bg-primary": data.link === activeList,
-                        }
-                      )}
-                    >
-                      <div className="ml-1 mr-4">
-                        <img src={data.icon} alt={`img-${index}`} />
-                      </div>
-                      <div>{data.name}</div>
+                <a onClick={()=> router.push(`/dashboard/${data.link}`)} key={index}>
+                  <div
+                    className={classname(
+                      "flex items-center font-ubuntu px-4 py-5 font-medium text-white bg-dark hover:bg-primary cursor-pointer text-sm tracking-tight",
+                      {
+                        "bg-primary": data.link === activeList,
+                      }
+                    )}
+                  >
+                    <div className="ml-1 mr-4">
+                      <img src={data.icon} alt={`img-${index}`} />
                     </div>
-                  </a>
-                </Link>
+                    <div>{data.name}</div>
+                  </div>
+                </a>
               );
             })}
           </div>
