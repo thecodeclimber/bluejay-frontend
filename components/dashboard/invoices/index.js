@@ -1,14 +1,16 @@
 import React from "react";
-import MyOrders from "./myOrders";
 import BreadCrum from "../breadCrum";
+import Reports from "./reports";
 
-const Orders = () => {
+const Invoices = () => {
   return (
     <div className="flex flex-col pt-8 px-12 bg-gray90 tracking-tight font-ubuntu h-full tracking-tight">
       <BreadCrum />
-      <MyOrders />
+      <div className="pt-8">
+        <Reports />
+      </div>
     </div>
   );
 };
 
-export default Orders;
+export default Invoices;
