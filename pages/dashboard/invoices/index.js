@@ -5,7 +5,7 @@ export default function InvoicesPage() {
   return (
     <>
       <Head>
-        <title>BlueJay Fasteners | Profile Page</title>
+        <title>BlueJay Fasteners | Invoices Page</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Invoices />

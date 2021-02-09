@@ -11,16 +11,15 @@ const BreadCrum = () => {
     const pathNames = router?.pathname && router?.pathname.split("/");
     const findIndex = pathNames.findIndex((path) => path === "dashboard");
     if (findIndex > -1) {
-      const getPathNames = pathNames.slice(findIndex + 1);
+      let getPathNames = pathNames.slice(findIndex + 1);
+      getPathNames = getPathNames.filter((pathName) => pathName !== "[id]");
       if (getPathNames && getPathNames.length > 0) {
         getPathNames.forEach((pathName) => {
-          breadCrumList = dashboardSideBarList
-            .map((path) => {
-              if (path.link === pathName) {
-                return path.name;
-              }
-            })
-            .filter(Boolean);
+          dashboardSideBarList.forEach((path) => {
+            if (path.link === pathName) {
+              breadCrumList.push(path.name);
+            }
+          });
         });
       }
     }
