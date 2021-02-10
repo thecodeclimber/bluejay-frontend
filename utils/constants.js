@@ -35,19 +35,19 @@ export const dashboardSideBarList = [
     id: 1,
     icon: "/img/user-icon.svg",
     name: "My Profile",
-    link: "profile",
+    link: "/dashboard/profile",
   },
   {
     id: 2,
     icon: "/img/user-cart-icon.svg",
     name: "My Orders",
-    link: "orders",
+    link: "/dashboard/orders",
   },
   {
     id: 3,
     icon: "/img/invoice-icon.svg",
     name: "Invoices",
-    link: "invoices",
+    link: "/dashboard/invoices",
   },
   {
     id: 4,
@@ -76,7 +76,7 @@ export const dashboardSideBarList = [
   {
     id: 8,
     name: "Invoice Info #{ID}",
-    link: "details",
+    link: "/dashboard/details",
     parentId: 3,
   },
 ];

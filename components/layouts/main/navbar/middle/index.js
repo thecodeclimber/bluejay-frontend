@@ -1,5 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import Search from "./search";
 import Categories from "./categories";
 import { httpGet } from "../../../../../utils/https";
@@ -18,7 +19,11 @@ const SearchType = {
 
 const Logo = () => (
   <div className="flex items-center">
-    <Image src="/img/logo.png" width="68" height="68" />
+    <Link href="/">
+      <a>
+        <Image src="/img/logo.png" width="68" height="68" />
+      </a>
+    </Link>
     {/* <div className="ml-3 font-medium text-white">
       <div>Bluejay</div>
       <div>Fasteners</div>

@@ -1,33 +1,58 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState, useEffect, useContext } from "react";
 import classname from "classnames";
 import { Menu, Transition } from "@headlessui/react";
-import { BsArrowRight as RightArrow } from "react-icons/bs";
+import { BsArrowRight as RightArrowIcon } from "react-icons/bs";
 import { HiOutlineBell as BellIcon } from "react-icons/hi";
+import { useRouter } from "next/router";
+import { Context } from "../../../../hooks/store";
+
+const notificationData = [
+  {
+    type: "Operation successful",
+    time: "20:17",
+    status: "Your operation was successful",
+  },
+  {
+    type: "Order cancelled",
+    time: "17:33",
+    status: "Your order has been canceled",
+  },
+];
 
 const Navbar = () => {
-  const notificationData = [
-    {
-      type: "Operation successful",
-      time: "20:17",
-      status: "Your operation was successful",
-    },
-    {
-      type: "Order cancelled",
-      time: "17:33",
-      status: "Your order has been canceled",
-    },
-  ];
+  const [activeList, setActiveList] = useState("");
+  const router = useRouter();
+  const { userState } = useContext(Context);
 
+  useEffect(() => {
+    const pathName = router?.pathname && router?.pathname.split("/");
+    if (pathName && pathName.length > 1 && activeList !== pathName[2]) {
+      setActiveList(pathName[2]);
+    }
+  }, [router]);
+
+  const getUserName = () => {
+    let userName = userState?.user?.firstName || "";
+
+    if (userState?.user?.lastName) {
+      userName = userName
+        ? `${userName} ${userState?.user?.lastName}`
+        : userState?.user?.lastName;
+    }
+    return userName;
+  };
+
+  const userName = getUserName();
   return (
     <>
       <div className="flex relative shadow-grey-8 items-center justify-between py-6 px-12 w-full tracking-tight ">
         <div className="flex items-center">
           <div className="text-3xl font-light text-dark mr-10">
-            My <span className="font-medium">Profile</span>
+            My <span className="font-medium">{activeList}</span>
           </div>
           <button className="flex items-center text-base font-normal whitespace-pre py-3 px-5 text-dark border border-dark rounded-3xl border-opacity-10 focus:outline-none">
             Go to marketplace
-            <RightArrow className="text-xl ml-4" />
+            <RightArrowIcon className="text-xl ml-4" />
           </button>
         </div>
         <div className="flex">
@@ -38,7 +63,7 @@ const Navbar = () => {
           />
           <div className="flex flex-col font-light opacity-75 mr-8">
             <span className="text-left text-sm">welcome</span>
-            <span className="text-lg font-medium">Andrey Babak</span>
+            <span className="text-lg font-medium capitalize">{userName}</span>
           </div>
           <Menu className="relative">
             {({ open }) => (

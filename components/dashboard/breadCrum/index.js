@@ -16,7 +16,10 @@ const BreadCrum = () => {
       if (getPathNames && getPathNames.length > 0) {
         getPathNames.forEach((pathName) => {
           dashboardSideBarList.forEach((path) => {
-            if (path.link === pathName) {
+            if (
+              path.link &&
+              path.link.replace("/dashboard/", "") === pathName
+            ) {
               breadCrumList.push(path.name);
             }
           });

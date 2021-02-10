@@ -98,6 +98,7 @@ const TopNavbar = () => {
       subMenuList: [
         {
           name: "My Account",
+          link: "/dashboard/profile",
           isExpanded: true,
         },
         {

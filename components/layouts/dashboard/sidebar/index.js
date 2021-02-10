@@ -9,9 +9,9 @@ const Sidebar = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const pathName = router?.pathname && router?.pathname.split("/").pop();
-    if (pathName && activeList !== pathName) {
-      setActiveList(pathName);
+    const pathName = router?.pathname && router?.pathname.split("/");
+    if (pathName && pathName.length > 1 && activeList !== pathName[2]) {
+      setActiveList(pathName[2]);
     }
   }, [router]);
 
@@ -20,12 +20,16 @@ const Sidebar = () => {
   return (
     <div className="relative max-w-220 flex flex-col bg-dark">
       <div>
-        <div className="flex px-4 py-5 items-center">
-          <img src="/img/dashboard-logo.png" className="mr-4" />
-          <div className="font-ubuntu font-medium text-white text-lg leading-21">
-            Blue-Jay Fasteners
-          </div>
-        </div>
+        <Link href="/">
+          <a>
+            <div className="flex px-4 py-5 items-center">
+              <img src="/img/dashboard-logo.png" className="mr-4" />
+              <div className="font-ubuntu font-medium text-white text-lg leading-21">
+                Blue-Jay Fasteners
+              </div>
+            </div>
+          </a>
+        </Link>
         <hr className="mb-5 opacity-07 bg-white h-px" />
       </div>
       {sidebarList && sidebarList.length > 0 && (
@@ -34,24 +38,26 @@ const Sidebar = () => {
             {sidebarList.map((data, index) => {
               if (index === sidebarList.length - 1) return;
               return (
-                <a
-                  onClick={() => router.push(`/dashboard/${data.link}`)}
-                  key={index}
-                >
-                  <div
-                    className={classname(
-                      "flex items-center font-ubuntu px-4 py-5 font-medium text-white bg-dark hover:bg-primary cursor-pointer text-sm tracking-tight",
-                      {
-                        "bg-primary": data.link === activeList,
-                      }
-                    )}
-                  >
-                    <div className="ml-1 mr-4">
-                      <img src={data.icon} alt={`img-${index}`} />
-                    </div>
-                    <div>{data.name}</div>
-                  </div>
-                </a>
+                <div key={index}>
+                  <Link href={data.link}>
+                    <a>
+                      <div
+                        className={classname(
+                          "flex items-center font-ubuntu px-4 py-5 font-medium text-white bg-dark hover:bg-primary cursor-pointer text-sm tracking-tight",
+                          {
+                            "bg-primary":
+                              data.link === `/dashboard/${activeList}`,
+                          }
+                        )}
+                      >
+                        <div className="ml-1 mr-4">
+                          <img src={data.icon} alt={`img-${index}`} />
+                        </div>
+                        <div>{data.name}</div>
+                      </div>
+                    </a>
+                  </Link>
+                </div>
               );
             })}
           </div>
