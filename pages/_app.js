@@ -29,7 +29,3 @@ function MyApp({ Component, pageProps }) {
 }
 
 export default MyApp;
-
-MyApp.getInitialProps = async ({ query, patname }) => {
-  return { ...query, ...patname };
-};
