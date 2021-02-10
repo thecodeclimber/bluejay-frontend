@@ -33,6 +33,12 @@ const URLS = {
     BRAND: {
       BRANDS: `${BIG_COMMERCE_BASE_URL}/catalog/brands`,
     },
+    BANNER: {
+      BANNERS: `${BIG_COMMERCE_BASE_URL.replace(
+        BIG_COMMERCE_VERSION_3,
+        BIG_COMMERCE_VERSION_2
+      )}/banners`,
+    },
     WISHLIST: {
       WISHLISTS: `${BIG_COMMERCE_BASE_URL}/wishlists`,
       ITEM: `${BIG_COMMERCE_BASE_URL}/wishlists/{WISHLIST_ID}/items`,
@@ -56,6 +62,9 @@ const URLS = {
       POPULAR: `${NEXT_BASE_URL}/categories/popular`,
       PRODUCTS: `${NEXT_BASE_URL}/categories/products`,
       SEARCH: `${NEXT_BASE_URL}/categories/search`,
+    },
+    BANNER: {
+      BANNERS: `${NEXT_BASE_URL}/banners`,
     },
     PRODUCT: {
       PRODUCTS: `${NEXT_BASE_URL}/products`,
