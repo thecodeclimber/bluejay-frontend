@@ -3,6 +3,7 @@ import classnames from "classnames";
 import { array, func, shape, bool, string } from "prop-types";
 import { RiSubtractFill as SubtractIcon } from "react-icons/ri";
 import { FiPlus as PlusIcon } from "react-icons/fi";
+import { MAX_QUANTITY } from "../../../utils/constants";
 
 const ProductQuantity = (props) => {
   const {
@@ -13,6 +14,8 @@ const ProductQuantity = (props) => {
     inputClassNames,
     isfromCartPage,
   } = props;
+  const minProductQuantity = product?.order_quantity_minimum || 1;
+  const maxProductQuantity = product?.order_quantity_maximum || MAX_QUANTITY;
 
   const decreaseQuantity = () => {
     let productsData;
@@ -21,12 +24,16 @@ const ProductQuantity = (props) => {
       const index = productsData.findIndex((data) => data.id === product.id);
       if (index === -1) return;
       productsData[index].quantity =
-        productsData[index].quantity > 1 ? productsData[index].quantity - 1 : 1;
+        productsData[index].quantity > minProductQuantity
+          ? productsData[index].quantity - 1
+          : minProductQuantity;
     } else {
       productsData = {
         ...product,
         quantity:
-          product?.quantity && product.quantity > 1 ? product.quantity - 1 : 1,
+          product?.quantity && product.quantity > minProductQuantity
+            ? product.quantity - 1
+            : minProductQuantity,
       };
     }
     handleProducts(productsData);
@@ -38,11 +45,17 @@ const ProductQuantity = (props) => {
       productsData = [...products];
       const index = productsData.findIndex((data) => data.id === product.id);
       if (index === -1) return;
-      productsData[index].quantity = productsData[index].quantity + 1;
+      productsData[index].quantity =
+        productsData[index].quantity + 1 < maxProductQuantity
+          ? productsData[index].quantity + 1
+          : maxProductQuantity;
     } else {
       productsData = {
         ...product,
-        quantity: product?.quantity ? product.quantity + 1 : 1,
+        quantity:
+          product?.quantity && product.quantity + 1 <= maxProductQuantity
+            ? product.quantity + 1
+            : maxProductQuantity,
       };
     }
     handleProducts(productsData);
@@ -53,10 +66,13 @@ const ProductQuantity = (props) => {
     if (e.keyCode === 38) return increaseQuantity();
     let inputValue = Number(e.target.value) || 0;
     if (
-      (e.type === "blur" && inputValue === 0) ||
-      (isfromCartPage && inputValue === 0)
+      (e.type === "blur" && inputValue < minProductQuantity) ||
+      (isfromCartPage && inputValue < minProductQuantity)
     ) {
-      inputValue = 1;
+      inputValue = minProductQuantity;
+    }
+    if (e.type === "blur" && inputValue > maxProductQuantity) {
+      inputValue = maxProductQuantity;
     }
     if (isNaN(inputValue)) return;
     let productsData;
@@ -79,11 +95,13 @@ const ProductQuantity = (props) => {
       {fromDrawer ? (
         <div className="flex items-center">
           <div
-            onClick={() => product.quantity > 1 && decreaseQuantity()}
+            onClick={() =>
+              product.quantity > minProductQuantity && decreaseQuantity()
+            }
             className={classnames(
               "border border-light p-1 rounded-md cursor-pointer",
               {
-                "cursor-not-allowed": product.quantity <= 1,
+                "cursor-not-allowed": product.quantity <= minProductQuantity,
               }
             )}
           >
@@ -103,11 +121,13 @@ const ProductQuantity = (props) => {
       ) : (
         <div className="flex justify-between items-center border rounded border-dark border-opacity-10">
           <div
-            onClick={() => product.quantity > 1 && decreaseQuantity()}
+            onClick={() =>
+              product.quantity > minProductQuantity && decreaseQuantity()
+            }
             className={classnames(
               "flex justify-center cursor-pointer border-r border-dark border-opacity-10 text-center items-center p-4",
               {
-                "cursor-not-allowed": product.quantity <= 1,
+                "cursor-not-allowed": product.quantity <= minProductQuantity,
               }
             )}
           >
@@ -130,7 +150,12 @@ const ProductQuantity = (props) => {
           </div>
           <div
             onClick={increaseQuantity}
-            className="flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4"
+            className={classnames(
+              "flex justify-center border-l cursor-pointer border-dark border-opacity-10 text-center items-center p-4",
+              {
+                "cursor-not-allowed": product.quantity >= maxProductQuantity,
+              }
+            )}
           >
             <PlusIcon className="text-dark" />
           </div>

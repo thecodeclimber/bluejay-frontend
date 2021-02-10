@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProductSlider from "../../../elements/productSlider";
 import { httpGet } from "../../../../utils/https";
 import URLS from "../../../../utils/urls";
+import { MAX_QUANTITY } from "../../../../utils/constants";
 
 const CustomerPurchase = () => {
   const [isFetching, setIsFetching] = useState(false);
@@ -24,6 +25,9 @@ const CustomerPurchase = () => {
           if (res.data && res.data.length > 0) {
             const data = res.data.map((product) => {
               product.quantity = 1;
+              product.quantity = product?.order_quantity_minimum || 1;
+              product.order_quantity_maximum =
+                product.order_quantity_maximum || MAX_QUANTITY;
               return product;
             });
             setPurchasedProducts(data);

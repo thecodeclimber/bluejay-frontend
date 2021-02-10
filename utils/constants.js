@@ -85,3 +85,5 @@ export const STATUS = {
   PENDING: "Pending",
   ARRIVED: "Arrived",
 };
+
+export const MAX_QUANTITY = 10000;
