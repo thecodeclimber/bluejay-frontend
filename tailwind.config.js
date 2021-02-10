@@ -35,6 +35,7 @@ module.exports = {
       60: "60px",
       100: "90px",
       200: "200px",
+      220: "219px",
       250: "280px",
       300: "300px",
       310: "315px",
@@ -58,6 +59,8 @@ module.exports = {
       default: "10px",
       xl: "20px",
       "2xl": "25px",
+      "3xl": "6.25rem",
+      full: "9999px",
     },
     colors: {
       white: "#fff",
@@ -65,6 +68,7 @@ module.exports = {
       light: "#eaeeee",
       dark: "#232F3E",
       grey: "#9fa5bd",
+      gray90: "#FAFCFF",
       primary: "#1E74DF",
       blue: "#385797",
       orange: "#DE4837",
@@ -121,6 +125,8 @@ module.exports = {
     extend: {
       backgroundImage: (theme) => ({
         "about-card": "url('/img/about-card.svg')",
+        "my-basket": "url('/img/dashboard-image-1.svg')",
+        "my-wishlist": "url('/img/dashboard-image-2.png')",
         "customer-review": "url('/img/customer-review.svg')",
         account: "url('/img/account-background.png')",
         "customer-card":
@@ -136,10 +142,14 @@ module.exports = {
       },
       lineHeight: {
         2: "0.875rem",
+        21: "21px",
       },
       inset: {
+        4: "4.5rem",
         "-5": "-5rem",
+        10: "10px",
         "-8": "-8px",
+        "-15": "-15px",
         "-30": "-30px",
         "-55": "-55px",
         "-70": "-70px",

@@ -19,6 +19,7 @@ import { httpGet } from "../../../../../../utils/https";
 import URLS from "../../../../../../utils/urls";
 
 let timer = "";
+const initialCategory = "All";
 
 const Search = (props) => {
   const { SearchType, categories } = props || {};
@@ -36,9 +37,8 @@ const Search = (props) => {
   );
   const [searchCategory, setSearchCategory] = useState({
     id: "",
-    name: "All",
+    name: initialCategory,
   });
-  const initialCategory = "All";
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
@@ -178,7 +178,7 @@ const Search = (props) => {
       className="relative flex flex-grow ml-6 rounded-md"
       onMouseLeave={() => handleActiveSearchType()}
     >
-      <Menu as="div" className="relative z-50">
+      <Menu as="div" className="relative z-30">
         <Menu.Button
           onMouseOver={() => handleActiveSearchType(SearchType.category)}
           className={classnames(

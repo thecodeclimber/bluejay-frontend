@@ -66,7 +66,6 @@ const Banner = () => {
               bannersData.map((dataItem, index) => (
                 <div className="h-full w-full" key={index}>
                   <div className="relative flex justify-center">
-                    {console.log(dataItem.content)}
                     <div
                       className="text-white text-4xl tracking-tight font-light font-ubuntu pb-8 rounded-lg overflow-hidden"
                       dangerouslySetInnerHTML={{
