@@ -71,6 +71,7 @@ module.exports = {
       gray90: "#FAFCFF",
       primary: "#1E74DF",
       blue: "#385797",
+      facebook: "#3B5998",
       orange: "#DE4837",
       success: "#76b162",
       info: "#56a1ff",

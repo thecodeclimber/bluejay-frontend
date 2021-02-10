@@ -60,7 +60,7 @@ const MyOrders = () => {
           time: "20:27",
           status: "Done",
         },
-      ]
+      ],
     },
     {
       date: "April 5, 2020",
@@ -69,7 +69,7 @@ const MyOrders = () => {
           time: "20:17",
           status: "Located in the recipient city",
         },
-      ]
+      ],
     },
     {
       date: "April 3, 2020",
@@ -82,7 +82,7 @@ const MyOrders = () => {
           time: "11:24",
           status: "Located in the recipient city",
         },
-      ]
+      ],
     },
     {
       date: "April 1, 2020",
@@ -95,21 +95,20 @@ const MyOrders = () => {
           time: "17:30",
           status: "New order",
         },
-      ]
+      ],
     },
   ];
   const [orders, setOrders] = useState(ordersList);
   const [toggleDropDown, setToggleDropDown] = useState(false);
 
-  useEffect(() => {
-  }, [toggleDropDown]);
+  useEffect(() => {}, [toggleDropDown]);
 
   const handleDropDown = (index) => {
-    if(!index && index != 0) return
-    orders[index].isExpanded = !orders[index].isExpanded
-    setOrders(orders)
-    setToggleDropDown(!toggleDropDown)
-  }
+    if (!index && index != 0) return;
+    orders[index].isExpanded = !orders[index].isExpanded;
+    setOrders(orders);
+    setToggleDropDown(!toggleDropDown);
+  };
 
   return (
     <div>
@@ -143,14 +142,31 @@ const MyOrders = () => {
             <>
               <div
                 key={index}
-                className= "pt-4 items-center bg-white rounded-lg shadow-grey-8 mt-6"
+                className="pt-4 items-center bg-white rounded-lg shadow-grey-8 mt-6"
               >
                 <div className="flex justify-between pb-4">
                   <div className="flex items-center">
-                    {!order.isExpanded ? <DownIcon1 className="ml-6 mr-4" onClick={() => handleDropDown(index)} /> :
-                      <UpIcon className="ml-6 mr-4 text-primary" onClick={() => handleDropDown(index)} />}
-                    <div className="text-dark font-medium mr-6">{order.orderID}</div>
-                    <div className="text-dark font-light mr-6">{order.date}</div>
+                    {!order.isExpanded ? (
+                      <DownIcon1
+                        className="ml-6 mr-4 cursor-pointer"
+                        onClick={() => handleDropDown(index)}
+                      />
+                    ) : (
+                      <UpIcon
+                        className="ml-6 mr-4 text-primary cursor-pointer"
+                        onClick={() => handleDropDown(index)}
+                      />
+                    )}
+                    <div
+                      className={classnames("text-dark font-medium mr-6", {
+                        "text-primary": order.isExpanded,
+                      })}
+                    >
+                      {order.orderID}
+                    </div>
+                    <div className="text-dark font-light mr-6">
+                      {order.date}
+                    </div>
                     <img className="mr-2" src={order.image1} />
                     <img src={order.image2} />
                   </div>
@@ -202,7 +218,8 @@ const MyOrders = () => {
                               className="absolute font-ubuntu bg-white outline-none px-6 py-4 right-0 top-4 mt-56 mr-16 text-dark rounded relative shadow-grey-8"
                               static
                             >
-                              {history && history.length > 0 &&
+                              {history &&
+                                history.length > 0 &&
                                 history?.map((data, index) => (
                                   <Fragment key={index}>
                                     <Menu.Item
@@ -210,32 +227,43 @@ const MyOrders = () => {
                                       className="flex flex-col justify-between text-dark focus:outline-none text-xs"
                                     >
                                       <div
-                                        className={classnames(
-                                          "font-bolder",
-                                          {
-                                            "pt-3": index !== 0,
-                                          }
-                                        )}>{data.date}</div>
+                                        className={classnames("font-bolder", {
+                                          "pt-3": index !== 0,
+                                        })}
+                                      >
+                                        {data.date}
+                                      </div>
                                       {index !== history.length && (
                                         <hr className="opacity-05 my-2" />
                                       )}
                                       <div className="text-xs font-light mr-3 opacity-75">
-                                        {data.shippingStatus?.map((shippingStatus, index) => {
-                                          const { time, status } = shippingStatus || {}
-                                          return (
-                                            <div className="flex relative">
-                                              {status === "Done" && <div className="absolute text-success -left-15">&#9679;</div>}
-                                              {time}
-                                              <div
-                                                className={classnames(
-                                                  "pl-16",
-                                                  {
-                                                    "font-bolder text-success": status === "Done",
-                                                  }
-                                                )}>{status}</div>
-                                            </div>
-                                          )
-                                        })}
+                                        {data.shippingStatus?.map(
+                                          (shippingStatus, index) => {
+                                            const { time, status } =
+                                              shippingStatus || {};
+                                            return (
+                                              <div className="flex relative">
+                                                {status === "Done" && (
+                                                  <div className="absolute text-success -left-15">
+                                                    &#9679;
+                                                  </div>
+                                                )}
+                                                {time}
+                                                <div
+                                                  className={classnames(
+                                                    "pl-16",
+                                                    {
+                                                      "font-bolder text-success":
+                                                        status === "Done",
+                                                    }
+                                                  )}
+                                                >
+                                                  {status}
+                                                </div>
+                                              </div>
+                                            );
+                                          }
+                                        )}
                                       </div>
                                     </Menu.Item>
                                   </Fragment>
